@@ -1,0 +1,840 @@
+{
+  "schema_version": 1,
+  "domains": [
+    {
+      "id": "technology",
+      "name": "テクノロジ系",
+      "order": 1
+    },
+    {
+      "id": "management",
+      "name": "マネジメント系",
+      "order": 2
+    },
+    {
+      "id": "strategy",
+      "name": "ストラテジ系",
+      "order": 3
+    }
+  ],
+  "categories": [
+    {
+      "id": "foundation_theory",
+      "name": "基礎理論・数値表現",
+      "order": 1,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "数値表現、論理演算、確率、情報量、グラフなど",
+      "subcategories": [
+        {
+          "id": "foundation_theory__c2867a60",
+          "name": "オートマトン"
+        },
+        {
+          "id": "foundation_theory__81603c47",
+          "name": "グラフ"
+        },
+        {
+          "id": "foundation_theory__3e1105f7",
+          "name": "情報量"
+        },
+        {
+          "id": "foundation_theory__47cebe43",
+          "name": "数値表現"
+        },
+        {
+          "id": "foundation_theory__bc44c21f",
+          "name": "数値計算"
+        },
+        {
+          "id": "foundation_theory__064ddae7",
+          "name": "確率"
+        },
+        {
+          "id": "foundation_theory__017ed27c",
+          "name": "補数"
+        },
+        {
+          "id": "foundation_theory__53289896",
+          "name": "誤り制御"
+        },
+        {
+          "id": "foundation_theory__ffebd7e1",
+          "name": "論理演算"
+        },
+        {
+          "id": "foundation_theory__2d76a294",
+          "name": "集合"
+        }
+      ]
+    },
+    {
+      "id": "algorithms_data_structures",
+      "name": "アルゴリズム・データ構造",
+      "order": 2,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "探索、整列、スタック、キュー、木、グラフ、計算量など",
+      "subcategories": [
+        {
+          "id": "algorithms_data_structures__8d0bcbd1",
+          "name": "アルゴリズム"
+        },
+        {
+          "id": "algorithms_data_structures__c07e0dfb",
+          "name": "グラフ"
+        },
+        {
+          "id": "algorithms_data_structures__eaec340b",
+          "name": "データ構造"
+        },
+        {
+          "id": "algorithms_data_structures__8138e49b",
+          "name": "ハッシュ"
+        },
+        {
+          "id": "algorithms_data_structures__a085f394",
+          "name": "再帰"
+        },
+        {
+          "id": "algorithms_data_structures__9ca30416",
+          "name": "動的計画法"
+        },
+        {
+          "id": "algorithms_data_structures__d0d772c8",
+          "name": "探索"
+        },
+        {
+          "id": "algorithms_data_structures__f369f396",
+          "name": "整列"
+        },
+        {
+          "id": "algorithms_data_structures__f9bd5a18",
+          "name": "木"
+        },
+        {
+          "id": "algorithms_data_structures__572c78f2",
+          "name": "計算量"
+        }
+      ]
+    },
+    {
+      "id": "computer_architecture",
+      "name": "コンピュータアーキテクチャ",
+      "order": 3,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "CPU、記憶装置、キャッシュ、RAID、仮想記憶、性能評価など",
+      "subcategories": [
+        {
+          "id": "computer_architecture__3767eec8",
+          "name": "CPU"
+        },
+        {
+          "id": "computer_architecture__1125e8aa",
+          "name": "I-O"
+        },
+        {
+          "id": "computer_architecture__b9feef24",
+          "name": "キャッシュ"
+        },
+        {
+          "id": "computer_architecture__30277c24",
+          "name": "ストレージ"
+        },
+        {
+          "id": "computer_architecture__e16a8a4c",
+          "name": "並列処理"
+        },
+        {
+          "id": "computer_architecture__49d8928e",
+          "name": "主記憶"
+        },
+        {
+          "id": "computer_architecture__c615575c",
+          "name": "仮想記憶"
+        },
+        {
+          "id": "computer_architecture__57dfa9e8",
+          "name": "性能評価"
+        },
+        {
+          "id": "computer_architecture__d0892ca5",
+          "name": "記憶装置"
+        }
+      ]
+    },
+    {
+      "id": "os_middleware",
+      "name": "OS・ミドルウェア",
+      "order": 4,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "プロセス、スレッド、排他、デッドロック、ファイルシステム、仮想化など",
+      "subcategories": [
+        {
+          "id": "os_middleware__c77fdcf9",
+          "name": "RPC"
+        },
+        {
+          "id": "os_middleware__22a25c3b",
+          "name": "コンテナ"
+        },
+        {
+          "id": "os_middleware__5cbf3a58",
+          "name": "スケジューリング"
+        },
+        {
+          "id": "os_middleware__669f3ae7",
+          "name": "スレッド"
+        },
+        {
+          "id": "os_middleware__be875319",
+          "name": "デッドロック"
+        },
+        {
+          "id": "os_middleware__aee762e5",
+          "name": "ハイパーバイザ"
+        },
+        {
+          "id": "os_middleware__894c4934",
+          "name": "ファイルシステム"
+        },
+        {
+          "id": "os_middleware__5bebc3bd",
+          "name": "プロセス"
+        },
+        {
+          "id": "os_middleware__182475e7",
+          "name": "メッセージング"
+        },
+        {
+          "id": "os_middleware__55d4a54b",
+          "name": "メモリ管理"
+        },
+        {
+          "id": "os_middleware__6ac3efa2",
+          "name": "同期"
+        },
+        {
+          "id": "os_middleware__b9ac277b",
+          "name": "排他制御"
+        }
+      ]
+    },
+    {
+      "id": "system_reliability",
+      "name": "システム構成・信頼性",
+      "order": 5,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "稼働率、冗長化、負荷分散、バックアップ、RTO・RPOなど",
+      "subcategories": [
+        {
+          "id": "system_reliability__ea355653",
+          "name": "バックアップ"
+        },
+        {
+          "id": "system_reliability__1c6ad800",
+          "name": "並列構成"
+        },
+        {
+          "id": "system_reliability__8c1a25a9",
+          "name": "信頼性"
+        },
+        {
+          "id": "system_reliability__3a60bad1",
+          "name": "冗長化"
+        },
+        {
+          "id": "system_reliability__a5b8158a",
+          "name": "拡張性"
+        },
+        {
+          "id": "system_reliability__4e8f339c",
+          "name": "災害復旧"
+        },
+        {
+          "id": "system_reliability__c1391208",
+          "name": "直列構成"
+        },
+        {
+          "id": "system_reliability__d41171e2",
+          "name": "稼働率"
+        },
+        {
+          "id": "system_reliability__1de1f41d",
+          "name": "負荷分散"
+        }
+      ]
+    },
+    {
+      "id": "databases",
+      "name": "データベース",
+      "order": 6,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "正規化、SQL、キー、トランザクション、索引、障害回復など",
+      "subcategories": [
+        {
+          "id": "databases__60d2548c",
+          "name": "SQL"
+        },
+        {
+          "id": "databases__e45dfbc0",
+          "name": "キー"
+        },
+        {
+          "id": "databases__fafc1493",
+          "name": "トランザクション"
+        },
+        {
+          "id": "databases__a319a38e",
+          "name": "参照整合性"
+        },
+        {
+          "id": "databases__b791b2ac",
+          "name": "正規化"
+        },
+        {
+          "id": "databases__5859da50",
+          "name": "索引"
+        },
+        {
+          "id": "databases__80264f61",
+          "name": "結合"
+        },
+        {
+          "id": "databases__518fea7c",
+          "name": "障害回復"
+        }
+      ]
+    },
+    {
+      "id": "networks",
+      "name": "ネットワーク",
+      "order": 7,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "IPv4、TCP・UDP、DNS、LAN、VPN、ルーティング、運用管理など",
+      "subcategories": [
+        {
+          "id": "networks__208eb414",
+          "name": "DNS"
+        },
+        {
+          "id": "networks__cf4b1840",
+          "name": "HTTP"
+        },
+        {
+          "id": "networks__0a89fa88",
+          "name": "IPv4"
+        },
+        {
+          "id": "networks__c5dbfe27",
+          "name": "LAN"
+        },
+        {
+          "id": "networks__22a20346",
+          "name": "TCP-IP"
+        },
+        {
+          "id": "networks__eb523488",
+          "name": "TCP・UDP"
+        },
+        {
+          "id": "networks__d566f81f",
+          "name": "VPN"
+        },
+        {
+          "id": "networks__f41130a2",
+          "name": "アドレス変換"
+        },
+        {
+          "id": "networks__ba4eef7e",
+          "name": "ルーティング"
+        },
+        {
+          "id": "networks__3cd60854",
+          "name": "運用管理"
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "name": "セキュリティ",
+      "order": 8,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "暗号、電子署名、認証、アクセス制御、Web攻撃、マルウェアなど",
+      "subcategories": [
+        {
+          "id": "security__e96fc0cb",
+          "name": "Web・OS攻撃"
+        },
+        {
+          "id": "security__d67bec0c",
+          "name": "Web攻撃"
+        },
+        {
+          "id": "security__db42d9a0",
+          "name": "アクセス制御"
+        },
+        {
+          "id": "security__00ef1f51",
+          "name": "サプライチェーン"
+        },
+        {
+          "id": "security__c604c9fb",
+          "name": "ネットワーク"
+        },
+        {
+          "id": "security__aab4b2ec",
+          "name": "ハッシュ"
+        },
+        {
+          "id": "security__81988e33",
+          "name": "マルウェア"
+        },
+        {
+          "id": "security__a8f29f4b",
+          "name": "公開鍵暗号"
+        },
+        {
+          "id": "security__fcc6f131",
+          "name": "共通鍵暗号"
+        },
+        {
+          "id": "security__f5cce283",
+          "name": "監視"
+        },
+        {
+          "id": "security__f1ed77be",
+          "name": "考え方"
+        },
+        {
+          "id": "security__3b88cee9",
+          "name": "認証"
+        },
+        {
+          "id": "security__a67905a1",
+          "name": "電子署名"
+        }
+      ]
+    },
+    {
+      "id": "software_engineering",
+      "name": "システム開発・ソフトウェア工学",
+      "order": 9,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "開発工程、要求、UML、テスト、レビュー、アジャイル、CI/CDなど",
+      "subcategories": [
+        {
+          "id": "software_engineering__3604a806",
+          "name": "CI-CD"
+        },
+        {
+          "id": "software_engineering__9255d6d2",
+          "name": "UML"
+        },
+        {
+          "id": "software_engineering__751ab635",
+          "name": "アジャイル"
+        },
+        {
+          "id": "software_engineering__b17e3ab0",
+          "name": "アジャイル開発"
+        },
+        {
+          "id": "software_engineering__52576416",
+          "name": "システム保守"
+        },
+        {
+          "id": "software_engineering__7e353b3d",
+          "name": "テスト"
+        },
+        {
+          "id": "software_engineering__dd086d08",
+          "name": "テスト技法"
+        },
+        {
+          "id": "software_engineering__8913705b",
+          "name": "ライフサイクル"
+        },
+        {
+          "id": "software_engineering__46cce9ec",
+          "name": "レビュー"
+        },
+        {
+          "id": "software_engineering__0e22c239",
+          "name": "構成管理"
+        },
+        {
+          "id": "software_engineering__56702b47",
+          "name": "要求分析"
+        }
+      ]
+    },
+    {
+      "id": "project_management",
+      "name": "プロジェクト管理",
+      "order": 10,
+      "default_domain": "management",
+      "priority": "A",
+      "description": "WBS、クリティカルパス、PERT、EVM、リスク、品質、変更など",
+      "subcategories": [
+        {
+          "id": "project_management__450ee5dc",
+          "name": "EVM"
+        },
+        {
+          "id": "project_management__0f32de0c",
+          "name": "PERT"
+        },
+        {
+          "id": "project_management__9e9046d9",
+          "name": "クリティカルパス"
+        },
+        {
+          "id": "project_management__3b957226",
+          "name": "スコープ"
+        },
+        {
+          "id": "project_management__ada51a14",
+          "name": "ステークホルダ"
+        },
+        {
+          "id": "project_management__81e91e48",
+          "name": "リスク"
+        },
+        {
+          "id": "project_management__e6b98911",
+          "name": "リスク対応"
+        },
+        {
+          "id": "project_management__f7898ca5",
+          "name": "品質"
+        },
+        {
+          "id": "project_management__31d8696e",
+          "name": "変更管理"
+        },
+        {
+          "id": "project_management__4a2c322b",
+          "name": "見積り"
+        }
+      ]
+    },
+    {
+      "id": "it_service_management",
+      "name": "ITサービス管理",
+      "order": 11,
+      "default_domain": "management",
+      "priority": "A",
+      "description": "インシデント、問題、変更、SLA、可用性、容量、CMDBなど",
+      "subcategories": [
+        {
+          "id": "it_service_management__365693a6",
+          "name": "SLA"
+        },
+        {
+          "id": "it_service_management__9f2d8f48",
+          "name": "インシデント"
+        },
+        {
+          "id": "it_service_management__0364a662",
+          "name": "キャパシティ"
+        },
+        {
+          "id": "it_service_management__5ff2d47c",
+          "name": "サービスデスク"
+        },
+        {
+          "id": "it_service_management__2a4d68a4",
+          "name": "サービス要求"
+        },
+        {
+          "id": "it_service_management__622bbd35",
+          "name": "モニタリング"
+        },
+        {
+          "id": "it_service_management__d54cd701",
+          "name": "リリース"
+        },
+        {
+          "id": "it_service_management__4c46897b",
+          "name": "可用性"
+        },
+        {
+          "id": "it_service_management__1310e698",
+          "name": "問題"
+        },
+        {
+          "id": "it_service_management__972b4b9e",
+          "name": "変更"
+        },
+        {
+          "id": "it_service_management__4979f42a",
+          "name": "容量"
+        },
+        {
+          "id": "it_service_management__63bb0f81",
+          "name": "構成"
+        },
+        {
+          "id": "it_service_management__5096d5a0",
+          "name": "知識"
+        },
+        {
+          "id": "it_service_management__7e65a8af",
+          "name": "継続性"
+        }
+      ]
+    },
+    {
+      "id": "system_audit",
+      "name": "システム監査",
+      "order": 12,
+      "default_domain": "management",
+      "priority": "B",
+      "description": "独立性、監査証拠、監査技法、内部統制、フォローアップなど",
+      "subcategories": [
+        {
+          "id": "system_audit__cc5a479f",
+          "name": "CAAT"
+        },
+        {
+          "id": "system_audit__8dd06303",
+          "name": "サンプリング"
+        },
+        {
+          "id": "system_audit__f60d51e4",
+          "name": "フォローアップ"
+        },
+        {
+          "id": "system_audit__0c75a925",
+          "name": "リスク"
+        },
+        {
+          "id": "system_audit__9637e009",
+          "name": "ログ"
+        },
+        {
+          "id": "system_audit__9f9f3027",
+          "name": "内部統制"
+        },
+        {
+          "id": "system_audit__99ddede6",
+          "name": "報告"
+        },
+        {
+          "id": "system_audit__b832d4a6",
+          "name": "技法"
+        },
+        {
+          "id": "system_audit__c3f21cd3",
+          "name": "独立性"
+        },
+        {
+          "id": "system_audit__31e388c0",
+          "name": "監査技法"
+        },
+        {
+          "id": "system_audit__0803fddf",
+          "name": "継続的監査"
+        },
+        {
+          "id": "system_audit__958cf0c3",
+          "name": "計画"
+        },
+        {
+          "id": "system_audit__1c24a4f6",
+          "name": "証拠"
+        },
+        {
+          "id": "system_audit__4867bde6",
+          "name": "証拠評価"
+        }
+      ]
+    },
+    {
+      "id": "business_system_strategy",
+      "name": "経営・システム戦略",
+      "order": 13,
+      "default_domain": "strategy",
+      "priority": "B",
+      "description": "SWOT、PPM、BSC、CRM、SCM、ERP、BPR、DXなど",
+      "subcategories": [
+        {
+          "id": "business_system_strategy__06eb439b",
+          "name": "BPR"
+        },
+        {
+          "id": "business_system_strategy__6b26b201",
+          "name": "BSC"
+        },
+        {
+          "id": "business_system_strategy__c5be2eaf",
+          "name": "CRM"
+        },
+        {
+          "id": "business_system_strategy__72ddb8bf",
+          "name": "DX"
+        },
+        {
+          "id": "business_system_strategy__cecf8987",
+          "name": "ERP"
+        },
+        {
+          "id": "business_system_strategy__92d83fe0",
+          "name": "KPI"
+        },
+        {
+          "id": "business_system_strategy__9bff6d00",
+          "name": "PPM"
+        },
+        {
+          "id": "business_system_strategy__9e697aea",
+          "name": "SCM"
+        },
+        {
+          "id": "business_system_strategy__e7bcd81a",
+          "name": "SWOT"
+        },
+        {
+          "id": "business_system_strategy__596be3db",
+          "name": "スマートファクトリー"
+        },
+        {
+          "id": "business_system_strategy__e57f5ca4",
+          "name": "価値連鎖"
+        },
+        {
+          "id": "business_system_strategy__64e6bc7a",
+          "name": "実現可能性"
+        },
+        {
+          "id": "business_system_strategy__ce6f46d3",
+          "name": "競争分析"
+        }
+      ]
+    },
+    {
+      "id": "corporate_accounting",
+      "name": "企業活動・会計",
+      "order": 14,
+      "default_domain": "strategy",
+      "priority": "B",
+      "description": "財務諸表、損益分岐、ROI、ROE、在庫、調達、生産性など",
+      "subcategories": [
+        {
+          "id": "corporate_accounting__871c658f",
+          "name": "ABC分析"
+        },
+        {
+          "id": "corporate_accounting__25762644",
+          "name": "ROE"
+        },
+        {
+          "id": "corporate_accounting__86dbe471",
+          "name": "ROI"
+        },
+        {
+          "id": "corporate_accounting__1ab6c83c",
+          "name": "キャッシュフロー"
+        },
+        {
+          "id": "corporate_accounting__b83431e6",
+          "name": "利益"
+        },
+        {
+          "id": "corporate_accounting__bb0765a7",
+          "name": "在庫"
+        },
+        {
+          "id": "corporate_accounting__3a29a716",
+          "name": "損益分岐点"
+        },
+        {
+          "id": "corporate_accounting__54ba690c",
+          "name": "減価償却"
+        },
+        {
+          "id": "corporate_accounting__c81cca53",
+          "name": "生産性"
+        },
+        {
+          "id": "corporate_accounting__0ec0d223",
+          "name": "調達"
+        },
+        {
+          "id": "corporate_accounting__0cd462ee",
+          "name": "財務諸表"
+        }
+      ]
+    },
+    {
+      "id": "law_standards_emerging",
+      "name": "法務・標準・新技術",
+      "order": 15,
+      "default_domain": "strategy",
+      "priority": "B",
+      "description": "知的財産、契約、個人情報、OSS、標準、クラウド、AI・IoTなど",
+      "subcategories": [
+        {
+          "id": "law_standards_emerging__3437f3ec",
+          "name": "OSS"
+        },
+        {
+          "id": "law_standards_emerging__a5a79978",
+          "name": "エッジAI"
+        },
+        {
+          "id": "law_standards_emerging__a18b8462",
+          "name": "サービスモデル"
+        },
+        {
+          "id": "law_standards_emerging__17208a8b",
+          "name": "ソフトウェアライセンス"
+        },
+        {
+          "id": "law_standards_emerging__d728913c",
+          "name": "個人情報"
+        },
+        {
+          "id": "law_standards_emerging__648dd3ed",
+          "name": "個人情報・電子署名"
+        },
+        {
+          "id": "law_standards_emerging__071ce68e",
+          "name": "商標"
+        },
+        {
+          "id": "law_standards_emerging__cc124f6b",
+          "name": "契約"
+        },
+        {
+          "id": "law_standards_emerging__3610a911",
+          "name": "情報セキュリティ"
+        },
+        {
+          "id": "law_standards_emerging__569b41f9",
+          "name": "機械学習"
+        },
+        {
+          "id": "law_standards_emerging__5b3829cd",
+          "name": "特許"
+        },
+        {
+          "id": "law_standards_emerging__be4f615f",
+          "name": "著作権"
+        },
+        {
+          "id": "law_standards_emerging__8d7be751",
+          "name": "運用自動化"
+        }
+      ]
+    }
+  ]
+}

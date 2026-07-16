@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NW A1 Dojo Questions",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "metadata",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 240,
+      "maxItems": 240,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "domain_id",
+          "category_id",
+          "subcategory_id",
+          "subcategory",
+          "difficulty",
+          "priority",
+          "question",
+          "choices",
+          "correct_choice",
+          "explanation",
+          "memory_point",
+          "question_set",
+          "source",
+          "status",
+          "schema_version"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 240
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^A1-[0-9]{3}$"
+          },
+          "domain_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "category_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "subcategory_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "subcategory": {
+            "type": "string",
+            "minLength": 1
+          },
+          "difficulty": {
+            "enum": [
+              "基礎",
+              "標準",
+              "応用"
+            ]
+          },
+          "priority": {
+            "enum": [
+              "S",
+              "A",
+              "B"
+            ]
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "choices": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "text"
+              ],
+              "properties": {
+                "id": {
+                  "enum": [
+                    "A",
+                    "B",
+                    "C",
+                    "D"
+                  ]
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "correct_choice": {
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "memory_point": {
+            "type": "string",
+            "minLength": 1
+          },
+          "question_set": {
+            "type": "object"
+          },
+          "source": {
+            "type": "object"
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "schema_version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
