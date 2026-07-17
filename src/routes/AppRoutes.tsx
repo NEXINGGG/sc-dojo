@@ -5,6 +5,7 @@ import { ExamSelectionPage } from '../pages/ExamSelectionPage';
 import { HomePage } from '../pages/HomePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { PracticeQuestionPage } from '../pages/PracticeQuestionPage';
+import { PracticeResultPage } from '../pages/PracticeResultPage';
 import { PracticeSetupPage } from '../pages/PracticeSetupPage';
 import { ProgressPage } from '../pages/ProgressPage';
 import { SettingsPage } from '../pages/SettingsPage';
@@ -15,6 +16,7 @@ export function AppRoutes() {
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
         <Route path="practice" element={<PracticeSetupPage />} />
+        <Route path="practice/:sessionId/result" element={<PracticeResultPage />} />
         <Route path="practice/:sessionId" element={<PracticeQuestionPage />} />
         <Route path="exam" element={<ExamSelectionPage />} />
         <Route path="exam/:sessionId" element={<ExamPage />} />

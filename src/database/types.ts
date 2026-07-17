@@ -1,3 +1,4 @@
+import type { PracticeFilters } from '../domain/practice';
 import type { ChoiceId } from '../types/question';
 
 export interface QuestionProgressRow {
@@ -22,16 +23,25 @@ export interface AnswerAttemptRow {
   sessionId: string;
 }
 
+export interface PracticeSessionAnswer {
+  selectedChoice: ChoiceId;
+  confirmed: boolean;
+  selectedAt: string;
+  isCorrect?: boolean;
+  confirmedAt?: string;
+}
+
 export interface PracticeSessionRow {
   id: string;
-  status: 'in_progress';
-  filters: Record<string, unknown>;
+  version: 1;
+  status: 'in_progress' | 'completed';
+  filters: PracticeFilters;
   questionCodes: string[];
-  choiceOrderByCode: Record<string, ChoiceId[]>;
   currentIndex: number;
-  answers: Record<string, ChoiceId>;
+  answers: Record<string, PracticeSessionAnswer>;
   createdAt: string;
   updatedAt: string;
+  completedAt?: string;
 }
 
 export interface ExamSessionRow {

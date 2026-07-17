@@ -15,8 +15,7 @@ function renderRoute(path: string) {
 describe('主要ルート', () => {
   it.each([
     ['/', 'ホーム'],
-    ['/practice', '演習条件'],
-    ['/practice/demo', '問題演習'],
+    ['/practice', '通常演習'],
     ['/exam', '模擬試験'],
     ['/exam/demo', '模擬試験中'],
     ['/progress', '成績'],
@@ -43,6 +42,6 @@ describe('主要ルート', () => {
     expect(
       screen.getByRole('button', { name: 'テーマをダークモードに切り替え' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '今日の10問を始める' })).toBeDisabled();
+    expect(screen.getByRole('link', { name: '通常演習を始める' })).toBeInTheDocument();
   });
 });
