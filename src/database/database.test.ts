@@ -25,6 +25,7 @@ describe('A1DojoDatabase', () => {
       'learningDays',
       'settings',
       'metadata',
+      'practiceResults',
     ]);
 
     database.close();

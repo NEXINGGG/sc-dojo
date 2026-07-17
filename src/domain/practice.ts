@@ -1,7 +1,16 @@
-import type { PracticeSessionRow, PracticeSessionAnswer } from '../database/types';
+import type {
+  PracticeSessionAnswer,
+  PracticeSessionRow,
+  QuestionProgressRow,
+} from '../database/types';
+import {
+  getPracticeModeForAnswerStatus,
+  matchesPracticeAnswerStatus,
+  type PracticeAnswerStatus,
+} from './learning';
 import type { ChoiceId, Difficulty, Question } from '../types/question';
 
-export const practiceQuestionCounts = [10, 20, 30, 'all'] as const;
+export const practiceQuestionCounts = [5, 10, 20, 30, 'all'] as const;
 
 export type PracticeQuestionCount = (typeof practiceQuestionCounts)[number];
 export type PracticeOrder = 'registered' | 'random';
@@ -10,9 +19,14 @@ export interface PracticeFilters {
   domainId: string | 'all';
   categoryIds: readonly string[];
   difficulty: Difficulty | 'all';
+  answerStatus: PracticeAnswerStatus;
   questionCount: PracticeQuestionCount;
   order: PracticeOrder;
 }
+
+type PracticeScopeFilters = Pick<PracticeFilters, 'domainId' | 'categoryIds' | 'difficulty'> & {
+  answerStatus?: PracticeAnswerStatus;
+};
 
 export interface PracticeSessionResult {
   total: number;
@@ -43,6 +57,7 @@ export const defaultPracticeFilters: PracticeFilters = {
   domainId: 'all',
   categoryIds: [],
   difficulty: 'all',
+  answerStatus: 'all',
   questionCount: 10,
   order: 'registered',
 };
@@ -56,7 +71,8 @@ export function clonePracticeFilters(filters: PracticeFilters): PracticeFilters 
 
 export function filterPracticeQuestions(
   source: readonly Question[],
-  filters: Pick<PracticeFilters, 'domainId' | 'categoryIds' | 'difficulty'>,
+  filters: PracticeScopeFilters,
+  progressByCode: ReadonlyMap<string, QuestionProgressRow> = new Map(),
 ): readonly Question[] {
   const categoryIds = new Set(filters.categoryIds);
 
@@ -65,7 +81,8 @@ export function filterPracticeQuestions(
       question.status === 'active' &&
       (filters.domainId === 'all' || question.domainId === filters.domainId) &&
       (categoryIds.size === 0 || categoryIds.has(question.categoryId)) &&
-      (filters.difficulty === 'all' || question.difficulty === filters.difficulty),
+      (filters.difficulty === 'all' || question.difficulty === filters.difficulty) &&
+      matchesPracticeAnswerStatus(progressByCode.get(question.code), filters.answerStatus ?? 'all'),
   );
 }
 
@@ -84,8 +101,9 @@ export function selectPracticeQuestions(
   source: readonly Question[],
   filters: PracticeFilters,
   random: () => number = Math.random,
+  progressByCode: ReadonlyMap<string, QuestionProgressRow> = new Map(),
 ): readonly Question[] {
-  const filtered = filterPracticeQuestions(source, filters);
+  const filtered = filterPracticeQuestions(source, filters, progressByCode);
   const ordered = filters.order === 'random' ? shuffleQuestions(filtered, random) : [...filtered];
   const limit = filters.questionCount === 'all' ? ordered.length : filters.questionCount;
 
@@ -94,11 +112,16 @@ export function selectPracticeQuestions(
 
 export function countQuestionsByCategory(
   source: readonly Question[],
-  filters: Pick<PracticeFilters, 'domainId' | 'difficulty'>,
+  filters: Pick<PracticeFilters, 'domainId' | 'difficulty' | 'answerStatus'>,
+  progressByCode: ReadonlyMap<string, QuestionProgressRow> = new Map(),
 ): ReadonlyMap<string, number> {
   const counts = new Map<string, number>();
 
-  for (const question of filterPracticeQuestions(source, { ...filters, categoryIds: [] })) {
+  for (const question of filterPracticeQuestions(
+    source,
+    { ...filters, categoryIds: [] },
+    progressByCode,
+  )) {
     counts.set(question.categoryId, (counts.get(question.categoryId) ?? 0) + 1);
   }
 
@@ -107,12 +130,35 @@ export function countQuestionsByCategory(
 
 export function countQuestionsByDifficulty(
   source: readonly Question[],
-  filters: Pick<PracticeFilters, 'domainId' | 'categoryIds'>,
+  filters: Pick<PracticeFilters, 'domainId' | 'categoryIds' | 'answerStatus'>,
+  progressByCode: ReadonlyMap<string, QuestionProgressRow> = new Map(),
 ): ReadonlyMap<Difficulty, number> {
   const counts = new Map<Difficulty, number>();
 
-  for (const question of filterPracticeQuestions(source, { ...filters, difficulty: 'all' })) {
+  for (const question of filterPracticeQuestions(
+    source,
+    { ...filters, difficulty: 'all' },
+    progressByCode,
+  )) {
     counts.set(question.difficulty, (counts.get(question.difficulty) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+export function countQuestionsByDomain(
+  source: readonly Question[],
+  filters: Pick<PracticeFilters, 'categoryIds' | 'difficulty' | 'answerStatus'>,
+  progressByCode: ReadonlyMap<string, QuestionProgressRow> = new Map(),
+): ReadonlyMap<string, number> {
+  const counts = new Map<string, number>();
+
+  for (const question of filterPracticeQuestions(
+    source,
+    { ...filters, domainId: 'all' },
+    progressByCode,
+  )) {
+    counts.set(question.domainId, (counts.get(question.domainId) ?? 0) + 1);
   }
 
   return counts;
@@ -127,6 +173,7 @@ export function createPracticeSession(
     id: options.id,
     version: 1,
     status: 'in_progress',
+    mode: getPracticeModeForAnswerStatus(filters.answerStatus),
     filters: clonePracticeFilters(filters),
     questionCodes: [...questionCodes],
     currentIndex: 0,

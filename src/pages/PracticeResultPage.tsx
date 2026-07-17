@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { getCategoryById, getDomainById, getQuestionByCode, questions } from '../data/catalog';
 import { database } from '../database/database';
 import type { PracticeSessionRow } from '../database/types';
+import type { QuestionProgressRow } from '../database/types';
 import {
   completePracticeSession,
   createPracticeSession,
@@ -15,8 +16,10 @@ import {
   ActivePracticeSessionExistsError,
   PracticeSessionRepository,
 } from '../features/practice/practiceSessionRepository';
+import { LearningRepository } from '../features/learning/learningRepository';
 
 const practiceSessions = new PracticeSessionRepository(database);
+const learning = new LearningRepository(database);
 
 export function PracticeResultPage() {
   const navigate = useNavigate();
@@ -24,6 +27,10 @@ export function PracticeResultPage() {
   const [session, setSession] = useState<PracticeSessionRow>();
   const [error, setError] = useState<string>();
   const [isStartingAgain, setIsStartingAgain] = useState(false);
+  const [progressByCode, setProgressByCode] = useState<ReadonlyMap<string, QuestionProgressRow>>(
+    new Map(),
+  );
+  const [favoriteSavingCode, setFavoriteSavingCode] = useState<string>();
 
   useEffect(() => {
     let isCurrent = true;
@@ -35,6 +42,7 @@ export function PracticeResultPage() {
       }
 
       try {
+        const progress = await learning.getProgressMap();
         const loaded = await practiceSessions.get(sessionId);
         if (!isCurrent) {
           return;
@@ -46,14 +54,16 @@ export function PracticeResultPage() {
           });
           return;
         }
+        setProgressByCode(progress);
         if (loaded.status === 'in_progress') {
           const completed = completePracticeSession(loaded, new Date().toISOString());
-          await practiceSessions.save(completed);
+          await learning.completePracticeSession(completed);
           if (isCurrent) {
             setSession(completed);
           }
           return;
         }
+        await learning.completePracticeSession(loaded);
         setSession(loaded);
       } catch {
         if (isCurrent) {
@@ -79,7 +89,13 @@ export function PracticeResultPage() {
     if (session === undefined) {
       return;
     }
-    const selectedQuestions = selectPracticeQuestions(questions, session.filters);
+    const progress = await learning.getProgressMap();
+    const selectedQuestions = selectPracticeQuestions(
+      questions,
+      session.filters,
+      Math.random,
+      progress,
+    );
     if (selectedQuestions.length === 0) {
       setError('同じ条件に一致する問題がありません。条件を変更して始めてください。');
       return;
@@ -105,6 +121,25 @@ export function PracticeResultPage() {
       }
     } finally {
       setIsStartingAgain(false);
+    }
+  }
+
+  async function toggleFavorite(code: string) {
+    const current = progressByCode.get(code);
+    setFavoriteSavingCode(code);
+    try {
+      const updated = await learning.setFavorite(
+        code,
+        !(current?.favorite ?? false),
+        new Date().toISOString(),
+      );
+      setProgressByCode((previous) => new Map(previous).set(code, updated));
+    } catch {
+      setError(
+        'お気に入りを保存できませんでした。端末の保存領域を確認して、もう一度お試しください。',
+      );
+    } finally {
+      setFavoriteSavingCode(undefined);
     }
   }
 
@@ -165,6 +200,7 @@ export function PracticeResultPage() {
             return null;
           }
           const answer = session.answers[code];
+          const isFavorite = progressByCode.get(code)?.favorite ?? false;
           const status =
             answer?.confirmed !== true ? '未回答' : answer.isCorrect ? '正解' : '不正解';
           const correctChoice = question.choices.find(
@@ -194,6 +230,20 @@ export function PracticeResultPage() {
                   ? question.correctChoice
                   : `${correctChoice.id}. ${correctChoice.text}`}
               </p>
+              <div className="result-question-actions">
+                <button
+                  aria-pressed={isFavorite}
+                  className="text-button"
+                  disabled={favoriteSavingCode === code}
+                  onClick={() => void toggleFavorite(code)}
+                  type="button"
+                >
+                  {isFavorite ? '★ お気に入り登録済み' : '☆ お気に入りに追加'}
+                </button>
+                <Link className="text-link" to={`/history/${code}`}>
+                  学習履歴を見る
+                </Link>
+              </div>
               <h3>解説</h3>
               <p>{question.explanation}</p>
               <h3>覚える一行</h3>

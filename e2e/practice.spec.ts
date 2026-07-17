@@ -13,9 +13,17 @@ test('通常演習を開始し、回答を保存してホームから再開で�
   await page.getByRole('button', { name: '回答する' }).click();
   await expect(page.getByRole('status')).toContainText(/正解です|不正解です/);
 
+  await page.getByRole('button', { name: '☆ お気に入りに追加' }).click();
+  await expect(page.getByRole('button', { name: '★ お気に入り登録済み' })).toBeVisible();
+  await page.getByRole('link', { name: 'この問題の学習履歴を見る' }).click();
+  await expect(page.getByRole('heading', { name: '問題の学習履歴' })).toBeVisible();
+  await expect(page.locator('.history-metrics dt', { hasText: '回答回数' })).toBeVisible();
+  await page.getByRole('button', { name: '前の画面へ戻る' }).click();
+
   await page.getByRole('button', { name: '中断する' }).click();
   await expect(page.getByRole('dialog', { name: '通常演習を中断しますか？' })).toBeVisible();
   await page.getByRole('button', { name: '保存してホームへ戻る' }).click();
   await expect(page.getByRole('heading', { name: 'ホーム' })).toBeVisible();
   await expect(page.getByRole('link', { name: /前回の続きから再開/ })).toBeVisible();
+  await expect(page.getByText('1 / 240問')).toBeVisible();
 });

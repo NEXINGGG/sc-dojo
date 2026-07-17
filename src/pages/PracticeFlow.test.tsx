@@ -13,12 +13,20 @@ import {
 
 beforeEach(async () => {
   await database.practiceSessions.clear();
+  await database.practiceResults.clear();
+  await database.answerAttempts.clear();
+  await database.questionProgress.clear();
+  await database.learningDays.clear();
   window.location.hash = '#/practice';
 });
 
 afterEach(async () => {
   cleanup();
   await database.practiceSessions.clear();
+  await database.practiceResults.clear();
+  await database.answerAttempts.clear();
+  await database.questionProgress.clear();
+  await database.learningDays.clear();
   window.location.hash = '#/';
 });
 
@@ -28,7 +36,7 @@ describe('通常演習の画面', () => {
     render(<App />);
 
     expect(screen.getByText('出題予定: 10問')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'この条件で始める' }));
+    await user.click(await screen.findByRole('button', { name: 'この条件で始める' }));
 
     expect(await screen.findByRole('heading', { name: '1 / 10 問' })).toBeInTheDocument();
     const choices = screen.getAllByRole('radio');
@@ -41,6 +49,61 @@ describe('通常演習の画面', () => {
       const session = await database.practiceSessions.toCollection().first();
       expect(session?.answers[session.questionCodes[0]]?.confirmed).toBe(true);
     });
+
+    await user.click(screen.getByRole('link', { name: 'ホーム' }));
+    expect(await screen.findByText('1 / 240問')).toBeInTheDocument();
+  });
+
+  it('回答状態を現在間違えている問題にすると、その問題だけで復習を始められる', async () => {
+    const firstQuestion = questions[0];
+    await database.questionProgress.put({
+      code: firstQuestion.code,
+      attemptCount: 1,
+      correctCount: 0,
+      incorrectCount: 1,
+      favorite: false,
+      lastChoice: firstQuestion.correctChoice === 'A' ? 'B' : 'A',
+      lastIsCorrect: false,
+      lastAnsweredAt: '2026-07-17T00:00:00.000Z',
+      updatedAt: '2026-07-17T00:00:00.000Z',
+    });
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(await screen.findByRole('radio', { name: /現在間違えている/ }));
+    expect(screen.getByText('出題予定: 1問')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'この条件で始める' }));
+
+    expect(await screen.findByRole('heading', { name: '1 / 1 問' })).toBeInTheDocument();
+    await waitFor(async () => {
+      const session = await database.practiceSessions.toCollection().first();
+      expect(session?.mode).toBe('review_incorrect');
+      expect(session?.questionCodes).toEqual([firstQuestion.code]);
+    });
+  });
+
+  it('問題画面のお気に入りと学習履歴画面を利用できる', async () => {
+    const firstQuestion = questions[0];
+    const session = createPracticeSession([firstQuestion.code], defaultPracticeFilters, {
+      id: 'favorite-and-history',
+      now: '2026-07-17T00:00:00.000Z',
+    });
+    await database.practiceSessions.put(session);
+    window.location.hash = `#/practice/${session.id}`;
+    const user = userEvent.setup();
+    render(<App />);
+
+    const favoriteButton = await screen.findByRole('button', { name: '☆ お気に入りに追加' });
+    await user.click(favoriteButton);
+    await waitFor(async () => {
+      const progress = await database.questionProgress.get(firstQuestion.code);
+      expect(progress?.favorite).toBe(true);
+    });
+
+    await user.click(screen.getByRole('link', { name: 'この問題の学習履歴を見る' }));
+    expect(await screen.findByRole('heading', { name: '問題の学習履歴' })).toBeInTheDocument();
+    expect(screen.getByText('まだ回答履歴はありません。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '★ お気に入り登録済み' })).toBeInTheDocument();
   });
 
   it('条件を初期状態へ戻せる', async () => {

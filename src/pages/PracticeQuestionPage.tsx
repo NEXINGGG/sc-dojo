@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import {
   getCategoryById,
@@ -17,9 +17,11 @@ import {
   validatePracticeSession,
 } from '../domain/practice';
 import { PracticeSessionRepository } from '../features/practice/practiceSessionRepository';
+import { LearningRepository } from '../features/learning/learningRepository';
 import type { ChoiceId } from '../types/question';
 
 const practiceSessions = new PracticeSessionRepository(database);
+const learning = new LearningRepository(database);
 const catalogCodes = new Set(questions.map((question) => question.code));
 
 export function PracticeQuestionPage() {
@@ -30,6 +32,9 @@ export function PracticeQuestionPage() {
   const [selectedChoice, setSelectedChoice] = useState<ChoiceId>();
   const [isSaving, setIsSaving] = useState(false);
   const [showInterruptDialog, setShowInterruptDialog] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavoriteSaving, setIsFavoriteSaving] = useState(false);
+  const [actionMessage, setActionMessage] = useState<string>();
   const feedbackRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -87,6 +92,7 @@ export function PracticeQuestionPage() {
       ? undefined
       : session.answers[currentQuestion.code];
   const currentAnswer = currentResponse?.confirmed ? currentResponse : undefined;
+  const currentQuestionCode = currentQuestion?.code;
 
   useEffect(() => {
     setSelectedChoice(currentResponse?.selectedChoice);
@@ -97,6 +103,33 @@ export function PracticeQuestionPage() {
       feedbackRef.current?.focus();
     }
   }, [currentAnswer]);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadFavorite() {
+      if (currentQuestionCode === undefined) {
+        return;
+      }
+      try {
+        const progress = await learning.getProgress(currentQuestionCode);
+        if (isCurrent) {
+          setIsFavorite(progress?.favorite ?? false);
+        }
+      } catch {
+        if (isCurrent) {
+          setActionMessage(
+            'お気に入りの状態を読み込めませんでした。再読み込みして、もう一度お試しください。',
+          );
+        }
+      }
+    }
+
+    void loadFavorite();
+    return () => {
+      isCurrent = false;
+    };
+  }, [currentQuestionCode]);
 
   async function saveSession(nextSession: PracticeSessionRow): Promise<boolean> {
     setIsSaving(true);
@@ -132,7 +165,41 @@ export function PracticeQuestionPage() {
       );
       return;
     }
-    await saveSession(result.session);
+    setIsSaving(true);
+    setLoadError(undefined);
+    try {
+      const saved = await learning.recordConfirmedPracticeAnswer(result.session, currentQuestion);
+      setSession(saved.session);
+    } catch {
+      setLoadError(
+        '回答履歴を保存できませんでした。回答と履歴は更新されていないため、端末の保存領域を確認して、もう一度お試しください。',
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function toggleFavorite() {
+    if (currentQuestion === undefined || isFavoriteSaving) {
+      return;
+    }
+
+    setIsFavoriteSaving(true);
+    setActionMessage(undefined);
+    try {
+      const progress = await learning.setFavorite(
+        currentQuestion.code,
+        !isFavorite,
+        new Date().toISOString(),
+      );
+      setIsFavorite(progress.favorite);
+    } catch {
+      setActionMessage(
+        'お気に入りを保存できませんでした。端末の保存領域を確認して、もう一度お試しください。',
+      );
+    } finally {
+      setIsFavoriteSaving(false);
+    }
   }
 
   async function selectAnswer(choiceId: ChoiceId) {
@@ -168,8 +235,17 @@ export function PracticeQuestionPage() {
       return;
     }
     const completed = completePracticeSession(session, new Date().toISOString());
-    if (await saveSession(completed)) {
+    setIsSaving(true);
+    try {
+      await learning.completePracticeSession(completed);
+      setSession(completed);
       navigate(`/practice/${completed.id}/result`);
+    } catch {
+      setLoadError(
+        '演習結果を保存できませんでした。端末の保存領域を確認して、もう一度お試しください。',
+      );
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -233,14 +309,32 @@ export function PracticeQuestionPage() {
             {session.currentIndex + 1} / {session.questionCodes.length} 問
           </h1>
         </div>
-        <button
-          className="secondary-button"
-          onClick={() => setShowInterruptDialog(true)}
-          type="button"
-        >
-          中断する
-        </button>
+        <div className="practice-header-actions">
+          <button
+            aria-pressed={isFavorite}
+            className="secondary-button favorite-button"
+            disabled={isFavoriteSaving}
+            onClick={() => void toggleFavorite()}
+            type="button"
+          >
+            {isFavorite ? '★ お気に入り登録済み' : '☆ お気に入りに追加'}
+          </button>
+          <button
+            className="secondary-button"
+            onClick={() => setShowInterruptDialog(true)}
+            type="button"
+          >
+            中断する
+          </button>
+        </div>
       </header>
+
+      {actionMessage !== undefined ? (
+        <section className="inline-notice inline-notice-warning" role="status">
+          <strong>確認してください</strong>
+          <p>{actionMessage}</p>
+        </section>
+      ) : null}
 
       <div
         aria-label={`進捗 ${session.currentIndex + 1} / ${session.questionCodes.length}`}
@@ -318,6 +412,9 @@ export function PracticeQuestionPage() {
             <p>{currentQuestion.memoryPoint}</p>
           </section>
         ) : null}
+        <Link className="text-link history-link" to={`/history/${currentQuestion.code}`}>
+          この問題の学習履歴を見る
+        </Link>
       </article>
 
       <div className="practice-action-bar">

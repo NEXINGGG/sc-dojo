@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { questions } from '../data/catalog';
+import type { QuestionProgressRow } from '../database/types';
 import {
   completePracticeSession,
   confirmPracticeAnswer,
@@ -42,6 +43,56 @@ describe('通常演習の出題条件', () => {
     ).toEqual([]);
   });
 
+  it('回答状態と他の条件を組み合わせて絞り込める', () => {
+    const [firstQuestion, secondQuestion] = firstActiveQuestions;
+    const progressByCode = new Map<string, QuestionProgressRow>([
+      [
+        firstQuestion.code,
+        {
+          code: firstQuestion.code,
+          attemptCount: 1,
+          correctCount: 0,
+          incorrectCount: 1,
+          favorite: true,
+          lastIsCorrect: false,
+          updatedAt: '2026-07-17T00:00:00.000Z',
+        },
+      ],
+      [
+        secondQuestion.code,
+        {
+          code: secondQuestion.code,
+          attemptCount: 1,
+          correctCount: 1,
+          incorrectCount: 0,
+          favorite: false,
+          lastIsCorrect: true,
+          updatedAt: '2026-07-17T00:00:00.000Z',
+        },
+      ],
+    ]);
+
+    expect(
+      filterPracticeQuestions(
+        [firstQuestion, secondQuestion],
+        {
+          domainId: firstQuestion.domainId,
+          categoryIds: [firstQuestion.categoryId],
+          difficulty: firstQuestion.difficulty,
+          answerStatus: 'incorrect',
+        },
+        progressByCode,
+      ).map((question) => question.code),
+    ).toEqual([firstQuestion.code]);
+    expect(
+      filterPracticeQuestions(
+        [firstQuestion, secondQuestion],
+        { domainId: 'all', categoryIds: [], difficulty: 'all', answerStatus: 'favorite' },
+        progressByCode,
+      ).map((question) => question.code),
+    ).toEqual([firstQuestion.code]);
+  });
+
   it('登録順を保持し、ランダム順でも元の配列を変更しない', () => {
     const filters = { ...defaultPracticeFilters, questionCount: 'all' as const };
     const registered = selectPracticeQuestions(firstActiveQuestions, filters);
@@ -58,10 +109,10 @@ describe('通常演習の出題条件', () => {
     expect(shuffleQuestions([1, 2, 3], () => 0)).toEqual([2, 3, 1]);
   });
 
-  it('出題数の10問・20問・30問・すべてを安定して適用する', () => {
+  it('出題数の5問・10問・20問・30問・すべてを安定して適用する', () => {
     const source = questions.filter((question) => question.status === 'active');
 
-    for (const count of [10, 20, 30, 'all'] as const) {
+    for (const count of [5, 10, 20, 30, 'all'] as const) {
       const selected = selectPracticeQuestions(source, {
         ...defaultPracticeFilters,
         questionCount: count,

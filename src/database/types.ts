@@ -1,15 +1,20 @@
 import type { PracticeFilters } from '../domain/practice';
 import type { ChoiceId } from '../types/question';
 
+export type AnswerSource =
+  'normal_practice' | 'review_unanswered' | 'review_incorrect' | 'review_favorite' | 'exam';
+
 export interface QuestionProgressRow {
   code: string;
   attemptCount: number;
   correctCount: number;
   incorrectCount: number;
+  firstAnsweredAt?: string;
   lastChoice?: ChoiceId;
   lastIsCorrect?: boolean;
   lastAnsweredAt?: string;
   favorite: boolean;
+  favoriteAt?: string;
   updatedAt: string;
 }
 
@@ -17,10 +22,12 @@ export interface AnswerAttemptRow {
   id?: number;
   code: string;
   selectedChoice: ChoiceId;
+  correctChoice: ChoiceId;
   isCorrect: boolean;
   answeredAt: string;
-  mode: 'practice' | 'exam';
+  mode: AnswerSource;
   sessionId: string;
+  version: 1;
 }
 
 export interface PracticeSessionAnswer {
@@ -35,6 +42,7 @@ export interface PracticeSessionRow {
   id: string;
   version: 1;
   status: 'in_progress' | 'completed';
+  mode?: Exclude<AnswerSource, 'exam'>;
   filters: PracticeFilters;
   questionCodes: string[];
   currentIndex: number;
@@ -42,6 +50,24 @@ export interface PracticeSessionRow {
   createdAt: string;
   updatedAt: string;
   completedAt?: string;
+}
+
+export interface PracticeResultRow {
+  id: string;
+  version: 1;
+  sessionId: string;
+  mode: Exclude<AnswerSource, 'exam'>;
+  startedAt: string;
+  completedAt: string;
+  filters: PracticeFilters;
+  questionCodes: string[];
+  confirmedQuestionCodes: string[];
+  total: number;
+  correct: number;
+  incorrect: number;
+  unanswered: number;
+  correctRate: number;
+  elapsedSeconds: number;
 }
 
 export interface ExamSessionRow {

@@ -1,30 +1,42 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { PageHeader } from '../components/PageHeader';
 import { categories, domains, questions } from '../data/catalog';
 import { database } from '../database/database';
+import type { QuestionProgressRow } from '../database/types';
 import {
   clonePracticeFilters,
   countQuestionsByCategory,
   countQuestionsByDifficulty,
+  countQuestionsByDomain,
   createPracticeSession,
   createPracticeSessionId,
   defaultPracticeFilters,
+  filterPracticeQuestions,
   practiceQuestionCounts,
   selectPracticeQuestions,
   type PracticeFilters,
 } from '../domain/practice';
+import type { PracticeAnswerStatus } from '../domain/learning';
 import {
   ActivePracticeSessionExistsError,
   PracticeSessionRepository,
 } from '../features/practice/practiceSessionRepository';
+import { LearningRepository } from '../features/learning/learningRepository';
 import { difficulties, type Difficulty } from '../types/question';
 
 const practiceSessions = new PracticeSessionRepository(database);
+const learning = new LearningRepository(database);
+const answerStatusOptions: readonly { value: PracticeAnswerStatus; label: string }[] = [
+  { value: 'all', label: 'すべて' },
+  { value: 'unanswered', label: '未回答' },
+  { value: 'incorrect', label: '現在間違えている' },
+  { value: 'favorite', label: 'お気に入り' },
+];
 
 interface PracticeSetupLocationState {
-  initialFilters?: PracticeFilters;
+  initialFilters?: Partial<PracticeFilters>;
   notice?: string;
 }
 
@@ -42,7 +54,14 @@ function readInitialFilters(state: unknown): PracticeFilters {
     return clonePracticeFilters(defaultPracticeFilters);
   }
 
-  return clonePracticeFilters(candidate);
+  return {
+    ...defaultPracticeFilters,
+    ...candidate,
+    categoryIds: [...candidate.categoryIds],
+    answerStatus: isPracticeAnswerStatus(candidate.answerStatus)
+      ? candidate.answerStatus
+      : defaultPracticeFilters.answerStatus,
+  };
 }
 
 function readNotice(state: unknown): string | undefined {
@@ -54,6 +73,10 @@ function readNotice(state: unknown): string | undefined {
   return typeof notice === 'string' ? notice : undefined;
 }
 
+function isPracticeAnswerStatus(value: unknown): value is PracticeAnswerStatus {
+  return value === 'all' || value === 'unanswered' || value === 'incorrect' || value === 'favorite';
+}
+
 export function PracticeSetupPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,10 +84,69 @@ export function PracticeSetupPage() {
   const [message, setMessage] = useState<string | undefined>(() => readNotice(location.state));
   const [pendingSession, setPendingSession] = useState<ReturnType<typeof createPracticeSession>>();
   const [isSaving, setIsSaving] = useState(false);
+  const [progressByCode, setProgressByCode] = useState<ReadonlyMap<string, QuestionProgressRow>>(
+    new Map(),
+  );
+  const [isProgressLoading, setIsProgressLoading] = useState(true);
 
-  const selectedQuestions = useMemo(() => selectPracticeQuestions(questions, filters), [filters]);
-  const categoryCounts = useMemo(() => countQuestionsByCategory(questions, filters), [filters]);
-  const difficultyCounts = useMemo(() => countQuestionsByDifficulty(questions, filters), [filters]);
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadProgress() {
+      try {
+        const progress = await learning.getProgressMap();
+        if (isCurrent) {
+          setProgressByCode(progress);
+        }
+      } catch {
+        if (isCurrent) {
+          setMessage(
+            '学習履歴を読み込めませんでした。端末の保存領域を確認して、再読み込みしてください。',
+          );
+        }
+      } finally {
+        if (isCurrent) {
+          setIsProgressLoading(false);
+        }
+      }
+    }
+
+    void loadProgress();
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
+
+  const selectedQuestions = useMemo(
+    () => selectPracticeQuestions(questions, filters, Math.random, progressByCode),
+    [filters, progressByCode],
+  );
+  const categoryCounts = useMemo(
+    () => countQuestionsByCategory(questions, filters, progressByCode),
+    [filters, progressByCode],
+  );
+  const difficultyCounts = useMemo(
+    () => countQuestionsByDifficulty(questions, filters, progressByCode),
+    [filters, progressByCode],
+  );
+  const domainCounts = useMemo(
+    () => countQuestionsByDomain(questions, filters, progressByCode),
+    [filters, progressByCode],
+  );
+  const answerStatusCounts = useMemo(
+    () =>
+      new Map(
+        answerStatusOptions.map((option) => [
+          option.value,
+          filterPracticeQuestions(
+            questions,
+            { ...filters, answerStatus: option.value },
+            progressByCode,
+          ).length,
+        ]),
+      ),
+    [filters, progressByCode],
+  );
 
   function updateFilters(update: Partial<PracticeFilters>) {
     setMessage(undefined);
@@ -115,7 +197,7 @@ export function PracticeSetupPage() {
   async function startPractice() {
     if (selectedQuestions.length === 0) {
       setMessage(
-        'この条件に一致する問題はありません。カテゴリまたは難易度の条件を変更してください。',
+        'この条件に一致する問題はありません。回答状態、カテゴリ、難易度の条件を変更してください。',
       );
       return;
     }
@@ -149,7 +231,7 @@ export function PracticeSetupPage() {
   return (
     <>
       <PageHeader
-        description="出題条件を選ぶと、登録順またはランダム順で演習できます。"
+        description="回答状態も組み合わせて、今の自分に合う問題を選べます。"
         title="通常演習"
       />
 
@@ -169,6 +251,31 @@ export function PracticeSetupPage() {
         }}
       >
         <fieldset className="surface-card filter-section">
+          <legend>回答状態</legend>
+          <p className="filter-help">未回答、現在間違えている問題、お気に入りから復習できます。</p>
+          <div className="segmented-options">
+            {answerStatusOptions.map((option) => {
+              const count = answerStatusCounts.get(option.value) ?? 0;
+              const isSelected = filters.answerStatus === option.value;
+              return (
+                <label className="filter-option" key={option.value}>
+                  <input
+                    checked={isSelected}
+                    disabled={count === 0 && !isSelected}
+                    name="answer-status"
+                    onChange={() => updateFilters({ answerStatus: option.value })}
+                    type="radio"
+                  />
+                  <span>{option.label}</span>
+                  <small>{count}問</small>
+                  {count === 0 ? <em>現在ありません</em> : null}
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        <fieldset className="surface-card filter-section">
           <legend>系統</legend>
           <p className="filter-help">問題ごとの系統で絞り込みます。</p>
           <div className="segmented-options">
@@ -180,18 +287,33 @@ export function PracticeSetupPage() {
                 type="radio"
               />
               <span>すべて</span>
+              <small>
+                {
+                  filterPracticeQuestions(
+                    questions,
+                    { ...filters, domainId: 'all' },
+                    progressByCode,
+                  ).length
+                }
+                問
+              </small>
             </label>
-            {domains.map((domain) => (
-              <label className={`filter-option domain-${domain.id}`} key={domain.id}>
-                <input
-                  checked={filters.domainId === domain.id}
-                  name="domain"
-                  onChange={() => updateFilters({ domainId: domain.id })}
-                  type="radio"
-                />
-                <span>{domain.name}</span>
-              </label>
-            ))}
+            {domains.map((domain) => {
+              const count = domainCounts.get(domain.id) ?? 0;
+              return (
+                <label className={`filter-option domain-${domain.id}`} key={domain.id}>
+                  <input
+                    checked={filters.domainId === domain.id}
+                    disabled={count === 0 && filters.domainId !== domain.id}
+                    name="domain"
+                    onChange={() => updateFilters({ domainId: domain.id })}
+                    type="radio"
+                  />
+                  <span>{domain.name}</span>
+                  <small>{count}問</small>
+                </label>
+              );
+            })}
           </div>
         </fieldset>
 
@@ -296,9 +418,11 @@ export function PracticeSetupPage() {
         <section aria-live="polite" className="practice-count-summary">
           <strong>出題予定: {selectedQuestions.length}問</strong>
           <span>
-            {filters.questionCount === 'all'
-              ? '条件に合う全問を出題します。'
-              : `最大${filters.questionCount}問を出題します。`}
+            {isProgressLoading
+              ? '学習履歴を読み込んでいます。'
+              : filters.questionCount === 'all'
+                ? '条件に合う全問を出題します。'
+                : `最大${filters.questionCount}問を出題します。`}
           </span>
         </section>
 
@@ -306,8 +430,8 @@ export function PracticeSetupPage() {
           <button className="secondary-button" onClick={resetFilters} type="button">
             初期状態へ戻す
           </button>
-          <button className="primary-button" disabled={isSaving} type="submit">
-            {isSaving ? '保存中…' : 'この条件で始める'}
+          <button className="primary-button" disabled={isSaving || isProgressLoading} type="submit">
+            {isSaving ? '保存中…' : isProgressLoading ? '履歴を読み込み中…' : 'この条件で始める'}
           </button>
         </div>
       </form>

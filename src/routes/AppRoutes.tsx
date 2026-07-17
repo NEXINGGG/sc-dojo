@@ -8,6 +8,7 @@ import { PracticeQuestionPage } from '../pages/PracticeQuestionPage';
 import { PracticeResultPage } from '../pages/PracticeResultPage';
 import { PracticeSetupPage } from '../pages/PracticeSetupPage';
 import { ProgressPage } from '../pages/ProgressPage';
+import { QuestionHistoryPage } from '../pages/QuestionHistoryPage';
 import { SettingsPage } from '../pages/SettingsPage';
 
 export function AppRoutes() {
@@ -18,6 +19,7 @@ export function AppRoutes() {
         <Route path="practice" element={<PracticeSetupPage />} />
         <Route path="practice/:sessionId/result" element={<PracticeResultPage />} />
         <Route path="practice/:sessionId" element={<PracticeQuestionPage />} />
+        <Route path="history/:questionCode" element={<QuestionHistoryPage />} />
         <Route path="exam" element={<ExamSelectionPage />} />
         <Route path="exam/:sessionId" element={<ExamPage />} />
         <Route path="progress" element={<ProgressPage />} />
