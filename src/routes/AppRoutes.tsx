@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { AppLayout } from '../layouts/AppLayout';
 import { ExamPage } from '../pages/ExamPage';
+import { ExamResultPage } from '../pages/ExamResultPage';
 import { ExamSelectionPage } from '../pages/ExamSelectionPage';
 import { HomePage } from '../pages/HomePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -21,6 +22,7 @@ export function AppRoutes() {
         <Route path="practice/:sessionId" element={<PracticeQuestionPage />} />
         <Route path="history/:questionCode" element={<QuestionHistoryPage />} />
         <Route path="exam" element={<ExamSelectionPage />} />
+        <Route path="exam/:sessionId/result" element={<ExamResultPage />} />
         <Route path="exam/:sessionId" element={<ExamPage />} />
         <Route path="progress" element={<ProgressPage />} />
         <Route path="settings" element={<SettingsPage />} />

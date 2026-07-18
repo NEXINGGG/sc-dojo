@@ -17,7 +17,7 @@ describe('主要ルート', () => {
     ['/', 'ホーム'],
     ['/practice', '通常演習'],
     ['/exam', '模擬試験'],
-    ['/exam/demo', '模擬試験中'],
+    ['/exam/demo', '模擬試験を読み込んでいます'],
     ['/progress', '成績'],
     ['/settings', '設定'],
   ])('%s で %s を表示する', (path, heading) => {

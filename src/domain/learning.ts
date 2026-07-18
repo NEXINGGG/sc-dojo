@@ -1,10 +1,10 @@
 import type {
   AnswerAttemptRow,
-  AnswerSource,
   LearningDayRow,
   PracticeResultRow,
   PracticeSessionRow,
   QuestionProgressRow,
+  PracticeAnswerSource,
 } from '../database/types';
 import type { Question } from '../types/question';
 
@@ -24,7 +24,7 @@ export interface LearningDashboard {
 
 export function getPracticeModeForAnswerStatus(
   answerStatus: PracticeAnswerStatus,
-): Exclude<AnswerSource, 'exam'> {
+): PracticeAnswerSource {
   switch (answerStatus) {
     case 'unanswered':
       return 'review_unanswered';

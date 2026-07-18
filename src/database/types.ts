@@ -1,8 +1,14 @@
 import type { PracticeFilters } from '../domain/practice';
 import type { ChoiceId } from '../types/question';
 
+export type PracticeAnswerSource =
+  'normal_practice' | 'review_unanswered' | 'review_incorrect' | 'review_favorite';
+
 export type AnswerSource =
-  'normal_practice' | 'review_unanswered' | 'review_incorrect' | 'review_favorite' | 'exam';
+  PracticeAnswerSource | 'exam' | 'mock_exam_fixed_1' | 'mock_exam_fixed_2' | 'mock_exam_random';
+
+export type ExamType = 'fixed_1' | 'fixed_2' | 'random';
+export type ExamSubmissionReason = 'manual' | 'timeout';
 
 export interface QuestionProgressRow {
   code: string;
@@ -42,7 +48,7 @@ export interface PracticeSessionRow {
   id: string;
   version: 1;
   status: 'in_progress' | 'completed';
-  mode?: Exclude<AnswerSource, 'exam'>;
+  mode?: PracticeAnswerSource;
   filters: PracticeFilters;
   questionCodes: string[];
   currentIndex: number;
@@ -56,7 +62,7 @@ export interface PracticeResultRow {
   id: string;
   version: 1;
   sessionId: string;
-  mode: Exclude<AnswerSource, 'exam'>;
+  mode: PracticeAnswerSource;
   startedAt: string;
   completedAt: string;
   filters: PracticeFilters;
@@ -72,28 +78,58 @@ export interface PracticeResultRow {
 
 export interface ExamSessionRow {
   id: string;
-  status: 'in_progress';
-  examType: 'fixed_1' | 'fixed_2' | 'random';
+  version: 1;
+  status: 'in_progress' | 'submitted';
+  examType: ExamType;
   questionCodes: string[];
-  choiceOrderByCode: Record<string, ChoiceId[]>;
   answers: Record<string, ChoiceId>;
   reviewCodes: string[];
   currentIndex: number;
   startedAt: string;
   deadlineAt: string;
+  submittedAt?: string;
+  submissionReason?: ExamSubmissionReason;
   updatedAt: string;
+}
+
+export interface ExamQuestionResultRow {
+  code: string;
+  selectedChoice?: ChoiceId;
+  correctChoice: ChoiceId;
+  isCorrect?: boolean;
+  review: boolean;
+}
+
+export interface ExamScoreBreakdownRow {
+  total: number;
+  answered: number;
+  correct: number;
+  incorrect: number;
+  unanswered: number;
 }
 
 export interface ExamResultRow {
   id: string;
+  version: 1;
   examSessionId: string;
-  examType: 'fixed_1' | 'fixed_2' | 'random';
-  completedAt: string;
+  examType: ExamType;
+  questionCodes: string[];
+  questionResults: Record<string, ExamQuestionResultRow>;
+  reviewCodes: string[];
+  startedAt: string;
+  submittedAt: string;
+  deadlineAt: string;
   elapsedSeconds: number;
+  total: number;
+  correct: number;
+  incorrect: number;
+  unanswered: number;
   score: number;
-  unansweredCount: number;
-  categoryResults: Record<string, { answered: number; correct: number }>;
-  incorrectCodes: string[];
+  correctRate: number;
+  passed: boolean;
+  submissionReason: ExamSubmissionReason;
+  categoryResults: Record<string, ExamScoreBreakdownRow>;
+  domainResults: Record<string, ExamScoreBreakdownRow>;
 }
 
 export interface LearningDayRow {

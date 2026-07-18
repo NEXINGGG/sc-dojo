@@ -12,7 +12,7 @@ import type {
 } from './types';
 
 export const DATABASE_NAME = 'a1-dojo';
-export const DATABASE_VERSION = 2;
+export const DATABASE_VERSION = 3;
 
 export class A1DojoDatabase extends Dexie {
   questionProgress!: EntityTable<QuestionProgressRow, 'code'>;
@@ -46,6 +46,18 @@ export class A1DojoDatabase extends Dexie {
       practiceResults: '&id, &sessionId, completedAt, mode',
       examSessions: '&id, status, updatedAt, deadlineAt',
       examResults: '&id, examSessionId, completedAt',
+      learningDays: '&date, updatedAt',
+      settings: '&key, updatedAt',
+      metadata: '&key, updatedAt',
+    });
+
+    this.version(3).stores({
+      questionProgress: '&code, favorite, lastAnsweredAt, lastIsCorrect',
+      answerAttempts: '++id, &[sessionId+code], code, sessionId, answeredAt, mode',
+      practiceSessions: '&id, status, updatedAt',
+      practiceResults: '&id, &sessionId, completedAt, mode',
+      examSessions: '&id, status, updatedAt, deadlineAt, examType',
+      examResults: '&id, &examSessionId, examType, submittedAt',
       learningDays: '&date, updatedAt',
       settings: '&key, updatedAt',
       metadata: '&key, updatedAt',

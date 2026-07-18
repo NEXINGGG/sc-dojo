@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { database } from '../database/database';
 import type { PracticeSessionRow } from '../database/types';
+import type { ExamOverview } from '../features/exam/examRepository';
+import { ExamRepository } from '../features/exam/examRepository';
+import { formatExamRemainingTime, getExamName, getExamTimerState } from '../domain/exam';
 import { defaultPracticeFilters } from '../domain/practice';
 import type { LearningDashboard } from '../domain/learning';
 import { LearningRepository } from '../features/learning/learningRepository';
@@ -10,6 +13,7 @@ import { PracticeSessionRepository } from '../features/practice/practiceSessionR
 
 const practiceSessions = new PracticeSessionRepository(database);
 const learning = new LearningRepository(database);
+const exams = new ExamRepository(database);
 
 const emptyDashboard: LearningDashboard = {
   totalQuestions: 240,
@@ -23,9 +27,12 @@ const emptyDashboard: LearningDashboard = {
   learningStreak: 0,
 };
 
+const emptyExamOverview: ExamOverview = { totalAttempts: 0 };
+
 export function HomePage() {
   const [inProgressSession, setInProgressSession] = useState<PracticeSessionRow>();
   const [dashboard, setDashboard] = useState<LearningDashboard>(emptyDashboard);
+  const [examOverview, setExamOverview] = useState<ExamOverview>(emptyExamOverview);
   const [loadFailed, setLoadFailed] = useState(false);
 
   useEffect(() => {
@@ -33,13 +40,16 @@ export function HomePage() {
 
     async function loadHomeData() {
       try {
-        const [session, stats] = await Promise.all([
+        await exams.submitExpiredInProgress();
+        const [session, stats, overview] = await Promise.all([
           practiceSessions.getInProgress(),
           learning.getDashboard(),
+          exams.getOverview(),
         ]);
         if (isCurrent) {
           setInProgressSession(session);
           setDashboard(stats);
+          setExamOverview(overview);
         }
       } catch {
         if (isCurrent) {
@@ -139,6 +149,38 @@ export function HomePage() {
             status="favorite"
           />
         </div>
+      </section>
+
+      <section aria-label="模擬試験" className="surface-card home-exam-card">
+        <h2>模擬試験</h2>
+        {examOverview.inProgress !== undefined ? (
+          <>
+            <p>
+              {getExamName(examOverview.inProgress.examType)}を保存しています。現在位置{' '}
+              {examOverview.inProgress.currentIndex + 1} /{' '}
+              {examOverview.inProgress.questionCodes.length}問・ 残り時間{' '}
+              {formatExamRemainingTime(
+                getExamTimerState(examOverview.inProgress.deadlineAt).remainingSeconds,
+              )}
+            </p>
+            <Link className="primary-button" to={`/exam/${examOverview.inProgress.id}`}>
+              模試の続き
+            </Link>
+          </>
+        ) : (
+          <>
+            <p>30問・50分の本番形式で、実力を確認できます。</p>
+            <Link className="primary-button" to="/exam">
+              模擬試験を始める
+            </Link>
+          </>
+        )}
+        <p className="muted-text">
+          模試受験回数 {examOverview.totalAttempts}回
+          {examOverview.latestResult === undefined
+            ? '・直近結果: 未受験'
+            : `・直近結果: ${examOverview.latestResult.correct} / ${examOverview.latestResult.total}問（${examOverview.latestResult.passed ? '合格' : '不合格'}）`}
+        </p>
       </section>
     </>
   );
