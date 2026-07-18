@@ -3,35 +3,23 @@ import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { database } from '../database/database';
 import type { PracticeSessionRow } from '../database/types';
+import type { ProgressAnalytics } from '../domain/progress';
 import type { ExamOverview } from '../features/exam/examRepository';
 import { ExamRepository } from '../features/exam/examRepository';
 import { formatExamRemainingTime, getExamName, getExamTimerState } from '../domain/exam';
 import { defaultPracticeFilters } from '../domain/practice';
-import type { LearningDashboard } from '../domain/learning';
-import { LearningRepository } from '../features/learning/learningRepository';
+import { ProgressRepository } from '../features/progress/progressRepository';
 import { PracticeSessionRepository } from '../features/practice/practiceSessionRepository';
 
 const practiceSessions = new PracticeSessionRepository(database);
-const learning = new LearningRepository(database);
 const exams = new ExamRepository(database);
-
-const emptyDashboard: LearningDashboard = {
-  totalQuestions: 240,
-  studiedQuestions: 0,
-  unansweredQuestions: 240,
-  currentlyIncorrectQuestions: 0,
-  favoriteQuestions: 0,
-  latestCorrectQuestions: 0,
-  latestCorrectRate: 0,
-  todayAnswerCount: 0,
-  learningStreak: 0,
-};
+const progress = new ProgressRepository(database);
 
 const emptyExamOverview: ExamOverview = { totalAttempts: 0 };
 
 export function HomePage() {
   const [inProgressSession, setInProgressSession] = useState<PracticeSessionRow>();
-  const [dashboard, setDashboard] = useState<LearningDashboard>(emptyDashboard);
+  const [analytics, setAnalytics] = useState<ProgressAnalytics>();
   const [examOverview, setExamOverview] = useState<ExamOverview>(emptyExamOverview);
   const [loadFailed, setLoadFailed] = useState(false);
 
@@ -43,12 +31,12 @@ export function HomePage() {
         await exams.submitExpiredInProgress();
         const [session, stats, overview] = await Promise.all([
           practiceSessions.getInProgress(),
-          learning.getDashboard(),
+          progress.getAnalytics('30d'),
           exams.getOverview(),
         ]);
         if (isCurrent) {
           setInProgressSession(session);
-          setDashboard(stats);
+          setAnalytics(stats);
           setExamOverview(overview);
         }
       } catch {
@@ -66,6 +54,8 @@ export function HomePage() {
 
   const currentQuestionNumber =
     inProgressSession === undefined ? undefined : inProgressSession.currentIndex + 1;
+  const todayAnswerCount = analytics?.daily.at(-1)?.answerCount ?? 0;
+  const overall = analytics?.overall;
 
   return (
     <>
@@ -75,9 +65,9 @@ export function HomePage() {
       />
       <section className="hero-card">
         <p className="eyebrow hero-eyebrow">ネットワークスペシャリスト 科目A-1</p>
-        <h2>{dashboard.studiedQuestions === 0 ? 'まずは10問から' : '今日も一歩ずつ'}</h2>
+        <h2>{(overall?.studiedQuestions ?? 0) === 0 ? 'まずは10問から' : '今日も一歩ずつ'}</h2>
         <p>
-          今日の回答 {dashboard.todayAnswerCount}問・連続学習 {dashboard.learningStreak}日
+          今日の回答 {todayAnswerCount}問・連続学習 {overall?.learningStreak ?? 0}日
         </p>
         {inProgressSession === undefined ? (
           <Link className="primary-button" to="/practice">
@@ -102,30 +92,30 @@ export function HomePage() {
         <article className="metric-card">
           <span>学習済み問題</span>
           <strong>
-            {dashboard.studiedQuestions} / {dashboard.totalQuestions}問
+            {overall?.studiedQuestions ?? 0} / {overall?.totalQuestions ?? 240}問
           </strong>
         </article>
         <article className="metric-card">
           <span>最新状態の正答率</span>
           <strong>
-            {dashboard.studiedQuestions === 0 ? '未学習' : `${dashboard.latestCorrectRate}%`}
+            {overall?.latestCorrectRate === undefined ? '未学習' : `${overall.latestCorrectRate}%`}
           </strong>
         </article>
         <article className="metric-card">
           <span>未回答問題</span>
-          <strong>{dashboard.unansweredQuestions}問</strong>
+          <strong>{overall?.unansweredQuestions ?? 240}問</strong>
         </article>
         <article className="metric-card">
           <span>現在間違えている問題</span>
-          <strong>{dashboard.currentlyIncorrectQuestions}問</strong>
+          <strong>{overall?.currentlyIncorrectQuestions ?? 0}問</strong>
         </article>
         <article className="metric-card">
           <span>お気に入り</span>
-          <strong>{dashboard.favoriteQuestions}問</strong>
+          <strong>{overall?.favoriteQuestions ?? 0}問</strong>
         </article>
         <article className="metric-card">
           <span>連続学習日数</span>
-          <strong>{dashboard.learningStreak}日</strong>
+          <strong>{overall?.learningStreak ?? 0}日</strong>
         </article>
       </section>
 
@@ -134,21 +124,64 @@ export function HomePage() {
         <p>回答状態を選ぶと、復習に合う問題だけを出題します。</p>
         <div className="quick-start-list">
           <QuickStartLink
-            count={dashboard.unansweredQuestions}
+            count={overall?.unansweredQuestions ?? 240}
             label="未回答を学習"
             status="unanswered"
           />
           <QuickStartLink
-            count={dashboard.currentlyIncorrectQuestions}
+            count={overall?.currentlyIncorrectQuestions ?? 0}
             label="間違えた問題を復習"
             status="incorrect"
           />
           <QuickStartLink
-            count={dashboard.favoriteQuestions}
+            count={overall?.favoriteQuestions ?? 0}
             label="お気に入りを学習"
             status="favorite"
           />
         </div>
+      </section>
+
+      <section aria-label="学習の進捗" className="surface-card home-progress-card">
+        <h2>学習の進捗</h2>
+        <p>
+          現在の理解度は{' '}
+          <strong>
+            {overall?.latestCorrectRate === undefined ? '未学習' : `${overall.latestCorrectRate}%`}
+          </strong>
+          ・直近7日間の回答数は <strong>{overall?.recentSevenDayAnswerCount ?? 0}問</strong> です。
+        </p>
+        <Link className="secondary-button" to="/progress">
+          詳しい成績を見る
+        </Link>
+      </section>
+
+      <section aria-label="優先して復習する分野" className="surface-card home-weak-card">
+        <h2>優先して復習する分野</h2>
+        {analytics === undefined || analytics.weakCategories.length === 0 ? (
+          <p>回答が3問以上になると、優先して復習する分野を案内します。</p>
+        ) : (
+          <ol className="home-weak-list">
+            {analytics.weakCategories.map((category) => (
+              <li key={category.id}>
+                <strong>{category.name}</strong>
+                <span>最新正答率 {category.latestCorrectRate}%</span>
+                <Link
+                  state={{
+                    initialFilters: {
+                      ...defaultPracticeFilters,
+                      categoryIds: [category.id],
+                      answerStatus:
+                        category.currentlyIncorrectQuestions > 0 ? 'incorrect' : 'unanswered',
+                    },
+                  }}
+                  to="/practice"
+                >
+                  {category.recommendation}
+                </Link>
+              </li>
+            ))}
+          </ol>
+        )}
       </section>
 
       <section aria-label="模擬試験" className="surface-card home-exam-card">
