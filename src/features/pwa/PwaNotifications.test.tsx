@@ -19,6 +19,7 @@ describe('PWA通知', () => {
   it('新バージョンの通知は自動更新せず、利用者の操作でだけ適用する', async () => {
     const user = userEvent.setup();
     renderAt('/');
+    await screen.findByRole('heading', { name: 'ホーム' });
 
     act(() => pwaRegisterMock.options?.onNeedRefresh?.());
     expect(screen.getByText('新しいバージョンがあります')).toBeInTheDocument();
@@ -29,6 +30,7 @@ describe('PWA通知', () => {
     expect(pwaRegisterMock.updateServiceWorker).not.toHaveBeenCalled();
 
     await user.click(screen.getByRole('link', { name: '設定', exact: true }));
+    await screen.findByRole('heading', { name: '設定', exact: true });
     await user.click(screen.getByRole('button', { name: '更新のお知らせを再表示' }));
     await user.click(screen.getByRole('button', { name: '保存して更新する' }));
     await waitFor(() => expect(pwaRegisterMock.updateServiceWorker).toHaveBeenCalledWith(true));
@@ -37,6 +39,7 @@ describe('PWA通知', () => {
   it('模試中は更新前に保存確認を表示する', async () => {
     const user = userEvent.setup();
     renderAt('/exam/demo');
+    await screen.findByRole('heading', { name: '模擬試験を読み込んでいます' });
 
     act(() => pwaRegisterMock.options?.onNeedRefresh?.());
     await user.click(screen.getByRole('button', { name: '更新する' }));
@@ -46,8 +49,9 @@ describe('PWA通知', () => {
     await user.click(within(dialog).getByRole('button', { name: '模試を続ける' }));
   });
 
-  it('オフライン準備完了の通知を一度だけ表示する', () => {
+  it('オフライン準備完了の通知を一度だけ表示する', async () => {
     renderAt('/');
+    await screen.findByRole('heading', { name: 'ホーム' });
 
     act(() => pwaRegisterMock.options?.onOfflineReady?.());
     expect(screen.getByText('オフラインでも利用できるようになりました')).toBeInTheDocument();

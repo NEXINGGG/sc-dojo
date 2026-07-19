@@ -28,6 +28,16 @@
 pnpm run validate:data
 ```
 
+## リリース前の検査
+
+個人利用版として公開する前は、次を実行します。
+
+```bash
+pnpm run check:release
+```
+
+公開パス、HTTPS、更新、ロールバックは[配布手順](docs/deployment.md)、端末別の確認は[手動テストチェックリスト](docs/manual-test-checklist.md)、最終確認項目は[公開前チェックリスト](docs/release-checklist.md)を参照してください。
+
 ## PWAの起動と確認
 
 開発中は、古いキャッシュによる混乱を避けるためService Workerを登録しません。PWAとオフライン動作は、本番ビルドをpreviewで開いて確認します。

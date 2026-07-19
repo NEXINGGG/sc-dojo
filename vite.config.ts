@@ -7,6 +7,16 @@ const appBase = normalizeAppBase(process.env.VITE_APP_BASE);
 
 export default defineConfig({
   base: appBase,
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          dexie: ['dexie'],
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({

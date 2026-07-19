@@ -57,6 +57,17 @@ test('本番previewでmanifest・Service Workerを登録し、オフラインで
   await page.getByRole('button', { name: '回答する' }).click();
   await expect(page.getByText(/正解です|不正解です/)).toBeVisible();
 
+  await page.getByRole('link', { name: '模試', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '模擬試験' })).toBeVisible();
+  await page.getByRole('button', { name: '固定模試1を選ぶ' }).click();
+  await page.getByRole('button', { name: '模試を開始する' }).click();
+  await expect(page.getByRole('heading', { name: '1 / 30 問' })).toBeVisible();
+  await page.getByRole('radio').first().check();
+  await page.getByRole('button', { name: '提出する' }).click();
+  const submitDialog = page.getByRole('dialog', { name: '模試を提出しますか？' });
+  await submitDialog.getByRole('button', { name: '提出する' }).click();
+  await expect(page.getByRole('heading', { name: /合格|不合格/ })).toBeVisible();
+
   await context.setOffline(false);
   await expect(page.getByText('オフラインです')).not.toBeVisible();
   expect(browserErrors).toEqual([]);

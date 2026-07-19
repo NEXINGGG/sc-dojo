@@ -176,7 +176,11 @@ export function ensureLearningDataReady(database: A1DojoDatabase): Promise<void>
     return existing;
   }
 
-  const readiness = backfillLegacyPracticeData(database);
+  const readiness = backfillLegacyPracticeData(database).catch((error: unknown) => {
+    // IndexedDBが一時的に利用できない場合、再読み込みや空き容量確保後に再試行できるようにする。
+    readinessByDatabase.delete(database);
+    throw error;
+  });
   readinessByDatabase.set(database, readiness);
   return readiness;
 }

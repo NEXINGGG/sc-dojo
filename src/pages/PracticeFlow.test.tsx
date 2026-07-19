@@ -35,7 +35,7 @@ describe('通常演習の画面', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    expect(screen.getByText('出題予定: 10問')).toBeInTheDocument();
+    expect(await screen.findByText('出題予定: 10問')).toBeInTheDocument();
     await user.click(await screen.findByRole('button', { name: 'この条件で始める' }));
 
     expect(await screen.findByRole('heading', { name: '1 / 10 問' })).toBeInTheDocument();
@@ -71,7 +71,7 @@ describe('通常演習の画面', () => {
     render(<App />);
 
     await user.click(await screen.findByRole('radio', { name: /現在間違えている/ }));
-    expect(screen.getByText('出題予定: 1問')).toBeInTheDocument();
+    expect(await screen.findByText('出題予定: 1問')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'この条件で始める' }));
 
     expect(await screen.findByRole('heading', { name: '1 / 1 問' })).toBeInTheDocument();
@@ -102,19 +102,19 @@ describe('通常演習の画面', () => {
 
     await user.click(screen.getByRole('link', { name: 'この問題の学習履歴を見る' }));
     expect(await screen.findByRole('heading', { name: '問題の学習履歴' })).toBeInTheDocument();
-    expect(screen.getByText('まだ回答履歴はありません。')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '★ お気に入り登録済み' })).toBeInTheDocument();
+    expect(await screen.findByText('まだ回答履歴はありません。')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '★ お気に入り登録済み' })).toBeInTheDocument();
   });
 
   it('条件を初期状態へ戻せる', async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByRole('radio', { name: 'ランダム' }));
+    await user.click(await screen.findByRole('radio', { name: 'ランダム' }));
     await user.click(screen.getByRole('button', { name: '初期状態へ戻す' }));
 
-    expect(screen.getByRole('radio', { name: '登録順' })).toBeChecked();
-    expect(screen.getByText('出題予定: 10問')).toBeInTheDocument();
+    expect(await screen.findByRole('radio', { name: '登録順' })).toBeChecked();
+    expect(await screen.findByText('出題予定: 10問')).toBeInTheDocument();
   });
 
   it('ホームから保存済みの途中演習を再開できる', async () => {
@@ -167,7 +167,7 @@ describe('通常演習の画面', () => {
     render(<App />);
 
     expect(await screen.findByRole('heading', { name: '通常演習の結果' })).toBeInTheDocument();
-    expect(screen.getByText('50%')).toBeInTheDocument();
+    expect(await screen.findByText('50%')).toBeInTheDocument();
     expect(screen.getAllByText('解説').length).toBeGreaterThan(0);
   });
 });

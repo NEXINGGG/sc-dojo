@@ -85,7 +85,7 @@ describe('成績画面', () => {
     expect(
       await screen.findByRole('heading', { name: `${firstCategory.name}の成績` }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: '問題一覧' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '問題一覧' })).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: '問題の状態で絞り込む' })).toBeInTheDocument();
 
     await user.click(screen.getByRole('link', { name: '誤答を復習' }));

@@ -16,7 +16,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "node scripts/run-e2e.mjs",
-    "check": "node scripts/check.mjs"
+    "test:e2e:ui": "playwright test --ui",
+    "check": "node scripts/check.mjs",
+    "check:release": "pnpm run validate:data && pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test && pnpm run build && pnpm run test:e2e"
   },
   "dependencies": {
     "dexie": "^4.0.11",

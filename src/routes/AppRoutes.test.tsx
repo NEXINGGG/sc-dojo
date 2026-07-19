@@ -20,22 +20,25 @@ describe('主要ルート', () => {
     ['/exam/demo', '模擬試験を読み込んでいます'],
     ['/progress', '成績'],
     ['/settings', '設定'],
-  ])('%s で %s を表示する', (path, heading) => {
+  ])('%s で %s を表示する', async (path, heading) => {
     renderRoute(path);
 
-    expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument();
   });
 
-  it('存在しないURLで専用画面を表示する', () => {
+  it('存在しないURLで専用画面を表示する', async () => {
     renderRoute('/unknown-path');
 
-    expect(screen.getByRole('heading', { name: 'ページが見つかりません' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'ページが見つかりません' }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'ホームへ戻る' })).toBeInTheDocument();
   });
 
-  it('主要ナビゲーションとテーマ切替にアクセシブルな名前がある', () => {
+  it('主要ナビゲーションとテーマ切替にアクセシブルな名前がある', async () => {
     renderRoute('/');
 
+    await screen.findByRole('heading', { name: 'ホーム' });
     for (const label of ['ホーム', '演習', '模試', '成績', '設定']) {
       expect(screen.getByRole('link', { name: label })).toBeInTheDocument();
     }

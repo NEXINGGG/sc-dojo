@@ -1,5 +1,6 @@
 import { access } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
+import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 
 const host = '127.0.0.1';
@@ -44,10 +45,25 @@ async function waitForPreview() {
 }
 
 function runPlaywright() {
-  const playwright = spawn(process.execPath, [resolve('node_modules/playwright/cli.js'), 'test'], {
-    stdio: 'inherit',
-    windowsHide: true,
-  });
+  const playwright = spawn(
+    process.execPath,
+    [
+      resolve('node_modules/playwright/cli.js'),
+      'test',
+      '--config',
+      resolve('playwright.config.ts'),
+    ],
+    {
+      cwd: tmpdir(),
+      stdio: 'inherit',
+      windowsHide: true,
+      env: {
+        ...process.env,
+        CHROME_LOG_FILE: resolve(tmpdir(), 'nw-a1-dojo-chromium.log'),
+        PLAYWRIGHT_EXTERNAL_PREVIEW: '1',
+      },
+    },
+  );
   return new Promise((resolveExit, rejectExit) => {
     playwright.once('error', rejectExit);
     playwright.once('exit', (code) => resolveExit(code ?? 1));

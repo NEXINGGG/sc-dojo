@@ -16,7 +16,10 @@ test('固定模試を開始し、見直し・問題一覧・提出・結果履�
 
   await expect(page.getByRole('heading', { name: '1 / 30 問' })).toBeVisible();
   await expect(page.getByText('解説')).toHaveCount(0);
-  await page.getByRole('radio').first().check();
+  const choices = page.getByRole('radio');
+  await choices.first().check();
+  await choices.nth(1).check();
+  await expect(choices.nth(1)).toBeChecked();
   await page.getByRole('button', { name: '見直しにする' }).click();
   await expect(page.getByRole('button', { name: '見直しを解除' })).toBeVisible();
   await page.getByRole('button', { name: /問題 2: 未回答/ }).click();
@@ -30,6 +33,7 @@ test('固定模試を開始し、見直し・問題一覧・提出・結果履�
 
   await expect(page.getByRole('heading', { name: /合格|不合格/ })).toBeVisible();
   await expect(page.getByText('解説')).toBeVisible();
+  await expect(page.getByText(/^あなたの回答:/)).toBeVisible();
   await page.getByRole('link', { name: '模試選択へ' }).click();
   await expect(page.getByRole('heading', { name: '模擬試験' })).toBeVisible();
   await expect(page.getByRole('link', { name: /固定模試1/ })).toBeVisible();
