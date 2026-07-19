@@ -18,6 +18,8 @@ import {
   type StoredDataSummary,
 } from '../features/settings/dataManagementRepository';
 import { useDisplaySettings } from '../features/settings/DisplaySettingsContext';
+import { PwaSettingsSection } from '../features/pwa/PwaSettingsSection';
+import { usePwa } from '../features/pwa/PwaContext';
 
 type DialogKind = 'reset-display' | 'restore' | 'clear-learning-data';
 type Notice = { kind: 'success' | 'error'; message: string };
@@ -37,6 +39,7 @@ export function SettingsPage() {
     reloadDisplaySettings,
     clearError,
   } = useDisplaySettings();
+  const { runDataOperation } = usePwa();
   const [summary, setSummary] = useState<StoredDataSummary>();
   const [dialog, setDialog] = useState<DialogKind>();
   const [restoreCandidate, setRestoreCandidate] = useState<ValidatedBackup>();
@@ -128,7 +131,7 @@ export function SettingsPage() {
     setIsBusy(true);
     setNotice(undefined);
     try {
-      await dataManagementRepository.restore(restoreCandidate);
+      await runDataOperation(() => dataManagementRepository.restore(restoreCandidate));
       await reloadDisplaySettings();
       await refreshSummary();
       closeDialog();
@@ -154,7 +157,7 @@ export function SettingsPage() {
     setIsBusy(true);
     setNotice(undefined);
     try {
-      await dataManagementRepository.clearLearningData();
+      await runDataOperation(() => dataManagementRepository.clearLearningData());
       await refreshSummary();
       closeDialog();
       setNotice({
@@ -360,12 +363,10 @@ export function SettingsPage() {
               v{questionDataVersion}・{questionDataIdentity.fingerprint}
             </dd>
           </div>
-          <div>
-            <dt>オフライン対応</dt>
-            <dd>Phase 8で対応予定です</dd>
-          </div>
         </dl>
       </section>
+
+      <PwaSettingsSection />
 
       {dialog === 'reset-display' && (
         <ConfirmDialog

@@ -18,6 +18,7 @@ import {
 } from '../domain/practice';
 import { PracticeSessionRepository } from '../features/practice/practiceSessionRepository';
 import { LearningRepository } from '../features/learning/learningRepository';
+import { usePwa } from '../features/pwa/PwaContext';
 import type { ChoiceId } from '../types/question';
 
 const practiceSessions = new PracticeSessionRepository(database);
@@ -26,6 +27,7 @@ const catalogCodes = new Set(questions.map((question) => question.code));
 
 export function PracticeQuestionPage() {
   const navigate = useNavigate();
+  const { confirmPersistenceSaved, reportPersistenceFailure } = usePwa();
   const { sessionId } = useParams();
   const [session, setSession] = useState<PracticeSessionRow>();
   const [loadError, setLoadError] = useState<string>();
@@ -137,8 +139,10 @@ export function PracticeQuestionPage() {
     try {
       await practiceSessions.save(nextSession);
       setSession(nextSession);
+      confirmPersistenceSaved();
       return true;
     } catch {
+      reportPersistenceFailure('通常演習の状態を保存できませんでした。');
       setLoadError(
         '回答を保存できませんでした。端末の保存領域を確認して、もう一度お試しください。',
       );
@@ -170,7 +174,9 @@ export function PracticeQuestionPage() {
     try {
       const saved = await learning.recordConfirmedPracticeAnswer(result.session, currentQuestion);
       setSession(saved.session);
+      confirmPersistenceSaved();
     } catch {
+      reportPersistenceFailure('通常演習の回答履歴を保存できませんでした。');
       setLoadError(
         '回答履歴を保存できませんでした。回答と履歴は更新されていないため、端末の保存領域を確認して、もう一度お試しください。',
       );
@@ -193,7 +199,9 @@ export function PracticeQuestionPage() {
         new Date().toISOString(),
       );
       setIsFavorite(progress.favorite);
+      confirmPersistenceSaved();
     } catch {
+      reportPersistenceFailure('お気に入りを保存できませんでした。');
       setActionMessage(
         'お気に入りを保存できませんでした。端末の保存領域を確認して、もう一度お試しください。',
       );
@@ -239,8 +247,10 @@ export function PracticeQuestionPage() {
     try {
       await learning.completePracticeSession(completed);
       setSession(completed);
+      confirmPersistenceSaved();
       navigate(`/practice/${completed.id}/result`);
     } catch {
+      reportPersistenceFailure('通常演習の結果を保存できませんでした。');
       setLoadError(
         '演習結果を保存できませんでした。端末の保存領域を確認して、もう一度お試しください。',
       );
@@ -256,8 +266,10 @@ export function PracticeQuestionPage() {
     setIsSaving(true);
     try {
       await practiceSessions.remove(session.id);
+      confirmPersistenceSaved();
       navigate('/practice', { replace: true, state: { notice: '途中の通常演習を破棄しました。' } });
     } catch {
+      reportPersistenceFailure('通常演習の破棄を保存できませんでした。');
       setLoadError('途中の演習を破棄できませんでした。時間をおいて、もう一度お試しください。');
     } finally {
       setIsSaving(false);

@@ -1,4 +1,5 @@
 import { DATABASE_VERSION, type A1DojoDatabase } from '../../database/database';
+import { APP_VERSION } from '../../app/appVersion';
 import type { AnswerAttemptRow, LearningDayRow, QuestionProgressRow } from '../../database/types';
 import { questionDataVersion, questions } from '../../data/catalog';
 import {
@@ -15,7 +16,7 @@ import {
   getAsiaTokyoDate,
 } from '../../domain/learning';
 
-export const APP_VERSION = '0.1.0';
+export { APP_VERSION } from '../../app/appVersion';
 
 export interface StoredDataSummary {
   answerHistoryCount: number;

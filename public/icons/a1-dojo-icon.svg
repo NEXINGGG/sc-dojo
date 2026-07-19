@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">A1道場</title>
+  <rect width="512" height="512" fill="#2563EB"/>
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="26">
+    <path d="M154 164 358 144 370 358 154 374Z"/>
+  </g>
+  <g fill="#fff">
+    <circle cx="154" cy="164" r="54"/><circle cx="358" cy="144" r="54"/>
+    <circle cx="370" cy="358" r="54"/><circle cx="154" cy="374" r="54"/><circle cx="256" cy="256" r="68"/>
+  </g>
+  <g fill="none" stroke="#2563EB" stroke-linecap="round" stroke-linejoin="round" stroke-width="18">
+    <path d="m222 282 26-56 26 56m-42-20h32m36-36v56m-18-44 18-12m0 56h28"/>
+    <circle cx="154" cy="164" r="17"/><circle cx="358" cy="144" r="17"/><circle cx="370" cy="358" r="17"/><circle cx="154" cy="374" r="17"/>
+  </g>
+</svg>

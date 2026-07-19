@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { PwaNotifications } from '../features/pwa/PwaNotifications';
 
 const navigationItems = [
   { to: '/', label: 'ホーム', icon: 'home' },
@@ -17,6 +18,7 @@ export function AppLayout() {
         <span className="app-brand">A1道場</span>
         <ThemeToggle />
       </header>
+      <PwaNotifications />
       <main className="page-content">
         <Outlet />
       </main>

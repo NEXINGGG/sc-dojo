@@ -20,6 +20,7 @@ import {
   type DisplaySettings,
 } from './displaySettings';
 import { SettingsRepository } from './settingsRepository';
+import { usePwa } from '../pwa/PwaContext';
 
 interface DisplaySettingsContextValue {
   settings: DisplaySettings;
@@ -37,6 +38,7 @@ const DisplaySettingsContext = createContext<DisplaySettingsContextValue | undef
 const settingsRepository = new SettingsRepository(database);
 
 export function DisplaySettingsProvider({ children }: PropsWithChildren) {
+  const { confirmPersistenceSaved, reportPersistenceFailure } = usePwa();
   const [settings, setSettings] = useState<DisplaySettings>({ ...defaultDisplaySettings });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -82,12 +84,14 @@ export function DisplaySettingsProvider({ children }: PropsWithChildren) {
 
       try {
         await settingsRepository.saveDisplaySettings(normalized);
+        confirmPersistenceSaved();
       } catch {
         setSettings(previous);
+        reportPersistenceFailure('表示設定を保存できませんでした。');
         setError('表示設定を保存できませんでした。現在の設定を確認して、もう一度お試しください。');
       }
     },
-    [settings],
+    [confirmPersistenceSaved, reportPersistenceFailure, settings],
   );
 
   const reloadDisplaySettings = useCallback(async () => {

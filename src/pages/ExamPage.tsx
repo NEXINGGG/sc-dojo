@@ -16,12 +16,14 @@ import {
   type ExamTimerState,
 } from '../domain/exam';
 import { ExamRepository } from '../features/exam/examRepository';
+import { usePwa } from '../features/pwa/PwaContext';
 import type { ChoiceId } from '../types/question';
 
 const exams = new ExamRepository(database);
 
 export function ExamPage() {
   const navigate = useNavigate();
+  const { confirmPersistenceSaved, reportPersistenceFailure } = usePwa();
   const { sessionId } = useParams();
   const [session, setSession] = useState<ExamSessionRow>();
   const [timer, setTimer] = useState<ExamTimerState>();
@@ -43,11 +45,13 @@ export function ExamPage() {
       setError(undefined);
       try {
         await exams.submit(targetSessionId, new Date().toISOString(), reason);
+        confirmPersistenceSaved();
         navigate(`/exam/${targetSessionId}/result`, {
           replace: reason === 'timeout',
           state: { timeoutSubmitted: reason === 'timeout' },
         });
       } catch {
+        reportPersistenceFailure('模試の提出状態を保存できませんでした。');
         isAutoSubmitting.current = false;
         setError(
           '模試を提出できませんでした。回答は提出されていないため、画面を再読み込みしてからもう一度お試しください。',
@@ -58,7 +62,7 @@ export function ExamPage() {
         setIsSubmitConfirming(false);
       }
     },
-    [navigate],
+    [confirmPersistenceSaved, navigate, reportPersistenceFailure],
   );
 
   useEffect(() => {
@@ -140,12 +144,16 @@ export function ExamPage() {
   }, [deadlineAtForTimer, sessionIdForTimer, submitExam]);
 
   async function saveSession(nextSession: ExamSessionRow) {
+    const previousSession = session;
     setIsSaving(true);
     setError(undefined);
+    setSession(nextSession);
     try {
       await exams.saveInProgress(nextSession);
-      setSession(nextSession);
+      confirmPersistenceSaved();
     } catch {
+      setSession(previousSession);
+      reportPersistenceFailure('模試の回答状態を保存できませんでした。');
       setError(
         '回答を保存できませんでした。端末の保存領域を確認して、再読み込みしてからもう一度お試しください。',
       );

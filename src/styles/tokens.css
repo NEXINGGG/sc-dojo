@@ -15,6 +15,7 @@
   --color-incorrect-background: #fef2f2;
   --color-review: #b45309;
   --color-review-background: #fff7ed;
+  --color-info: #0369a1;
   --color-technology: #2563eb;
   --color-management: #7c3aed;
   --color-strategy: #c2410c;
@@ -50,6 +51,7 @@
   --color-incorrect-background: #3b171b;
   --color-review: #fbbf24;
   --color-review-background: #3a2712;
+  --color-info: #38bdf8;
   --color-technology: #93c5fd;
   --color-management: #c4b5fd;
   --color-strategy: #fb923c;
@@ -74,6 +76,7 @@
     --color-incorrect-background: #3b171b;
     --color-review: #fbbf24;
     --color-review-background: #3a2712;
+    --color-info: #38bdf8;
     --color-technology: #93c5fd;
     --color-management: #c4b5fd;
     --color-strategy: #fb923c;
