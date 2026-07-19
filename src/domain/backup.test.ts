@@ -1,0 +1,247 @@
+import { describe, expect, it } from 'vitest';
+import { questionDataVersion, questions } from '../data/catalog';
+import { createExamSession, gradeExam } from './exam';
+import {
+  BACKUP_FORMAT,
+  BACKUP_FORMAT_VERSION,
+  MAX_BACKUP_FILE_SIZE_BYTES,
+  createBackupDocument,
+  createBackupFileName,
+  createQuestionDataIdentity,
+  parseBackupJson,
+  serializeBackup,
+  validateBackupDocument,
+  validateBackupFileSize,
+  type BackupCreateInput,
+} from './backup';
+import { createPracticeSession, defaultPracticeFilters } from './practice';
+
+const exportedAt = '2026-07-18T00:00:00.000Z';
+const identity = createQuestionDataIdentity(questions, questionDataVersion);
+const firstQuestion = questions[0];
+const secondQuestion = questions[1];
+
+function createInput(overrides: Partial<BackupCreateInput> = {}): BackupCreateInput {
+  return {
+    exportedAt,
+    appVersion: '0.1.0',
+    databaseSchemaVersion: 4,
+    questionData: identity,
+    answerHistory: [
+      {
+        id: 1,
+        code: firstQuestion.code,
+        selectedChoice: firstQuestion.correctChoice,
+        correctChoice: firstQuestion.correctChoice,
+        isCorrect: true,
+        answeredAt: exportedAt,
+        mode: 'normal_practice',
+        sessionId: 'practice-result-1',
+        version: 1,
+      },
+    ],
+    favorites: [{ code: secondQuestion.code, favoriteAt: exportedAt }],
+    normalPracticeSessions: [
+      createPracticeSession([secondQuestion.code], defaultPracticeFilters, {
+        id: 'practice-in-progress',
+        now: exportedAt,
+      }),
+    ],
+    normalPracticeResults: [],
+    mockExamSessions: [],
+    mockExamResults: [],
+    learningDays: [{ date: '2026-07-18', answerCount: 1, updatedAt: exportedAt }],
+    settings: [
+      {
+        key: 'appearance',
+        theme: 'dark',
+        fontSize: 'large',
+        reducedMotion: 'reduce',
+        shuffleChoices: false,
+        updatedAt: exportedAt,
+      },
+    ],
+    ...overrides,
+  };
+}
+
+describe('バックアップ形式', () => {
+  it('安定した問題IDフィンガープリントと人が読めるJSONを作成できる', () => {
+    const reversed = createQuestionDataIdentity([...questions].reverse(), questionDataVersion);
+    const document = createBackupDocument(createInput());
+    const serialized = serializeBackup(document);
+
+    expect(reversed).toEqual(identity);
+    expect(document.format).toBe(BACKUP_FORMAT);
+    expect(document.formatVersion).toBe(BACKUP_FORMAT_VERSION);
+    expect(document.backupVersion).toBe(BACKUP_FORMAT_VERSION);
+    expect(serialized).toContain('\n  "format"');
+    expect(serialized).not.toContain(firstQuestion.question);
+    expect(serialized).not.toContain(firstQuestion.explanation);
+  });
+
+  it('正常なデータを検証し、表示設定とプレビューを返す', () => {
+    const result = validateBackupDocument(createBackupDocument(createInput()), questions, identity);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.value.preview).toMatchObject({
+      answerHistoryCount: 1,
+      favoriteCount: 1,
+      normalPracticeSessionCount: 1,
+      learningDayCount: 1,
+      questionDataMatches: true,
+    });
+    expect(result.value.preview.settings).toMatchObject({ theme: 'dark', fontSize: 'large' });
+  });
+
+  it('JSON・形式・将来の形式バージョン・必須項目を安全に拒否できる', () => {
+    expect(parseBackupJson('{', questions, identity)).toMatchObject({ ok: false });
+    expect(validateBackupDocument({ format: 'other' }, questions, identity)).toMatchObject({
+      ok: false,
+    });
+    expect(
+      validateBackupDocument(
+        { ...createBackupDocument(createInput()), formatVersion: 2 },
+        questions,
+        identity,
+      ),
+    ).toMatchObject({ ok: false });
+    expect(
+      validateBackupDocument({ format: BACKUP_FORMAT, formatVersion: 1 }, questions, identity),
+    ).toMatchObject({ ok: false });
+  });
+
+  it('未知の問題IDと不正な選択肢を除外し、既知の有効データだけをプレビューできる', () => {
+    const input = createInput({
+      answerHistory: [
+        ...createInput().answerHistory,
+        {
+          id: 2,
+          code: 'A1-999',
+          selectedChoice: 'A',
+          correctChoice: 'A',
+          isCorrect: true,
+          answeredAt: exportedAt,
+          mode: 'normal_practice',
+          sessionId: 'unknown',
+          version: 1,
+        },
+        {
+          id: 3,
+          code: secondQuestion.code,
+          selectedChoice: 'Z' as 'A',
+          correctChoice: secondQuestion.correctChoice,
+          isCorrect: false,
+          answeredAt: exportedAt,
+          mode: 'normal_practice',
+          sessionId: 'invalid-choice',
+          version: 1,
+        },
+      ],
+    });
+    const result = validateBackupDocument(createBackupDocument(input), questions, identity);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.value.preview.unknownQuestionIdCount).toBe(1);
+    expect(result.value.preview.excludedRecordCount).toBeGreaterThanOrEqual(2);
+    expect(result.value.document.data.answerHistory).toHaveLength(1);
+  });
+
+  it('重複データと不正な学習日を除外し、不正な設定は初期値へ補正する', () => {
+    const input = createInput({
+      favorites: [{ code: firstQuestion.code }, { code: firstQuestion.code }],
+      learningDays: [{ date: '2026-02-30', answerCount: 1, updatedAt: exportedAt }],
+      settings: [
+        {
+          key: 'appearance',
+          theme: 'unexpected' as 'dark',
+          fontSize: 'unexpected' as 'large',
+          reducedMotion: 'unexpected' as 'reduce',
+          shuffleChoices: false,
+          updatedAt: exportedAt,
+        },
+      ],
+    });
+    const result = validateBackupDocument(createBackupDocument(input), questions, identity);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.value.document.data.favorites).toHaveLength(1);
+    expect(result.value.document.data.learningDays).toHaveLength(0);
+    expect(result.value.preview.settings).toMatchObject({
+      theme: 'system',
+      fontSize: 'standard',
+      reducedMotion: 'system',
+    });
+  });
+
+  it('未知の問題を含む途中セッション全体を復元対象から外す', () => {
+    const session = createPracticeSession([firstQuestion.code], defaultPracticeFilters, {
+      id: 'invalid-session',
+      now: exportedAt,
+    });
+    const invalidSession = { ...session, questionCodes: [firstQuestion.code, 'A1-999'] };
+    const result = validateBackupDocument(
+      createBackupDocument(createInput({ normalPracticeSessions: [invalidSession] })),
+      questions,
+      identity,
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.value.document.data.normalPracticeSessions).toHaveLength(0);
+    expect(result.value.preview.unknownQuestionIdCount).toBe(1);
+  });
+
+  it('模試結果を30問・選択肢・採点結果の整合性で検証する', () => {
+    const session = createExamSession(
+      'fixed_1',
+      questions.slice(0, 30).map((question) => question.code),
+      {
+        id: 'exam-result-1',
+        now: exportedAt,
+      },
+    );
+    session.answers[session.questionCodes[0]] = firstQuestion.correctChoice;
+    const result = gradeExam(
+      session,
+      new Map(questions.map((question) => [question.code, question])),
+      exportedAt,
+      'manual',
+    );
+    const valid = validateBackupDocument(
+      createBackupDocument(createInput({ mockExamResults: [result] })),
+      questions,
+      identity,
+    );
+    const invalid = validateBackupDocument(
+      createBackupDocument(createInput({ mockExamResults: [{ ...result, score: 100 }] })),
+      questions,
+      identity,
+    );
+
+    expect(valid).toMatchObject({ ok: true });
+    expect(invalid).toMatchObject({ ok: true });
+    if (invalid.ok) {
+      expect(invalid.value.document.data.mockExamResults).toHaveLength(0);
+    }
+  });
+
+  it('ファイルサイズとファイル名を安全に扱う', () => {
+    expect(validateBackupFileSize(MAX_BACKUP_FILE_SIZE_BYTES)).toBeUndefined();
+    expect(validateBackupFileSize(MAX_BACKUP_FILE_SIZE_BYTES + 1)).toMatchObject({ ok: false });
+    expect(createBackupFileName(new Date('2026-07-18T00:00:00.000Z'))).toMatch(
+      /^nw-a1-dojo-backup-20260718-\d{6}\.json$/,
+    );
+  });
+});

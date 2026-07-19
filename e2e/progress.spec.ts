@@ -9,7 +9,7 @@ test('履歴がない状態でも成績、期間、カテゴリ詳細を表示�
   });
 
   await page.goto('/#/progress');
-  await expect(page.getByRole('heading', { name: '成績' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '成績', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'カテゴリ別成績' })).toBeVisible();
   await expect(page.getByText('現在、強い苦手分野はありません')).toBeVisible();
   await expect(page.getByText('まだ模試を受験していません')).toBeVisible();

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { HashRouter } from 'react-router-dom';
 import { database } from './database/database';
 import { ensureLearningDataReady } from './features/learning/learningRepository';
+import { DisplaySettingsProvider } from './features/settings/DisplaySettingsContext';
 import { AppRoutes } from './routes/AppRoutes';
 
 export function App() {
@@ -12,8 +13,10 @@ export function App() {
   }, []);
 
   return (
-    <HashRouter>
-      <AppRoutes />
-    </HashRouter>
+    <DisplaySettingsProvider>
+      <HashRouter>
+        <AppRoutes />
+      </HashRouter>
+    </DisplaySettingsProvider>
   );
 }

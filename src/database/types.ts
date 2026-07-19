@@ -138,10 +138,15 @@ export interface LearningDayRow {
   updatedAt: string;
 }
 
+export type ThemePreference = 'system' | 'light' | 'dark';
+export type FontSizePreference = 'small' | 'standard' | 'large' | 'extra_large';
+export type ReducedMotionPreference = 'system' | 'reduce' | 'no_preference';
+
 export interface SettingRow {
   key: 'appearance';
-  theme: 'system' | 'light' | 'dark';
-  fontSize: 'standard' | 'large' | 'extra_large';
+  theme: ThemePreference;
+  fontSize: FontSizePreference;
+  reducedMotion: ReducedMotionPreference;
   shuffleChoices: boolean;
   updatedAt: string;
 }

@@ -32,7 +32,7 @@ describe('A1DojoDatabase', () => {
     database.close();
   });
 
-  it('v2の学習データを保持したままv3へ更新できる', async () => {
+  it('v2の学習データを保持したままv4へ更新できる', async () => {
     const name = `a1-dojo-v2-migration-${crypto.randomUUID()}`;
     databaseNames.push(name);
     const legacy = new Dexie(name);
@@ -61,18 +61,31 @@ describe('A1DojoDatabase', () => {
       answerCount: 2,
       updatedAt: '2026-07-18T00:00:00.000Z',
     });
+    await legacy.table('settings').put({
+      key: 'appearance',
+      theme: 'dark',
+      fontSize: 'large',
+      shuffleChoices: true,
+      updatedAt: '2026-07-18T00:00:00.000Z',
+    });
     legacy.close();
 
     const upgraded = createDatabase(name);
     await initializeDatabase(upgraded);
 
-    expect(upgraded.verno).toBe(3);
+    expect(upgraded.verno).toBe(4);
     await expect(upgraded.questionProgress.get('A1-001')).resolves.toMatchObject({
       favorite: true,
       attemptCount: 2,
     });
     await expect(upgraded.learningDays.get('2026-07-18')).resolves.toMatchObject({
       answerCount: 2,
+    });
+    await expect(upgraded.settings.get('appearance')).resolves.toMatchObject({
+      theme: 'dark',
+      fontSize: 'large',
+      reducedMotion: 'system',
+      shuffleChoices: true,
     });
     upgraded.close();
   });

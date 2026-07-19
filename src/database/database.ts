@@ -3,16 +3,19 @@ import type {
   AnswerAttemptRow,
   ExamResultRow,
   ExamSessionRow,
+  FontSizePreference,
   LearningDayRow,
   MetadataRow,
   PracticeResultRow,
   PracticeSessionRow,
   QuestionProgressRow,
+  ReducedMotionPreference,
   SettingRow,
+  ThemePreference,
 } from './types';
 
 export const DATABASE_NAME = 'a1-dojo';
-export const DATABASE_VERSION = 3;
+export const DATABASE_VERSION = 4;
 
 export class A1DojoDatabase extends Dexie {
   questionProgress!: EntityTable<QuestionProgressRow, 'code'>;
@@ -62,6 +65,28 @@ export class A1DojoDatabase extends Dexie {
       settings: '&key, updatedAt',
       metadata: '&key, updatedAt',
     });
+
+    this.version(4)
+      .stores({
+        questionProgress: '&code, favorite, lastAnsweredAt, lastIsCorrect',
+        answerAttempts: '++id, &[sessionId+code], code, sessionId, answeredAt, mode',
+        practiceSessions: '&id, status, updatedAt',
+        practiceResults: '&id, &sessionId, completedAt, mode',
+        examSessions: '&id, status, updatedAt, deadlineAt, examType',
+        examResults: '&id, &examSessionId, examType, submittedAt',
+        learningDays: '&date, updatedAt',
+        settings: '&key, updatedAt',
+        metadata: '&key, updatedAt',
+      })
+      .upgrade(async (transaction) => {
+        const settings = transaction.table<SettingRow, 'key'>('settings');
+        await settings.toCollection().modify((row) => {
+          row.theme = normalizeTheme(row.theme);
+          row.fontSize = normalizeFontSize(row.fontSize);
+          row.reducedMotion = normalizeReducedMotion(row.reducedMotion);
+          row.shuffleChoices = row.shuffleChoices === true;
+        });
+      });
   }
 }
 
@@ -73,4 +98,18 @@ export const database = createDatabase();
 
 export async function initializeDatabase(target = database): Promise<void> {
   await target.open();
+}
+
+function normalizeTheme(value: unknown): ThemePreference {
+  return value === 'light' || value === 'dark' || value === 'system' ? value : 'system';
+}
+
+function normalizeFontSize(value: unknown): FontSizePreference {
+  return value === 'small' || value === 'large' || value === 'extra_large' || value === 'standard'
+    ? value
+    : 'standard';
+}
+
+function normalizeReducedMotion(value: unknown): ReducedMotionPreference {
+  return value === 'reduce' || value === 'no_preference' || value === 'system' ? value : 'system';
 }

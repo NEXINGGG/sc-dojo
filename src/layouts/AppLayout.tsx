@@ -15,9 +15,7 @@ export function AppLayout() {
     <div className="app-shell">
       <header className="app-bar">
         <span className="app-brand">A1道場</span>
-        <ThemeToggle
-          onThemeChange={(theme) => document.documentElement.setAttribute('data-theme', theme)}
-        />
+        <ThemeToggle />
       </header>
       <main className="page-content">
         <Outlet />
