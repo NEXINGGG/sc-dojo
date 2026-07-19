@@ -50,3 +50,5 @@ pnpm run build
 問題があれば、同じ公開パスに直前の正常な`dist/`を戻す。Service Workerのキャッシュを削除する手順を利用者へ一律に案内せず、まず再読み込みまたはアプリ内更新を案内する。IndexedDBの学習データはキャッシュと別であり、ロールバックやService Worker更新で削除してはならない。
 
 公開後は、Manifest、Service Worker、アイコン、オフライン再読み込み、通常演習・模試の保存、更新通知、バックアップ作成を確認する。
+
+Cloudflare Pagesを使う場合のGitHub連携、環境変数、ロールバック、Service Worker確認は[Cloudflare Pages公開手順](cloudflare-pages-deployment.md)を参照する。

@@ -5,3 +5,7 @@ playwright-report/
 test-results/
 coverage/
 *.tsbuildinfo
+.env
+.env.*
+!.env.example
+.wrangler/

@@ -66,6 +66,14 @@ PWAは端末内のブラウザ保存領域を利用します。容量不足、�
 
 アプリアイコンのPNGは `public/icons/a1-dojo-icon.svg` を元に生成しています。更新時は `node scripts/generate-pwa-icons.mjs` を実行してください。
 
+## Cloudflare Pagesへの公開
+
+Cloudflare PagesのGitHub連携では、Production branchを`main`、Build commandを`pnpm run build`、Build output directoryを`dist`、Root directoryをリポジトリルートに設定します。Node.js `24.18.0`とpnpm `11.9.0`を固定しています。手順、ロールバック、更新確認は[Cloudflare Pages公開手順](docs/cloudflare-pages-deployment.md)、公開後の端末確認は[公開後スモークテスト](docs/production-smoke-test.md)を参照してください。
+
+初期公開は個人利用向けで、`robots.txt`、HTMLの`noindex`、Cloudflareヘッダーの`X-Robots-Tag`により検索エンジンのクロールを抑制します。これはアクセス制限ではありません。GitHubリポジトリを非公開にしても、Cloudflare Pagesの公開URL自体は認証付きにはなりません。
+
+ライセンスファイルは、利用条件が未決定のため追加していません。公開前にライセンス方針を決定してください。
+
 ## UIプロトタイプ
 
 `prototype/index.html`をブラウザで開いてください。
