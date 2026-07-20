@@ -4,6 +4,7 @@ import type {
   SettingRow,
   ThemePreference,
 } from '../../database/types';
+import type { SubjectId } from '../../domain/subject';
 
 export interface DisplaySettings {
   theme: ThemePreference;
@@ -40,9 +41,14 @@ export function normalizeDisplaySettings(value: unknown): DisplaySettings {
   };
 }
 
-export function toSettingRow(settings: DisplaySettings, updatedAt: string): SettingRow {
+export function toSettingRow(
+  settings: DisplaySettings,
+  updatedAt: string,
+  selectedSubject: SubjectId = 'a1',
+): SettingRow {
   return {
     key: 'appearance',
+    selectedSubject,
     ...normalizeDisplaySettings(settings),
     updatedAt,
   };

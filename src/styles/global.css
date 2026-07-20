@@ -9,6 +9,40 @@
   transition-duration: 0.01ms !important;
 }
 
+.subject-switcher {
+  display: grid;
+  gap: 10px;
+}
+
+.subject-switcher-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.subject-switcher-option {
+  display: grid;
+  min-height: 64px;
+  gap: 4px;
+  padding: 10px;
+  color: var(--color-text);
+  text-align: left;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.subject-switcher-option.is-selected {
+  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.exam-subject-summary {
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root:not([data-reduced-motion='no_preference']) *,
   :root:not([data-reduced-motion='no_preference']) *::before,

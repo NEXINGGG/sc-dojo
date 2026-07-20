@@ -11,6 +11,7 @@ import {
   type SegmentStatistics,
   type WeakCategory,
 } from '../../domain/progress';
+import type { SubjectConfig } from '../../domain/subject';
 import { defaultPracticeFilters } from '../../domain/practice';
 import { formatDate, formatDateTime, formatElapsed, formatRate } from './progressFormat';
 
@@ -293,19 +294,31 @@ export function DailyLearningSection({
   );
 }
 
-export function ExamTrendSection({ exams }: { exams: readonly ExamTrendPoint[] }) {
+export function ExamTrendSection({
+  exams,
+  exam,
+}: {
+  exams: readonly ExamTrendPoint[];
+  exam: SubjectConfig['exam'];
+}) {
   return (
     <section aria-labelledby="exam-trend-heading" className="progress-section">
       <div className="section-heading-row">
         <div>
           <h2 id="exam-trend-heading">模試得点推移</h2>
-          <p>合格の目安は18 / 30問です（公式判定ではありません）。</p>
+          <p>
+            合格の目安は{exam.passingCorrectCount} / {exam.questionCount}
+            問です（公式判定ではありません）。
+          </p>
         </div>
       </div>
       {exams.length === 0 ? (
         <div className="surface-card empty-progress-card">
           <strong>まだ模試を受験していません</strong>
-          <p>30問・50分の模試で、今の理解度を確かめましょう。</p>
+          <p>
+            {exam.questionCount}問・{exam.durationSeconds / 60}
+            分の模試で、今の理解度を確かめましょう。
+          </p>
           <Link className="secondary-button" to="/exam">
             模擬試験へ
           </Link>

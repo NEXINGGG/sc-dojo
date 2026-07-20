@@ -13,8 +13,7 @@ import {
 import { defaultPracticeFilters } from '../domain/practice';
 import { formatRate } from '../features/progress/progressFormat';
 import { ProgressRepository } from '../features/progress/progressRepository';
-
-const progressRepository = new ProgressRepository(database);
+import { useSubject } from '../features/subjects/SubjectContext';
 
 const filters: readonly { value: CategoryQuestionFilter; label: string }[] = [
   { value: 'all', label: 'すべて' },
@@ -32,8 +31,13 @@ const sorts: readonly { value: CategoryQuestionSort; label: string }[] = [
 ];
 
 export function CategoryProgressPage() {
+  const { subjectId } = useSubject();
+  const progressRepository = useMemo(
+    () => new ProgressRepository(database, subjectId),
+    [subjectId],
+  );
   const { categoryId } = useParams();
-  const category = categoryId === undefined ? undefined : getCategoryById(categoryId);
+  const category = categoryId === undefined ? undefined : getCategoryById(categoryId, subjectId);
   const [analytics, setAnalytics] = useState<ProgressAnalytics>();
   const [filter, setFilter] = useState<CategoryQuestionFilter>('all');
   const [sort, setSort] = useState<CategoryQuestionSort>('code');
@@ -62,7 +66,7 @@ export function CategoryProgressPage() {
     return () => {
       isCurrent = false;
     };
-  }, [category]);
+  }, [category, progressRepository]);
 
   const categoryStats = analytics?.categories.find((item) => item.id === category?.id);
   const categoryQuestions = useMemo(

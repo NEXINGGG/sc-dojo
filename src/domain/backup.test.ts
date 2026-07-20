@@ -104,7 +104,7 @@ describe('バックアップ形式', () => {
     });
     expect(
       validateBackupDocument(
-        { ...createBackupDocument(createInput()), formatVersion: 2 },
+        { ...createBackupDocument(createInput()), formatVersion: 3 },
         questions,
         identity,
       ),

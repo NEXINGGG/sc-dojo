@@ -1,17 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { getCategoryById, getDomainById, getQuestionByCode } from '../data/catalog';
 import { database } from '../database/database';
 import type { ExamResultRow, QuestionProgressRow } from '../database/types';
-import { EXAM_PASSING_CORRECT_COUNT, getExamName } from '../domain/exam';
+import { getExamName } from '../domain/exam';
 import { ExamRepository } from '../features/exam/examRepository';
 import { LearningRepository } from '../features/learning/learningRepository';
-
-const exams = new ExamRepository(database);
-const learning = new LearningRepository(database);
+import { getSubjectConfig } from '../domain/subject';
+import { useSubject } from '../features/subjects/SubjectContext';
 
 export function ExamResultPage() {
+  const { subjectId } = useSubject();
+  const subject = getSubjectConfig(subjectId);
+  const exams = useMemo(() => new ExamRepository(database, subjectId), [subjectId]);
+  const learning = useMemo(() => new LearningRepository(database, subjectId), [subjectId]);
   const { sessionId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,7 +65,7 @@ export function ExamResultPage() {
     return () => {
       isCurrent = false;
     };
-  }, [navigate, sessionId]);
+  }, [exams, learning, navigate, sessionId]);
 
   useEffect(() => {
     if (result !== undefined) {
@@ -110,7 +113,7 @@ export function ExamResultPage() {
   }
 
   const currentCode = result.questionCodes[detailIndex];
-  const question = getQuestionByCode(currentCode);
+  const question = getQuestionByCode(currentCode, subjectId);
   const questionResult = result.questionResults[currentCode];
 
   return (
@@ -135,8 +138,12 @@ export function ExamResultPage() {
         <p className="result-rate">
           {result.correct} / {result.total}問
         </p>
-        <p>100点換算 {result.score}点（正解数 ÷ 30 × 100を四捨五入）</p>
-        <p>合格基準: {EXAM_PASSING_CORRECT_COUNT}問以上（60%）</p>
+        <p>
+          100点換算 {result.score}点（正解数 ÷ {subject.exam.questionCount} × 100を四捨五入）
+        </p>
+        <p>
+          合格基準: {subject.exam.passingCorrectCount}問以上（{subject.exam.passingScorePercent}%）
+        </p>
         <div aria-label="模試結果の内訳" className="result-counts">
           <span>正解 {result.correct}問</span>
           <span>不正解 {result.incorrect}問</span>
@@ -150,14 +157,14 @@ export function ExamResultPage() {
       <ResultBreakdown
         heading="カテゴリ別成績"
         rows={Object.entries(result.categoryResults).map(([id, value]) => ({
-          label: getCategoryById(id)?.name ?? id,
+          label: getCategoryById(id, subjectId)?.name ?? id,
           ...value,
         }))}
       />
       <ResultBreakdown
         heading="系統別成績"
         rows={Object.entries(result.domainResults).map(([id, value]) => ({
-          label: getDomainById(id)?.name ?? id,
+          label: getDomainById(id, subjectId)?.name ?? id,
           ...value,
         }))}
       />
@@ -192,7 +199,7 @@ export function ExamResultPage() {
           <h2 className="question-text">{question.question}</h2>
           <div className="chip-list">
             <span className="chip">
-              {getCategoryById(question.categoryId)?.name ?? question.categoryId}
+              {getCategoryById(question.categoryId, subjectId)?.name ?? question.categoryId}
             </span>
             <span className="chip chip-muted">{question.subcategory}</span>
             <span className="chip chip-muted">難易度: {question.difficulty}</span>

@@ -1,15 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { PageHeader } from '../components/PageHeader';
-import { questions } from '../data/catalog';
+import { getSubjectCatalog } from '../data/catalog';
 import { database } from '../database/database';
 import type { ExamResultRow, ExamSessionRow, ExamType } from '../database/types';
 import {
   createExamSession,
   createExamSessionId,
-  EXAM_DURATION_SECONDS,
-  EXAM_QUESTION_COUNT,
   getExamName,
   selectExamQuestionCodes,
 } from '../domain/exam';
@@ -18,16 +16,16 @@ import {
   ExamRepository,
   type ExamTypeHistorySummary,
 } from '../features/exam/examRepository';
+import { getSubjectConfig } from '../domain/subject';
+import { useSubject } from '../features/subjects/SubjectContext';
 
-const exams = new ExamRepository(database);
-
-const examCards: readonly { type: ExamType; description: string }[] = [
-  { type: 'fixed_1', description: '問題データで固定された30問を、本番形式で解きます。' },
-  { type: 'fixed_2', description: '別の固定30問を、本番形式で解きます。' },
-  { type: 'random', description: 'activeな240問から、重複なしで30問を出題します。' },
-];
+const examCards: readonly ExamType[] = ['fixed_1', 'fixed_2', 'random'];
 
 export function ExamSelectionPage() {
+  const { subjectId } = useSubject();
+  const subject = getSubjectConfig(subjectId);
+  const questions = useMemo(() => getSubjectCatalog(subjectId).questions, [subjectId]);
+  const exams = useMemo(() => new ExamRepository(database, subjectId), [subjectId]);
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<ExamType>();
   const [summaries, setSummaries] = useState<Record<ExamType, ExamTypeHistorySummary>>();
@@ -64,7 +62,7 @@ export function ExamSelectionPage() {
     return () => {
       isCurrent = false;
     };
-  }, []);
+  }, [exams]);
 
   async function requestStart() {
     if (selectedType === undefined || isStarting) {
@@ -88,10 +86,15 @@ export function ExamSelectionPage() {
 
   async function startNewExam(examType: ExamType) {
     const now = new Date().toISOString();
-    const session = createExamSession(examType, selectExamQuestionCodes(examType, questions), {
-      id: createExamSessionId(),
-      now,
-    });
+    const session = createExamSession(
+      subjectId,
+      examType,
+      selectExamQuestionCodes(subjectId, examType, questions),
+      {
+        id: createExamSessionId(),
+        now,
+      },
+    );
     try {
       await exams.createInProgress(session);
       navigate(`/exam/${session.id}`);
@@ -125,7 +128,14 @@ export function ExamSelectionPage() {
 
   return (
     <>
-      <PageHeader description="30問・50分の本番形式で、今の実力を確認します。" title="模擬試験" />
+      <PageHeader
+        description={`${subject.exam.questionCount}問・${formatMinutes(subject.exam.durationSeconds)}分の本番形式で、今の実力を確認します。`}
+        title="模擬試験"
+      />
+      <p className="exam-subject-summary">
+        {subject.label}: {subject.exam.questionCount}問・{subject.exam.durationSeconds / 60}分・
+        {subject.exam.passingCorrectCount}問以上で合格
+      </p>
       {message !== undefined ? (
         <section className="inline-notice inline-notice-warning" role="status">
           <strong>確認してください</strong>
@@ -134,39 +144,39 @@ export function ExamSelectionPage() {
       ) : null}
 
       <section aria-label="模試を選ぶ" className="exam-selection-list">
-        {examCards.map((exam) => (
-          <article className="surface-card exam-selection-card" key={exam.type}>
-            <h2>{getExamName(exam.type)}</h2>
-            <p>{exam.description}</p>
+        {examCards.map((examType) => (
+          <article className="surface-card exam-selection-card" key={examType}>
+            <h2>{getExamName(examType)}</h2>
+            <p>{getExamDescription(examType, subject.exam.questionCount)}</p>
             <dl className="exam-card-details">
               <div>
                 <dt>問題数</dt>
-                <dd>{EXAM_QUESTION_COUNT}問</dd>
+                <dd>{subject.exam.questionCount}問</dd>
               </div>
               <div>
                 <dt>制限時間</dt>
-                <dd>{formatMinutes(EXAM_DURATION_SECONDS)}分</dd>
+                <dd>{formatMinutes(subject.exam.durationSeconds)}分</dd>
               </div>
               <div>
                 <dt>受験回数</dt>
-                <dd>{summaries?.[exam.type].attempts ?? 0}回</dd>
+                <dd>{summaries?.[examType].attempts ?? 0}回</dd>
               </div>
               <div>
                 <dt>直近の得点</dt>
-                <dd>{formatScore(summaries?.[exam.type].latest)}</dd>
+                <dd>{formatScore(summaries?.[examType].latest)}</dd>
               </div>
               <div>
                 <dt>最高得点</dt>
-                <dd>{formatHighestScore(summaries?.[exam.type].highestScore)}</dd>
+                <dd>{formatHighestScore(summaries?.[examType].highestScore)}</dd>
               </div>
             </dl>
             <button
-              aria-pressed={selectedType === exam.type}
+              aria-pressed={selectedType === examType}
               className="secondary-button"
-              onClick={() => setSelectedType(exam.type)}
+              onClick={() => setSelectedType(examType)}
               type="button"
             >
-              {selectedType === exam.type ? '選択中' : `${getExamName(exam.type)}を選ぶ`}
+              {selectedType === examType ? '選択中' : `${getExamName(examType)}を選ぶ`}
             </button>
           </article>
         ))}
@@ -176,7 +186,10 @@ export function ExamSelectionPage() {
         <section aria-label="模試開始前の確認" className="surface-card exam-start-confirmation">
           <h2>{getExamName(selectedType)}を開始</h2>
           <ul>
-            <li>30問・制限時間50分です。</li>
+            <li>
+              {subject.exam.questionCount}問・制限時間{formatMinutes(subject.exam.durationSeconds)}
+              分です。
+            </li>
             <li>模試中は正解・正誤・解説を表示しません。</li>
             <li>未回答でも提出できます。時間切れでは自動提出されます。</li>
             <li>ブラウザを閉じても、回答・見直し・残り時間を再開できます。</li>
@@ -290,4 +303,15 @@ function formatElapsed(totalSeconds: number): string {
 
 function formatMinutes(totalSeconds: number): number {
   return Math.floor(totalSeconds / 60);
+}
+
+function getExamDescription(examType: ExamType, questionCount: number): string {
+  switch (examType) {
+    case 'fixed_1':
+      return `問題データで固定された${questionCount}問を、本番形式で解きます。`;
+    case 'fixed_2':
+      return `別の固定${questionCount}問を、本番形式で解きます。`;
+    case 'random':
+      return `activeな問題から、重複なしで${questionCount}問を出題します。`;
+  }
 }

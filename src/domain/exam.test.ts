@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { questions } from '../data/catalog';
+import { getSubjectCatalog, questions } from '../data/catalog';
 import type { ExamSessionRow } from '../database/types';
 import {
   createExamSession,
@@ -16,6 +16,9 @@ import {
 } from './exam';
 
 const activeQuestions = questions.filter((question) => question.status === 'active');
+const a2Questions = getSubjectCatalog('a2').questions.filter(
+  (question) => question.status === 'active',
+);
 
 function createSession(id = 'exam-test'): ExamSessionRow {
   return createExamSession(
@@ -48,6 +51,49 @@ describe('模試の出題生成', () => {
     expect(first).toEqual(second);
     expect(first.every((code) => before.includes(code))).toBe(true);
     expect(activeQuestions.map((question) => question.code)).toEqual(before);
+  });
+});
+
+describe('A-2 exam rules', () => {
+  it('uses 25 unique questions, 40 minutes, and a 15-answer pass threshold', () => {
+    const codes = selectExamQuestionCodes('a2', 'random', a2Questions, () => 0.2);
+    const session = createExamSession('a2', 'random', codes, {
+      id: 'a2-exam',
+      now: '2026-07-18T00:00:00.000Z',
+    });
+    const selectedQuestions = codes.map((code) =>
+      a2Questions.find((question) => question.code === code),
+    );
+    const answers = Object.fromEntries(
+      selectedQuestions.slice(0, 15).map((question) => [question?.code, question?.correctChoice]),
+    );
+    const passed = gradeExam(
+      { ...session, answers },
+      new Map(a2Questions.map((question) => [question.code, question])),
+      '2026-07-18T00:40:00.000Z',
+      'manual',
+    );
+    const failed = gradeExam(
+      {
+        ...session,
+        answers: Object.fromEntries(
+          selectedQuestions
+            .slice(0, 14)
+            .map((question) => [question?.code, question?.correctChoice]),
+        ),
+      },
+      new Map(a2Questions.map((question) => [question.code, question])),
+      '2026-07-18T00:40:00.000Z',
+      'manual',
+    );
+
+    expect(codes).toHaveLength(25);
+    expect(new Set(codes)).toHaveLength(25);
+    expect(new Date(session.deadlineAt).getTime() - new Date(session.startedAt).getTime()).toBe(
+      40 * 60 * 1000,
+    );
+    expect(passed).toMatchObject({ total: 25, correct: 15, passed: true });
+    expect(failed).toMatchObject({ correct: 14, passed: false });
   });
 });
 

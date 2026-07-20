@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { PageHeader } from '../components/PageHeader';
-import { categories, domains, questions } from '../data/catalog';
+import { getSubjectCatalog } from '../data/catalog';
 import { database } from '../database/database';
 import type { QuestionProgressRow } from '../database/types';
 import {
@@ -25,9 +25,8 @@ import {
 } from '../features/practice/practiceSessionRepository';
 import { LearningRepository } from '../features/learning/learningRepository';
 import { difficulties, type Difficulty } from '../types/question';
+import { useSubject } from '../features/subjects/SubjectContext';
 
-const practiceSessions = new PracticeSessionRepository(database);
-const learning = new LearningRepository(database);
 const answerStatusOptions: readonly { value: PracticeAnswerStatus; label: string }[] = [
   { value: 'all', label: 'すべて' },
   { value: 'unanswered', label: '未回答' },
@@ -78,6 +77,16 @@ function isPracticeAnswerStatus(value: unknown): value is PracticeAnswerStatus {
 }
 
 export function PracticeSetupPage() {
+  const { subjectId } = useSubject();
+  const { categories, domains, questions } = useMemo(
+    () => getSubjectCatalog(subjectId),
+    [subjectId],
+  );
+  const practiceSessions = useMemo(
+    () => new PracticeSessionRepository(database, subjectId),
+    [subjectId],
+  );
+  const learning = useMemo(() => new LearningRepository(database, subjectId), [subjectId]);
   const navigate = useNavigate();
   const location = useLocation();
   const [filters, setFilters] = useState<PracticeFilters>(() => readInitialFilters(location.state));
@@ -115,23 +124,23 @@ export function PracticeSetupPage() {
     return () => {
       isCurrent = false;
     };
-  }, []);
+  }, [learning]);
 
   const selectedQuestions = useMemo(
     () => selectPracticeQuestions(questions, filters, Math.random, progressByCode),
-    [filters, progressByCode],
+    [filters, progressByCode, questions],
   );
   const categoryCounts = useMemo(
     () => countQuestionsByCategory(questions, filters, progressByCode),
-    [filters, progressByCode],
+    [filters, progressByCode, questions],
   );
   const difficultyCounts = useMemo(
     () => countQuestionsByDifficulty(questions, filters, progressByCode),
-    [filters, progressByCode],
+    [filters, progressByCode, questions],
   );
   const domainCounts = useMemo(
     () => countQuestionsByDomain(questions, filters, progressByCode),
-    [filters, progressByCode],
+    [filters, progressByCode, questions],
   );
   const answerStatusCounts = useMemo(
     () =>
@@ -145,7 +154,7 @@ export function PracticeSetupPage() {
           ).length,
         ]),
       ),
-    [filters, progressByCode],
+    [filters, progressByCode, questions],
   );
 
   function updateFilters(update: Partial<PracticeFilters>) {
@@ -206,7 +215,7 @@ export function PracticeSetupPage() {
     const session = createPracticeSession(
       selectedQuestions.map((question) => question.code),
       filters,
-      { id: createPracticeSessionId(), now },
+      { id: createPracticeSessionId(), now, subjectId },
     );
 
     try {

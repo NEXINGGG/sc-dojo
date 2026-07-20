@@ -27,6 +27,7 @@ describe('A1DojoDatabase', () => {
       'settings',
       'metadata',
       'practiceResults',
+      'learningDaysBySubject',
     ]);
 
     database.close();
@@ -73,7 +74,7 @@ describe('A1DojoDatabase', () => {
     const upgraded = createDatabase(name);
     await initializeDatabase(upgraded);
 
-    expect(upgraded.verno).toBe(4);
+    expect(upgraded.verno).toBe(5);
     await expect(upgraded.questionProgress.get('A1-001')).resolves.toMatchObject({
       favorite: true,
       attemptCount: 2,
@@ -81,11 +82,16 @@ describe('A1DojoDatabase', () => {
     await expect(upgraded.learningDays.get('2026-07-18')).resolves.toMatchObject({
       answerCount: 2,
     });
+    await expect(upgraded.learningDaysBySubject.get(['a1', '2026-07-18'])).resolves.toMatchObject({
+      subjectId: 'a1',
+      answerCount: 2,
+    });
     await expect(upgraded.settings.get('appearance')).resolves.toMatchObject({
       theme: 'dark',
       fontSize: 'large',
       reducedMotion: 'system',
       shuffleChoices: true,
+      selectedSubject: 'a1',
     });
     upgraded.close();
   });

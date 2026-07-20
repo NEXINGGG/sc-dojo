@@ -1,17 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { getCategoryById, getDomainForQuestion, getQuestionByCode } from '../data/catalog';
 import { database } from '../database/database';
 import type { AnswerAttemptRow, QuestionProgressRow } from '../database/types';
 import { LearningRepository } from '../features/learning/learningRepository';
-
-const learning = new LearningRepository(database);
+import { useSubject } from '../features/subjects/SubjectContext';
 
 export function QuestionHistoryPage() {
+  const { subjectId } = useSubject();
+  const learning = useMemo(() => new LearningRepository(database, subjectId), [subjectId]);
   const { questionCode } = useParams();
   const navigate = useNavigate();
-  const question = questionCode === undefined ? undefined : getQuestionByCode(questionCode);
+  const question =
+    questionCode === undefined ? undefined : getQuestionByCode(questionCode, subjectId);
   const resolvedQuestionCode = question?.code;
   const [progress, setProgress] = useState<QuestionProgressRow>();
   const [attempts, setAttempts] = useState<readonly AnswerAttemptRow[]>();
@@ -47,7 +49,7 @@ export function QuestionHistoryPage() {
     return () => {
       isCurrent = false;
     };
-  }, [resolvedQuestionCode]);
+  }, [learning, resolvedQuestionCode]);
 
   async function toggleFavorite() {
     if (question === undefined || isFavoriteSaving) {
@@ -97,7 +99,7 @@ export function QuestionHistoryPage() {
   const isLoading = attempts === undefined;
   const isAnswered = (progress?.attemptCount ?? 0) > 0;
   const domain = getDomainForQuestion(question);
-  const category = getCategoryById(question.categoryId);
+  const category = getCategoryById(question.categoryId, subjectId);
 
   return (
     <>

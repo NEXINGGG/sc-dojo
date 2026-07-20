@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { database } from '../database/database';
@@ -10,14 +10,20 @@ import { formatExamRemainingTime, getExamName, getExamTimerState } from '../doma
 import { defaultPracticeFilters } from '../domain/practice';
 import { ProgressRepository } from '../features/progress/progressRepository';
 import { PracticeSessionRepository } from '../features/practice/practiceSessionRepository';
-
-const practiceSessions = new PracticeSessionRepository(database);
-const exams = new ExamRepository(database);
-const progress = new ProgressRepository(database);
+import { SubjectSwitcher, useSubject } from '../features/subjects/SubjectContext';
+import { getSubjectConfig } from '../domain/subject';
 
 const emptyExamOverview: ExamOverview = { totalAttempts: 0 };
 
 export function HomePage() {
+  const { subjectId, error: subjectError } = useSubject();
+  const subject = getSubjectConfig(subjectId);
+  const practiceSessions = useMemo(
+    () => new PracticeSessionRepository(database, subjectId),
+    [subjectId],
+  );
+  const exams = useMemo(() => new ExamRepository(database, subjectId), [subjectId]);
+  const progress = useMemo(() => new ProgressRepository(database, subjectId), [subjectId]);
   const [inProgressSession, setInProgressSession] = useState<PracticeSessionRow>();
   const [analytics, setAnalytics] = useState<ProgressAnalytics>();
   const [examOverview, setExamOverview] = useState<ExamOverview>(emptyExamOverview);
@@ -50,7 +56,7 @@ export function HomePage() {
     return () => {
       isCurrent = false;
     };
-  }, []);
+  }, [exams, practiceSessions, progress]);
 
   const currentQuestionNumber =
     inProgressSession === undefined ? undefined : inProgressSession.currentIndex + 1;
@@ -63,8 +69,14 @@ export function HomePage() {
         description="短い時間でも、今の学習状況に合う問題から始められます。"
         title="ホーム"
       />
+      <SubjectSwitcher />
+      {subjectError !== undefined ? (
+        <section className="inline-notice inline-notice-warning" role="status">
+          <p>{subjectError}</p>
+        </section>
+      ) : null}
       <section className="hero-card">
-        <p className="eyebrow hero-eyebrow">ネットワークスペシャリスト 科目A-1</p>
+        <p className="eyebrow hero-eyebrow">{subject.label}</p>
         <h2>{(overall?.studiedQuestions ?? 0) === 0 ? 'まずは10問から' : '今日も一歩ずつ'}</h2>
         <p>
           今日の回答 {todayAnswerCount}問・連続学習 {overall?.learningStreak ?? 0}日
@@ -92,7 +104,7 @@ export function HomePage() {
         <article className="metric-card">
           <span>学習済み問題</span>
           <strong>
-            {overall?.studiedQuestions ?? 0} / {overall?.totalQuestions ?? 240}問
+            {overall?.studiedQuestions ?? 0} / {overall?.totalQuestions ?? subject.questionCount}問
           </strong>
         </article>
         <article className="metric-card">
@@ -103,7 +115,7 @@ export function HomePage() {
         </article>
         <article className="metric-card">
           <span>未回答問題</span>
-          <strong>{overall?.unansweredQuestions ?? 240}問</strong>
+          <strong>{overall?.unansweredQuestions ?? subject.questionCount}問</strong>
         </article>
         <article className="metric-card">
           <span>現在間違えている問題</span>
@@ -124,7 +136,7 @@ export function HomePage() {
         <p>回答状態を選ぶと、復習に合う問題だけを出題します。</p>
         <div className="quick-start-list">
           <QuickStartLink
-            count={overall?.unansweredQuestions ?? 240}
+            count={overall?.unansweredQuestions ?? subject.questionCount}
             label="未回答を学習"
             status="unanswered"
           />
@@ -202,7 +214,10 @@ export function HomePage() {
           </>
         ) : (
           <>
-            <p>30問・50分の本番形式で、実力を確認できます。</p>
+            <p>
+              {subject.exam.questionCount}問・{subject.exam.durationSeconds / 60}
+              分の本番形式で、実力を確認できます。
+            </p>
             <Link className="primary-button" to="/exam">
               模擬試験を始める
             </Link>

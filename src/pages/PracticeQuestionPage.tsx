@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import {
   getCategoryById,
   getDomainForQuestion,
   getQuestionByCode,
-  questions,
+  getSubjectCatalog,
 } from '../data/catalog';
 import { database } from '../database/database';
 import type { PracticeSessionRow } from '../database/types';
@@ -20,12 +20,19 @@ import { PracticeSessionRepository } from '../features/practice/practiceSessionR
 import { LearningRepository } from '../features/learning/learningRepository';
 import { usePwa } from '../features/pwa/PwaContext';
 import type { ChoiceId } from '../types/question';
-
-const practiceSessions = new PracticeSessionRepository(database);
-const learning = new LearningRepository(database);
-const catalogCodes = new Set(questions.map((question) => question.code));
+import { useSubject } from '../features/subjects/SubjectContext';
 
 export function PracticeQuestionPage() {
+  const { subjectId } = useSubject();
+  const catalogCodes = useMemo(
+    () => new Set(getSubjectCatalog(subjectId).questions.map((question) => question.code)),
+    [subjectId],
+  );
+  const practiceSessions = useMemo(
+    () => new PracticeSessionRepository(database, subjectId),
+    [subjectId],
+  );
+  const learning = useMemo(() => new LearningRepository(database, subjectId), [subjectId]);
   const navigate = useNavigate();
   const { confirmPersistenceSaved, reportPersistenceFailure } = usePwa();
   const { sessionId } = useParams();
@@ -81,14 +88,14 @@ export function PracticeQuestionPage() {
     return () => {
       isCurrent = false;
     };
-  }, [navigate, sessionId]);
+  }, [navigate, practiceSessions, sessionId]);
 
   const validation =
     session === undefined ? undefined : validatePracticeSession(session, catalogCodes);
   const currentQuestion =
     session === undefined
       ? undefined
-      : getQuestionByCode(session.questionCodes[session.currentIndex]);
+      : getQuestionByCode(session.questionCodes[session.currentIndex], subjectId);
   const currentResponse =
     session === undefined || currentQuestion === undefined
       ? undefined
@@ -131,7 +138,7 @@ export function PracticeQuestionPage() {
     return () => {
       isCurrent = false;
     };
-  }, [currentQuestionCode]);
+  }, [currentQuestionCode, learning]);
 
   async function saveSession(nextSession: PracticeSessionRow): Promise<boolean> {
     setIsSaving(true);
@@ -308,7 +315,7 @@ export function PracticeQuestionPage() {
   }
 
   const domain = getDomainForQuestion(currentQuestion);
-  const category = getCategoryById(currentQuestion.categoryId);
+  const category = getCategoryById(currentQuestion.categoryId, subjectId);
   const progress = Math.round(((session.currentIndex + 1) / session.questionCodes.length) * 100);
   const isLastQuestion = session.currentIndex === session.questionCodes.length - 1;
 

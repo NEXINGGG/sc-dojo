@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "validate:data": "node scripts/validate-data.mjs",
+    "validate:a2": "node scripts/validate-a2-data.mjs",
     "prebuild": "node scripts/validate-data.mjs",
     "build": "tsc -b && vite build",
     "postbuild": "node scripts/validate-deployment.mjs",

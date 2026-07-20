@@ -23,12 +23,14 @@ import {
 import { getPracticeModeForAnswerStatus } from './learning';
 import type { PracticeFilters, PracticeQuestionCount } from './practice';
 import type { ChoiceId, Difficulty, Question } from '../types/question';
+import { getSubjectConfig, isSubjectId, type SubjectId } from './subject';
 
 export const BACKUP_FORMAT = 'nw-a1-dojo-backup';
-export const BACKUP_FORMAT_VERSION = 1;
+export const BACKUP_FORMAT_VERSION = 2;
 export const MAX_BACKUP_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 export interface FavoriteBackupEntry {
+  subjectId: SubjectId;
   code: string;
   favoriteAt?: string;
 }
@@ -230,12 +232,12 @@ export function validateBackupDocument(
   if (source.format !== BACKUP_FORMAT) {
     return failure(
       'invalid_format',
-      'A1道場のバックアップ形式ではありません。別のファイルを選んでください。',
+      'このアプリのバックアップ形式ではありません。別のファイルを選んでください。',
     );
   }
   if (
-    source.formatVersion !== BACKUP_FORMAT_VERSION ||
-    source.backupVersion !== BACKUP_FORMAT_VERSION
+    (source.formatVersion !== 1 && source.formatVersion !== BACKUP_FORMAT_VERSION) ||
+    (source.backupVersion !== 1 && source.backupVersion !== BACKUP_FORMAT_VERSION)
   ) {
     return failure('unsupported_version', 'このバックアップ形式のバージョンには対応していません。');
   }
@@ -386,6 +388,7 @@ function parseAnswerHistory(value: unknown[], collector: ValidationCollector): A
     sessionQuestionKeys.add(duplicateKey);
     entries.push({
       id: item.id,
+      subjectId: question.subjectId,
       code: item.code,
       selectedChoice: item.selectedChoice,
       correctChoice: item.correctChoice,
@@ -407,7 +410,8 @@ function parseFavorites(value: unknown[], collector: ValidationCollector): Favor
       exclude(collector);
       continue;
     }
-    if (!collector.questionsByCode.has(item.code)) {
+    const question = collector.questionsByCode.get(item.code);
+    if (question === undefined) {
       unknown(collector, item.code);
       continue;
     }
@@ -417,6 +421,7 @@ function parseFavorites(value: unknown[], collector: ValidationCollector): Favor
     }
     codes.add(item.code);
     entries.push({
+      subjectId: question.subjectId,
       code: item.code,
       ...(isIsoDate(item.favoriteAt) ? { favoriteAt: item.favoriteAt } : {}),
     });
@@ -468,13 +473,15 @@ function parsePracticeSession(
     return undefined;
   }
   const answers = parsePracticeAnswers(value.answers, questionCodes, collector);
+  const subjectId = inferSubjectId(questionCodes, collector);
   const mode =
     value.mode === undefined ? getPracticeModeForAnswerStatus(filters.answerStatus) : value.mode;
-  if (answers === undefined || !isPracticeMode(mode)) {
+  if (answers === undefined || subjectId === undefined || !isPracticeMode(mode)) {
     return undefined;
   }
   return {
     id: value.id,
+    subjectId,
     version: 1,
     status: 'in_progress',
     mode,
@@ -525,8 +532,11 @@ function parsePracticeResult(
   const filters = parsePracticeFilters(value.filters, collector);
   const questionCodes = parseKnownCodes(value.questionCodes, collector);
   const confirmedQuestionCodes = parseKnownCodes(value.confirmedQuestionCodes, collector);
+  const subjectId =
+    questionCodes === undefined ? undefined : inferSubjectId(questionCodes, collector);
   if (
     filters === undefined ||
+    subjectId === undefined ||
     questionCodes === undefined ||
     questionCodes.length === 0 ||
     confirmedQuestionCodes === undefined ||
@@ -543,6 +553,7 @@ function parsePracticeResult(
   }
   return {
     id: value.id,
+    subjectId,
     version: 1,
     sessionId: value.sessionId,
     mode: value.mode,
@@ -592,10 +603,14 @@ function parseExamSession(
   ) {
     return undefined;
   }
-  const questionCodes = parseKnownCodes(value.questionCodes, collector, 30);
+  const questionCodes = parseKnownCodes(value.questionCodes, collector);
   const reviewCodes = parseKnownCodes(value.reviewCodes, collector);
+  const subjectId =
+    questionCodes === undefined ? undefined : inferSubjectId(questionCodes, collector);
   if (
     questionCodes === undefined ||
+    subjectId === undefined ||
+    questionCodes.length !== getSubjectConfig(subjectId).exam.questionCount ||
     reviewCodes === undefined ||
     reviewCodes.some((code) => !questionCodes.includes(code)) ||
     !isIndex(value.currentIndex, questionCodes.length) ||
@@ -609,6 +624,7 @@ function parseExamSession(
   }
   return {
     id: value.id,
+    subjectId,
     version: 1,
     status: 'in_progress',
     examType: value.examType,
@@ -658,10 +674,14 @@ function parseExamResult(
   ) {
     return undefined;
   }
-  const questionCodes = parseKnownCodes(value.questionCodes, collector, 30);
+  const questionCodes = parseKnownCodes(value.questionCodes, collector);
   const reviewCodes = parseKnownCodes(value.reviewCodes, collector);
+  const subjectId =
+    questionCodes === undefined ? undefined : inferSubjectId(questionCodes, collector);
   if (
     questionCodes === undefined ||
+    subjectId === undefined ||
+    questionCodes.length !== getSubjectConfig(subjectId).exam.questionCount ||
     reviewCodes === undefined ||
     reviewCodes.some((code) => !questionCodes.includes(code)) ||
     new Date(value.deadlineAt).getTime() <= new Date(value.startedAt).getTime() ||
@@ -681,6 +701,7 @@ function parseExamResult(
   const generated = gradeExam(
     {
       id: value.examSessionId,
+      subjectId,
       version: 1,
       status: 'in_progress',
       examType: value.examType,
@@ -720,13 +741,20 @@ function parseLearningDays(value: unknown[], collector: ValidationCollector): Le
       !isTokyoDate(item.date) ||
       !isNonNegativeInteger(item.answerCount) ||
       !isIsoDate(item.updatedAt) ||
-      dates.has(item.date)
+      !isSubjectId(item.subjectId ?? 'a1') ||
+      dates.has(`${item.subjectId ?? 'a1'}:${item.date}`)
     ) {
       exclude(collector);
       continue;
     }
-    dates.add(item.date);
-    entries.push({ date: item.date, answerCount: item.answerCount, updatedAt: item.updatedAt });
+    const subjectId = (item.subjectId ?? 'a1') as SubjectId;
+    dates.add(`${subjectId}:${item.date}`);
+    entries.push({
+      subjectId,
+      date: item.date,
+      answerCount: item.answerCount,
+      updatedAt: item.updatedAt,
+    });
   }
   return entries;
 }
@@ -761,6 +789,7 @@ function parseSettings(
     const settings = normalizeDisplaySettings(item);
     entries.push({
       key: 'appearance',
+      selectedSubject: isSubjectId(item.selectedSubject) ? item.selectedSubject : 'a1',
       ...settings,
       updatedAt: isIsoDate(item.updatedAt) ? item.updatedAt : fallbackUpdatedAt,
     });
@@ -927,6 +956,18 @@ function parseKnownCodes(
     return undefined;
   }
   return [...value];
+}
+
+function inferSubjectId(
+  codes: readonly string[],
+  collector: ValidationCollector,
+): SubjectId | undefined {
+  const subjects = new Set(
+    codes
+      .map((code) => collector.questionsByCode.get(code)?.subjectId)
+      .filter((subjectId): subjectId is SubjectId => subjectId !== undefined),
+  );
+  return subjects.size === 1 ? [...subjects][0] : undefined;
 }
 
 function failure(code: BackupValidationIssue['code'], message: string): BackupValidationResult {

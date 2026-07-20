@@ -30,10 +30,10 @@ export function normalizeAppBase(value: string | undefined): string {
 export function createPwaManifest(base: string): PwaManifestDefinition {
   const normalizedBase = normalizeAppBase(base);
   return {
-    name: 'ネットワークスペシャリスト A1道場',
-    short_name: 'A1道場',
+    name: 'ネットワークスペシャリスト NW道場',
+    short_name: 'NW道場',
     description:
-      'ネットワークスペシャリスト科目A-1を、短時間で繰り返し学習できる問題演習アプリです。',
+      'ネットワークスペシャリスト科目A-1・A-2を、短時間で繰り返し学習できる問題演習アプリです。',
     lang: 'ja',
     dir: 'ltr',
     start_url: `${normalizedBase}#/`,

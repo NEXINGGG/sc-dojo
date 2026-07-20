@@ -1,0 +1,458 @@
+{
+  "schema_version": 1,
+  "exam_id": "network_specialist",
+  "subject_id": "a2",
+  "domains": [
+    {
+      "id": "technology",
+      "name": "テクノロジ系",
+      "order": 1
+    }
+  ],
+  "categories": [
+    {
+      "id": "network_methods",
+      "name": "ネットワーク方式",
+      "order": 1,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "伝送量計算、呼量、誤り率、伝送媒体、フレーム効率など",
+      "subcategories": [
+        {
+          "id": "network_methods__1d073375",
+          "name": "ビット誤り率"
+        },
+        {
+          "id": "network_methods__34d06d1a",
+          "name": "フレーム効率"
+        },
+        {
+          "id": "network_methods__1cc360eb",
+          "name": "伝送媒体"
+        },
+        {
+          "id": "network_methods__24add817",
+          "name": "伝送時間・回線速度"
+        },
+        {
+          "id": "network_methods__335efa4a",
+          "name": "伝送量計算"
+        },
+        {
+          "id": "network_methods__495e5804",
+          "name": "呼量・トラフィック理論"
+        },
+        {
+          "id": "network_methods__6ecbd426",
+          "name": "符号化・変調"
+        }
+      ]
+    },
+    {
+      "id": "data_communication_control",
+      "name": "データ通信と制御",
+      "order": 2,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "Ethernet、VLAN、STP、リンク集約、無線アクセス、経路制御など",
+      "subcategories": [
+        {
+          "id": "data_communication_control__5e543b17",
+          "name": "BGP"
+        },
+        {
+          "id": "data_communication_control__b897930a",
+          "name": "CSMA/CD"
+        },
+        {
+          "id": "data_communication_control__e1bd9675",
+          "name": "Ethernet・MAC学習"
+        },
+        {
+          "id": "data_communication_control__fbaa55c2",
+          "name": "OSPF"
+        },
+        {
+          "id": "data_communication_control__4c6ef0ac",
+          "name": "QoS"
+        },
+        {
+          "id": "data_communication_control__ad0f16af",
+          "name": "STP・RSTP"
+        },
+        {
+          "id": "data_communication_control__17124680",
+          "name": "VLAN・802.1Q"
+        },
+        {
+          "id": "data_communication_control__fcec23fb",
+          "name": "リンクアグリゲーション"
+        },
+        {
+          "id": "data_communication_control__d7b69a16",
+          "name": "ループ防止"
+        },
+        {
+          "id": "data_communication_control__154d344b",
+          "name": "冗長ゲートウェイ"
+        },
+        {
+          "id": "data_communication_control__421ab5f8",
+          "name": "無線アクセス制御"
+        }
+      ]
+    },
+    {
+      "id": "communication_protocols",
+      "name": "通信プロトコル",
+      "order": 3,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "IPv4/IPv6、TCP/UDP、ICMP、DNS、DHCP、ルーティング、マルチキャストなど",
+      "subcategories": [
+        {
+          "id": "communication_protocols__0fbb7f72",
+          "name": "ARP"
+        },
+        {
+          "id": "communication_protocols__22c55c0e",
+          "name": "CIDR・経路集約"
+        },
+        {
+          "id": "communication_protocols__a73114ea",
+          "name": "DHCP"
+        },
+        {
+          "id": "communication_protocols__3ddc21b1",
+          "name": "DNS"
+        },
+        {
+          "id": "communication_protocols__05eceda6",
+          "name": "ICMP"
+        },
+        {
+          "id": "communication_protocols__e4c0d453",
+          "name": "IPv4サブネット"
+        },
+        {
+          "id": "communication_protocols__4dbeec45",
+          "name": "IPv6アドレス"
+        },
+        {
+          "id": "communication_protocols__e044be3a",
+          "name": "IPv6フラグメンテーション"
+        },
+        {
+          "id": "communication_protocols__32e4f425",
+          "name": "IPv6移行"
+        },
+        {
+          "id": "communication_protocols__afa3273c",
+          "name": "IPv6自動設定"
+        },
+        {
+          "id": "communication_protocols__3ef4eb3a",
+          "name": "IPv6近隣探索"
+        },
+        {
+          "id": "communication_protocols__418fb6ca",
+          "name": "MTU・フラグメンテーション"
+        },
+        {
+          "id": "communication_protocols__c5d768a7",
+          "name": "NAT・NAPT"
+        },
+        {
+          "id": "communication_protocols__045240b6",
+          "name": "PPP"
+        },
+        {
+          "id": "communication_protocols__f544fb30",
+          "name": "TCP"
+        },
+        {
+          "id": "communication_protocols__52e59354",
+          "name": "TCPシーケンス番号"
+        },
+        {
+          "id": "communication_protocols__e9a6f622",
+          "name": "UDP"
+        },
+        {
+          "id": "communication_protocols__71d5f5a3",
+          "name": "マルチキャスト"
+        },
+        {
+          "id": "communication_protocols__4e4779a1",
+          "name": "ルーティング"
+        },
+        {
+          "id": "communication_protocols__8991bc71",
+          "name": "無線LANプロトコル"
+        }
+      ]
+    },
+    {
+      "id": "network_management",
+      "name": "ネットワーク管理",
+      "order": 4,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "SNMP、Syslog、NTP/PTP、SDN/OpenFlow、監視設計など",
+      "subcategories": [
+        {
+          "id": "network_management__5333ac81",
+          "name": "NTP・PTP"
+        },
+        {
+          "id": "network_management__41857e33",
+          "name": "SDN・OpenFlow"
+        },
+        {
+          "id": "network_management__9aa33d88",
+          "name": "SNMP"
+        },
+        {
+          "id": "network_management__f2b4eb8f",
+          "name": "Syslog"
+        }
+      ]
+    },
+    {
+      "id": "network_applications",
+      "name": "ネットワーク応用",
+      "order": 5,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "HTTP、メール、VoIP、CDN、IoT、5G・クラウドサービスなど",
+      "subcategories": [
+        {
+          "id": "network_applications__6884c2e3",
+          "name": "5G・モバイル"
+        },
+        {
+          "id": "network_applications__67b6c4b8",
+          "name": "CDN"
+        },
+        {
+          "id": "network_applications__c74f088d",
+          "name": "HTTP・Web"
+        },
+        {
+          "id": "network_applications__41c40a37",
+          "name": "IoTプロトコル"
+        },
+        {
+          "id": "network_applications__2ff4f370",
+          "name": "VoIP"
+        },
+        {
+          "id": "network_applications__521b4c8b",
+          "name": "WebDAV"
+        },
+        {
+          "id": "network_applications__327eb3f8",
+          "name": "負荷分散"
+        },
+        {
+          "id": "network_applications__fca5c560",
+          "name": "電子メール"
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "name": "セキュリティ",
+      "order": 6,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "TLS、IPsec、認証、メールセキュリティ、攻撃対策、無線LANセキュリティなど",
+      "subcategories": [
+        {
+          "id": "security__aab770d1",
+          "name": "DNSセキュリティ"
+        },
+        {
+          "id": "security__1071dc6f",
+          "name": "FW・IDS・IPS"
+        },
+        {
+          "id": "security__7b6db741",
+          "name": "IPsec"
+        },
+        {
+          "id": "security__d91e1888",
+          "name": "TLS"
+        },
+        {
+          "id": "security__33b7378d",
+          "name": "VPN"
+        },
+        {
+          "id": "security__e1ca58cc",
+          "name": "クラウドセキュリティ"
+        },
+        {
+          "id": "security__662a3076",
+          "name": "セキュリティ運用"
+        },
+        {
+          "id": "security__6c056a52",
+          "name": "ゼロトラスト"
+        },
+        {
+          "id": "security__60e0bb9c",
+          "name": "メールセキュリティ"
+        },
+        {
+          "id": "security__5c505132",
+          "name": "攻撃手法"
+        },
+        {
+          "id": "security__082a5415",
+          "name": "暗号・証明書"
+        },
+        {
+          "id": "security__54f64d6e",
+          "name": "無線LANセキュリティ"
+        },
+        {
+          "id": "security__5664ed9a",
+          "name": "認証・802.1X"
+        },
+        {
+          "id": "security__4d51d57d",
+          "name": "認証・EAP"
+        },
+        {
+          "id": "security__50b8411d",
+          "name": "認証・RADIUS"
+        }
+      ]
+    },
+    {
+      "id": "computer_components",
+      "name": "コンピュータ構成要素",
+      "order": 7,
+      "default_domain": "technology",
+      "priority": "B",
+      "description": "CPU、メモリ、キャッシュ、バス、入出力など",
+      "subcategories": [
+        {
+          "id": "computer_components__a8b32c4b",
+          "name": "キャッシュメモリ"
+        },
+        {
+          "id": "computer_components__cbda7566",
+          "name": "バス・I/O"
+        },
+        {
+          "id": "computer_components__cef68868",
+          "name": "メモリ"
+        },
+        {
+          "id": "computer_components__c29d7cd4",
+          "name": "割込み"
+        }
+      ]
+    },
+    {
+      "id": "system_components",
+      "name": "システム構成要素",
+      "order": 8,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "信頼性、性能、冗長化、仮想化、クラウド実行基盤など",
+      "subcategories": [
+        {
+          "id": "system_components__0d2688ba",
+          "name": "仮想化・クラウド"
+        },
+        {
+          "id": "system_components__bcf07e26",
+          "name": "信頼性"
+        },
+        {
+          "id": "system_components__5c8f4459",
+          "name": "冗長化"
+        },
+        {
+          "id": "system_components__11b0f730",
+          "name": "可用性"
+        },
+        {
+          "id": "system_components__e6ffcdc8",
+          "name": "性能評価"
+        },
+        {
+          "id": "system_components__327eb3f8",
+          "name": "負荷分散"
+        }
+      ]
+    },
+    {
+      "id": "system_development",
+      "name": "システム開発技術",
+      "order": 9,
+      "default_domain": "technology",
+      "priority": "B",
+      "description": "要件定義、設計、レビュー、テスト、導入など",
+      "subcategories": [
+        {
+          "id": "system_development__a67e9f5d",
+          "name": "アーキテクチャ"
+        },
+        {
+          "id": "system_development__63b560db",
+          "name": "テスト"
+        },
+        {
+          "id": "system_development__bd3906c0",
+          "name": "安全設計"
+        },
+        {
+          "id": "system_development__55d61cbd",
+          "name": "導入・環境"
+        },
+        {
+          "id": "system_development__f52fd514",
+          "name": "要件定義・モデリング"
+        },
+        {
+          "id": "system_development__cf1ec8c2",
+          "name": "設計レビュー"
+        }
+      ]
+    },
+    {
+      "id": "software_development_management",
+      "name": "ソフトウェア開発管理技術",
+      "order": 10,
+      "default_domain": "technology",
+      "priority": "B",
+      "description": "構成管理、CI/CD、課題管理、アジャイル、IaCなど",
+      "subcategories": [
+        {
+          "id": "software_development_management__25ef1b43",
+          "name": "CI/CD"
+        },
+        {
+          "id": "software_development_management__4aecf59a",
+          "name": "IaC・DevOps"
+        },
+        {
+          "id": "software_development_management__f27ef97b",
+          "name": "アジャイル"
+        },
+        {
+          "id": "software_development_management__a41dced3",
+          "name": "構成管理"
+        },
+        {
+          "id": "software_development_management__d01c53e6",
+          "name": "課題管理"
+        }
+      ]
+    }
+  ]
+}

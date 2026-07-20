@@ -24,6 +24,7 @@ export interface QuestionSource {
 }
 
 export interface Question {
+  subjectId: SubjectId;
   id: string;
   code: string;
   domainId: string;
@@ -64,3 +65,4 @@ export interface Category {
   description: string;
   subcategories: readonly Subcategory[];
 }
+import type { SubjectId } from '../domain/subject';

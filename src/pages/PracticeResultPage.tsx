@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
-import { getCategoryById, getDomainById, getQuestionByCode, questions } from '../data/catalog';
+import {
+  getCategoryById,
+  getDomainById,
+  getQuestionByCode,
+  getSubjectCatalog,
+} from '../data/catalog';
 import { database } from '../database/database';
 import type { PracticeSessionRow } from '../database/types';
 import type { QuestionProgressRow } from '../database/types';
@@ -17,11 +22,16 @@ import {
   PracticeSessionRepository,
 } from '../features/practice/practiceSessionRepository';
 import { LearningRepository } from '../features/learning/learningRepository';
-
-const practiceSessions = new PracticeSessionRepository(database);
-const learning = new LearningRepository(database);
+import { useSubject } from '../features/subjects/SubjectContext';
 
 export function PracticeResultPage() {
+  const { subjectId } = useSubject();
+  const questions = useMemo(() => getSubjectCatalog(subjectId).questions, [subjectId]);
+  const practiceSessions = useMemo(
+    () => new PracticeSessionRepository(database, subjectId),
+    [subjectId],
+  );
+  const learning = useMemo(() => new LearningRepository(database, subjectId), [subjectId]);
   const navigate = useNavigate();
   const { sessionId } = useParams();
   const [session, setSession] = useState<PracticeSessionRow>();
@@ -78,7 +88,7 @@ export function PracticeResultPage() {
     return () => {
       isCurrent = false;
     };
-  }, [navigate, sessionId]);
+  }, [learning, navigate, practiceSessions, sessionId]);
 
   const result = useMemo(
     () => (session === undefined ? undefined : getPracticeSessionResult(session)),
@@ -107,7 +117,7 @@ export function PracticeResultPage() {
       const nextSession = createPracticeSession(
         selectedQuestions.map((question) => question.code),
         session.filters,
-        { id: createPracticeSessionId(), now },
+        { id: createPracticeSessionId(), now, subjectId },
       );
       await practiceSessions.createInProgress(nextSession);
       navigate(`/practice/${nextSession.id}`);
@@ -189,13 +199,13 @@ export function PracticeResultPage() {
 
       <section className="surface-card result-filters">
         <h2>今回の条件</h2>
-        <p>{describeFilters(session)}</p>
+        <p>{describeFilters(session, subjectId)}</p>
       </section>
 
       <section aria-label="問題ごとの結果" className="result-question-list">
         <h2>問題ごとの確認</h2>
         {session.questionCodes.map((code, index) => {
-          const question = getQuestionByCode(code);
+          const question = getQuestionByCode(code, subjectId);
           if (question === undefined) {
             return null;
           }
@@ -288,14 +298,19 @@ function formatElapsedTime(totalSeconds: number): string {
   return `${minutes}分${seconds}秒`;
 }
 
-function describeFilters(session: PracticeSessionRow): string {
+function describeFilters(
+  session: PracticeSessionRow,
+  subjectId: import('../domain/subject').SubjectId,
+): string {
   const domain =
-    session.filters.domainId === 'all' ? undefined : getDomainById(session.filters.domainId)?.name;
+    session.filters.domainId === 'all'
+      ? undefined
+      : getDomainById(session.filters.domainId, subjectId)?.name;
   const categoryText =
     session.filters.categoryIds.length === 0
       ? 'カテゴリ: すべて'
       : `カテゴリ: ${session.filters.categoryIds
-          .map((categoryId) => getCategoryById(categoryId)?.name ?? categoryId)
+          .map((categoryId) => getCategoryById(categoryId, subjectId)?.name ?? categoryId)
           .join('・')}`;
   const countText =
     session.filters.questionCount === 'all'

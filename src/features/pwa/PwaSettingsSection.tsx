@@ -58,7 +58,7 @@ export function PwaSettingsSection() {
     <section aria-labelledby="pwa-settings-heading" className="surface-card settings-section">
       <h2 id="pwa-settings-heading">オフライン・インストール</h2>
       <p className="muted-text">
-        A1道場を端末へ追加すると、通信が不安定な場所でも、保存済みの問題と学習データで続けられます。
+        NW道場を端末へ追加すると、通信が不安定な場所でも、保存済みの問題と学習データで続けられます。
       </p>
       <dl className="settings-summary-list">
         <div>
@@ -141,7 +141,7 @@ export function PwaSettingsSection() {
 
       {showGuide ? (
         <ConfirmDialog
-          description="A1道場は、ブラウザのメニューから端末のホーム画面へ追加できます。追加すると、アプリのように開けます。"
+          description="NW道場は、ブラウザのメニューから端末のホーム画面へ追加できます。追加すると、アプリのように開けます。"
           title="インストール方法"
         >
           <div className="install-guide">

@@ -22,10 +22,16 @@ import {
 } from '../features/progress/ProgressSections';
 import { formatRate } from '../features/progress/progressFormat';
 import { ProgressRepository } from '../features/progress/progressRepository';
-
-const progressRepository = new ProgressRepository(database);
+import { useSubject } from '../features/subjects/SubjectContext';
+import { getSubjectConfig } from '../domain/subject';
 
 export function ProgressPage() {
+  const { subjectId } = useSubject();
+  const subject = getSubjectConfig(subjectId);
+  const progressRepository = useMemo(
+    () => new ProgressRepository(database, subjectId),
+    [subjectId],
+  );
   const [period, setPeriod] = useState<AnalyticsPeriod>('30d');
   const [analytics, setAnalytics] = useState<ProgressAnalytics>();
   const [historyFilter, setHistoryFilter] = useState<LearningHistoryFilter>('all');
@@ -56,7 +62,7 @@ export function ProgressPage() {
     return () => {
       isCurrent = false;
     };
-  }, [period]);
+  }, [period, progressRepository]);
 
   const filteredHistory = useMemo(
     () => (analytics === undefined ? [] : filterLearningHistory(analytics.history, historyFilter)),
@@ -172,7 +178,7 @@ export function ProgressPage() {
                     : `${analytics.overall.latestExam.correct} / ${analytics.overall.latestExam.total}問`,
                 description:
                   analytics.overall.latestExam === undefined
-                    ? '30問・50分の模試で確認できます'
+                    ? `${subject.exam.questionCount}問・${subject.exam.durationSeconds / 60}分の模試で確認できます`
                     : `${analytics.overall.latestExam.score}点・${analytics.overall.latestExam.passed ? '合格圏' : '要復習'}`,
               },
             ]}
@@ -195,7 +201,7 @@ export function ProgressPage() {
           <DifficultyStatisticsSection difficulties={analytics.difficulties} />
           <CategoryStatisticsSection categories={analytics.categories} />
           <DailyLearningSection daily={analytics.daily} period={period} />
-          <ExamTrendSection exams={analytics.examTrend} />
+          <ExamTrendSection exam={subject.exam} exams={analytics.examTrend} />
           <LearningHistorySection
             filter={historyFilter}
             history={filteredHistory}

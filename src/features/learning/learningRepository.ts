@@ -1,4 +1,4 @@
-import { getQuestionByCode, questions } from '../../data/catalog';
+import { getQuestionByCode, getSubjectCatalog } from '../../data/catalog';
 import type { A1DojoDatabase } from '../../database/database';
 import type {
   AnswerAttemptRow,
@@ -16,46 +16,63 @@ import {
   getPracticeModeForAnswerStatus,
   type LearningDashboard,
 } from '../../domain/learning';
+import type { SubjectId } from '../../domain/subject';
 import type { Question } from '../../types/question';
 
 const readinessByDatabase = new WeakMap<A1DojoDatabase, Promise<void>>();
 
 export class LearningRepository {
-  constructor(private readonly database: A1DojoDatabase) {}
+  constructor(
+    private readonly database: A1DojoDatabase,
+    private readonly subjectId: SubjectId = 'a1',
+  ) {}
 
   async getProgress(code: string): Promise<QuestionProgressRow | undefined> {
     await ensureLearningDataReady(this.database);
-    return this.database.questionProgress.get(code);
+    if (this.subjectId === 'a1') {
+      const row = await this.database.questionProgress.get(code);
+      return row?.subjectId === undefined || row.subjectId === 'a1' ? row : undefined;
+    }
+    return this.database.questionProgress
+      .where('[subjectId+code]')
+      .equals([this.subjectId, code])
+      .first();
   }
 
   async getProgressMap(): Promise<ReadonlyMap<string, QuestionProgressRow>> {
     await ensureLearningDataReady(this.database);
-    const rows = await this.database.questionProgress.toArray();
+    const rows = (await this.database.questionProgress.toArray()).filter((row) =>
+      matchesSubject(row.subjectId, this.subjectId),
+    );
     return new Map(rows.map((row) => [row.code, row]));
   }
 
   async getAttempts(code: string): Promise<readonly AnswerAttemptRow[]> {
     await ensureLearningDataReady(this.database);
-    const attempts = await this.database.answerAttempts
-      .where('code')
-      .equals(code)
-      .sortBy('answeredAt');
+    const attempts = (await this.database.answerAttempts.where('code').equals(code).toArray())
+      .filter((row) => matchesSubject(row.subjectId, this.subjectId))
+      .sort((left, right) => left.answeredAt.localeCompare(right.answeredAt));
     return attempts.reverse();
   }
 
   async getPracticeResult(sessionId: string): Promise<PracticeResultRow | undefined> {
     await ensureLearningDataReady(this.database);
-    return this.database.practiceResults.get(sessionId);
+    return this.database.practiceResults
+      .where('[subjectId+sessionId]')
+      .equals([this.subjectId, sessionId])
+      .first();
   }
 
   async getDashboard(referenceDate: Date = new Date()): Promise<LearningDashboard> {
     await ensureLearningDataReady(this.database);
     const [progressRows, learningDays] = await Promise.all([
-      this.database.questionProgress.toArray(),
-      this.database.learningDays.toArray(),
+      this.database.questionProgress
+        .toArray()
+        .then((rows) => rows.filter((row) => matchesSubject(row.subjectId, this.subjectId))),
+      this.database.learningDaysBySubject.where('subjectId').equals(this.subjectId).toArray(),
     ]);
     return createLearningDashboard(
-      questions,
+      getSubjectCatalog(this.subjectId).questions,
       new Map(progressRows.map((row) => [row.code, row])),
       learningDays,
       referenceDate,
@@ -70,8 +87,11 @@ export class LearningRepository {
     await ensureLearningDataReady(this.database);
 
     return this.database.transaction('rw', this.database.questionProgress, async () => {
-      const current = await this.database.questionProgress.get(code);
-      const base = current ?? createEmptyQuestionProgress(code, updatedAt);
+      const current = await this.database.questionProgress
+        .where('[subjectId+code]')
+        .equals([this.subjectId, code])
+        .first();
+      const base = current ?? createEmptyQuestionProgress(code, updatedAt, this.subjectId);
       const next: QuestionProgressRow = {
         ...base,
         favorite,
@@ -88,6 +108,9 @@ export class LearningRepository {
     question: Question,
   ): Promise<{ session: PracticeSessionRow; recorded: boolean }> {
     await ensureLearningDataReady(this.database);
+    if (session.subjectId !== this.subjectId || question.subjectId !== this.subjectId) {
+      throw new LearningDataError('選択中の科目と異なる学習データは保存できません。');
+    }
     const response = session.answers[question.code];
 
     if (
@@ -111,9 +134,11 @@ export class LearningRepository {
       this.database.answerAttempts,
       this.database.questionProgress,
       this.database.learningDays,
+      this.database.learningDaysBySubject,
       async () => {
         const existing = await getAttemptForSessionQuestion(
           this.database,
+          session.subjectId,
           session.id,
           question.code,
         );
@@ -151,7 +176,10 @@ export class LearningRepository {
       this.database.practiceResults,
       async () => {
         await this.database.practiceSessions.put(session);
-        const existing = await this.database.practiceResults.get(session.id);
+        const existing = await this.database.practiceResults
+          .where('[subjectId+sessionId]')
+          .equals([session.subjectId, session.id])
+          .first();
         if (existing !== undefined) {
           return existing;
         }
@@ -196,8 +224,10 @@ async function backfillLegacyPracticeData(database: A1DojoDatabase): Promise<voi
         database.answerAttempts,
         database.questionProgress,
         database.learningDays,
+        database.learningDaysBySubject,
         database.practiceResults,
         async () => {
+          const subjectId = session.subjectId ?? 'a1';
           for (const [code, response] of Object.entries(session.answers)) {
             if (
               !response.confirmed ||
@@ -207,14 +237,19 @@ async function backfillLegacyPracticeData(database: A1DojoDatabase): Promise<voi
             ) {
               continue;
             }
-            const question = getQuestionByCode(code);
+            const question = getQuestionByCode(code, subjectId);
             if (
               question === undefined ||
               !question.choices.some((choice) => choice.id === response.selectedChoice)
             ) {
               continue;
             }
-            const existing = await getAttemptForSessionQuestion(database, session.id, code);
+            const existing = await getAttemptForSessionQuestion(
+              database,
+              subjectId,
+              session.id,
+              code,
+            );
             if (existing !== undefined) {
               continue;
             }
@@ -230,7 +265,10 @@ async function backfillLegacyPracticeData(database: A1DojoDatabase): Promise<voi
           }
 
           if (session.status === 'completed' && session.completedAt !== undefined) {
-            const existingResult = await database.practiceResults.get(session.id);
+            const existingResult = await database.practiceResults
+              .where('[subjectId+sessionId]')
+              .equals([subjectId, session.id])
+              .first();
             if (existingResult === undefined) {
               await database.practiceResults.add(
                 createPracticeResult(session, session.completedAt),
@@ -253,6 +291,7 @@ function createAttempt(
   answeredAt: string,
 ): Omit<AnswerAttemptRow, 'id'> {
   return {
+    subjectId: session.subjectId,
     code: question.code,
     selectedChoice,
     correctChoice: question.correctChoice,
@@ -266,25 +305,40 @@ function createAttempt(
 
 async function getAttemptForSessionQuestion(
   database: A1DojoDatabase,
+  subjectId: SubjectId,
   sessionId: string,
   code: string,
 ): Promise<AnswerAttemptRow | undefined> {
-  return database.answerAttempts.where('[sessionId+code]').equals([sessionId, code]).first();
+  return database.answerAttempts
+    .where('[subjectId+sessionId+code]')
+    .equals([subjectId, sessionId, code])
+    .first();
 }
 
 async function updateProgressAndLearningDay(
   database: A1DojoDatabase,
   attempt: Omit<AnswerAttemptRow, 'id'>,
 ): Promise<void> {
-  const currentProgress = await database.questionProgress.get(attempt.code);
+  const currentProgress = await database.questionProgress
+    .where('[subjectId+code]')
+    .equals([attempt.subjectId, attempt.code])
+    .first();
   await database.questionProgress.put(applyAnswerToQuestionProgress(currentProgress, attempt));
 
   const date = getAsiaTokyoDate(new Date(attempt.answeredAt));
-  const currentDay = await database.learningDays.get(date);
+  const currentDay = await database.learningDaysBySubject.get([attempt.subjectId, date]);
   const nextDay: LearningDayRow = {
+    subjectId: attempt.subjectId,
     date,
     answerCount: (currentDay?.answerCount ?? 0) + 1,
     updatedAt: attempt.answeredAt,
   };
-  await database.learningDays.put(nextDay);
+  await database.learningDaysBySubject.put(nextDay);
+  if (attempt.subjectId === 'a1') {
+    await database.learningDays.put(nextDay);
+  }
+}
+
+function matchesSubject(value: SubjectId | undefined, subjectId: SubjectId): boolean {
+  return value === subjectId || (value === undefined && subjectId === 'a1');
 }

@@ -8,6 +8,7 @@ import type {
   QuestionProgressRow,
 } from '../database/types';
 import { calculateLearningStreak, getAsiaTokyoDate } from './learning';
+import { getSubjectConfig } from './subject';
 import {
   difficulties,
   type Category,
@@ -199,6 +200,7 @@ export function buildProgressAnalytics(
   sourceDomains: readonly Domain[] = catalogDomains,
 ): ProgressAnalytics {
   const now = normalizeNow(input.now);
+  const examConfig = getSubjectConfig(sourceQuestions[0]?.subjectId ?? 'a1').exam;
   const activeQuestions = sourceQuestions.filter((question) => question.status === 'active');
   const questionByCode = new Map(activeQuestions.map((question) => [question.code, question]));
   const progressByCode = new Map(input.progressRows.map((row) => [row.code, row]));
@@ -217,10 +219,10 @@ export function buildProgressAnalytics(
     latestByCode,
     progressByCode,
   );
-  const examTrend = normalizeExamResults(input.examResults, questionByCode, now)
+  const examTrend = normalizeExamResults(input.examResults, questionByCode, now, examConfig)
     .filter((result) => isInPeriod(result.submittedAt, input.period, now))
     .sort((left, right) => left.submittedAt.localeCompare(right.submittedAt));
-  const allExamTrend = normalizeExamResults(input.examResults, questionByCode, now);
+  const allExamTrend = normalizeExamResults(input.examResults, questionByCode, now, examConfig);
   const history = createLearningHistory(
     input.practiceResults,
     allExamTrend,
@@ -228,6 +230,7 @@ export function buildProgressAnalytics(
     questionByCode,
     input.period,
     now,
+    examConfig,
   );
   const learningDates = new Set(
     attempts.map((attempt) => getAsiaTokyoDate(new Date(attempt.answeredAt))),
@@ -624,6 +627,7 @@ function normalizeExamResults(
   source: readonly ExamResultRow[],
   questionByCode: ReadonlyMap<string, Question>,
   now: Date,
+  examConfig: ReturnType<typeof getSubjectConfig>['exam'],
 ): readonly ExamTrendPoint[] {
   const unique = new Set<string>();
   const normalized: ExamTrendPoint[] = [];
@@ -635,8 +639,8 @@ function normalizeExamResults(
       submittedAtMilliseconds === undefined ||
       submittedAtMilliseconds > now.getTime() ||
       !isExamType(result.examType) ||
-      result.questionCodes.length !== 30 ||
-      new Set(result.questionCodes).size !== 30 ||
+      result.questionCodes.length !== examConfig.questionCount ||
+      new Set(result.questionCodes).size !== examConfig.questionCount ||
       result.questionCodes.some((code) => !questionByCode.has(code))
     ) {
       continue;
@@ -670,7 +674,7 @@ function normalizeExamResults(
       incorrect,
       unanswered,
       score: Math.round((correct / total) * 100),
-      passed: correct >= 18,
+      passed: correct >= examConfig.passingCorrectCount,
       elapsedSeconds: Math.max(0, Math.round(result.elapsedSeconds)),
     });
   }
@@ -685,6 +689,7 @@ function createLearningHistory(
   questionByCode: ReadonlyMap<string, Question>,
   period: AnalyticsPeriod,
   now: Date,
+  examConfig: ReturnType<typeof getSubjectConfig>['exam'],
 ): readonly LearningHistoryItem[] {
   const practice = normalizePracticeResults(practiceResults, attempts, questionByCode, now).filter(
     (item) => isInPeriod(item.happenedAt, period, now),
@@ -703,7 +708,7 @@ function createLearningHistory(
       unanswered: exam.unanswered,
       correctRate: rate(exam.correct, exam.total),
       elapsedSeconds: exam.elapsedSeconds,
-      conditions: '30問・50分',
+      conditions: `${examConfig.questionCount}問・${examConfig.durationSeconds / 60}分`,
       detailPath: `/exam/${exam.id}/result`,
     }));
 

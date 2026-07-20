@@ -9,6 +9,7 @@ import {
   type PracticeAnswerStatus,
 } from './learning';
 import type { ChoiceId, Difficulty, Question } from '../types/question';
+import type { SubjectId } from './subject';
 
 export const practiceQuestionCounts = [5, 10, 20, 30, 'all'] as const;
 
@@ -167,10 +168,11 @@ export function countQuestionsByDomain(
 export function createPracticeSession(
   questionCodes: readonly string[],
   filters: PracticeFilters,
-  options: { id: string; now: string },
+  options: { id: string; now: string; subjectId?: SubjectId },
 ): PracticeSessionRow {
   return {
     id: options.id,
+    subjectId: options.subjectId ?? 'a1',
     version: 1,
     status: 'in_progress',
     mode: getPracticeModeForAnswerStatus(filters.answerStatus),

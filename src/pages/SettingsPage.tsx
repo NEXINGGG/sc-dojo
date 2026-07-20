@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { PageHeader } from '../components/PageHeader';
 import { database } from '../database/database';
-import { questionDataVersion, questions } from '../data/catalog';
+import { allQuestions } from '../data/catalog';
 import {
   createQuestionDataIdentity,
   parseBackupJson,
@@ -25,7 +25,7 @@ type DialogKind = 'reset-display' | 'restore' | 'clear-learning-data';
 type Notice = { kind: 'success' | 'error'; message: string };
 
 const dataManagementRepository = new DataManagementRepository(database);
-const questionDataIdentity = createQuestionDataIdentity(questions, questionDataVersion);
+const questionDataIdentity = createQuestionDataIdentity(allQuestions, 1);
 
 export function SettingsPage() {
   const {
@@ -102,7 +102,7 @@ export function SettingsPage() {
     try {
       const validation = parseBackupJson(
         await readBackupFileAsText(file),
-        questions,
+        allQuestions,
         questionDataIdentity,
       );
       if (!validation.ok) {
@@ -347,7 +347,7 @@ export function SettingsPage() {
         <dl className="settings-summary-list">
           <div>
             <dt>アプリ名</dt>
-            <dd>A1道場</dd>
+            <dd>NW道場</dd>
           </div>
           <div>
             <dt>アプリバージョン</dt>
@@ -355,12 +355,12 @@ export function SettingsPage() {
           </div>
           <div>
             <dt>問題数</dt>
-            <dd>{questions.length}問</dd>
+            <dd>{allQuestions.length}問</dd>
           </div>
           <div>
             <dt>問題データ</dt>
             <dd>
-              v{questionDataVersion}・{questionDataIdentity.fingerprint}
+              v{questionDataIdentity.schemaVersion}・{questionDataIdentity.fingerprint}
             </dd>
           </div>
         </dl>

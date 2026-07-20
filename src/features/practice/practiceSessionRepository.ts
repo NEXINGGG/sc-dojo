@@ -1,15 +1,25 @@
 import type { A1DojoDatabase } from '../../database/database';
 import type { PracticeSessionRow } from '../../database/types';
+import type { SubjectId } from '../../domain/subject';
 
 export class PracticeSessionRepository {
-  constructor(private readonly database: A1DojoDatabase) {}
+  constructor(
+    private readonly database: A1DojoDatabase,
+    private readonly subjectId: SubjectId = 'a1',
+  ) {}
 
   async get(sessionId: string): Promise<PracticeSessionRow | undefined> {
-    return this.database.practiceSessions.get(sessionId);
+    return this.database.practiceSessions
+      .where('[subjectId+id]')
+      .equals([this.subjectId, sessionId])
+      .first();
   }
 
   async getInProgress(): Promise<PracticeSessionRow | undefined> {
-    return this.database.practiceSessions.where('status').equals('in_progress').first();
+    return this.database.practiceSessions
+      .where('[subjectId+status]')
+      .equals([this.subjectId, 'in_progress'])
+      .first();
   }
 
   async createInProgress(session: PracticeSessionRow): Promise<void> {
@@ -35,6 +45,9 @@ export class PracticeSessionRepository {
   }
 
   async save(session: PracticeSessionRow): Promise<void> {
+    if (session.subjectId !== this.subjectId) {
+      throw new ActivePracticeSessionExistsError(session.id);
+    }
     await this.database.practiceSessions.put(session);
   }
 

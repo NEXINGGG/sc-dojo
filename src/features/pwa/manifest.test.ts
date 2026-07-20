@@ -8,8 +8,8 @@ describe('PWA Manifest設定', () => {
     const manifest = createPwaManifest('/');
 
     expect(manifest).toMatchObject({
-      name: 'ネットワークスペシャリスト A1道場',
-      short_name: 'A1道場',
+      name: 'ネットワークスペシャリスト NW道場',
+      short_name: 'NW道場',
       lang: 'ja',
       display: 'standalone',
       start_url: '/#/',

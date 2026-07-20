@@ -15,7 +15,7 @@ export function AppLayout() {
   return (
     <div className="app-shell">
       <header className="app-bar">
-        <span className="app-brand">A1道場</span>
+        <span className="app-brand">NW道場</span>
         <ThemeToggle />
       </header>
       <PwaNotifications />

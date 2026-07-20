@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createDatabase, initializeDatabase, type A1DojoDatabase } from '../../database/database';
-import { questionDataVersion, questions } from '../../data/catalog';
+import {
+  allQuestions,
+  getSubjectCatalog,
+  questionDataVersion,
+  questions,
+} from '../../data/catalog';
 import {
   createBackupDocument,
   createQuestionDataIdentity,
@@ -21,6 +26,7 @@ import { DataManagementRepository } from './dataManagementRepository';
 const databaseNames: string[] = [];
 const exportedAt = '2026-07-18T00:00:00.000Z';
 const identity = createQuestionDataIdentity(questions, questionDataVersion);
+const allIdentity = createQuestionDataIdentity(allQuestions, 1);
 
 afterEach(async () => {
   vi.restoreAllMocks();
@@ -162,10 +168,12 @@ describe('DataManagementRepository', () => {
     const backup = await repository.createBackup(exportedAt);
 
     expect(backup.data.answerHistory).toHaveLength(1);
-    expect(backup.data.favorites).toEqual([{ code: questions[1].code, favoriteAt: exportedAt }]);
+    expect(backup.data.favorites).toEqual([
+      { subjectId: 'a1', code: questions[1].code, favoriteAt: exportedAt },
+    ]);
     expect(JSON.stringify(backup)).not.toContain(questions[0].question);
     expect(JSON.stringify(backup)).not.toContain(questions[0].explanation);
-    expect(backup.questionData).toEqual(identity);
+    expect(backup.questionData).toEqual(allIdentity);
     database.close();
   });
 
@@ -257,5 +265,47 @@ describe('DataManagementRepository', () => {
       database.answerAttempts.where('code').equals(questions[100].code).count(),
     ).resolves.toBe(1);
     database.close();
+  });
+
+  it('round-trips A-1 and A-2 records without mixing subjects', async () => {
+    const source = createTestDatabase();
+    const target = createTestDatabase();
+    await Promise.all([initializeDatabase(source), initializeDatabase(target)]);
+    const a1 = questions[0];
+    const a2 = getSubjectCatalog('a2').questions[0];
+    await source.answerAttempts.bulkAdd([
+      {
+        subjectId: 'a1',
+        code: a1.code,
+        selectedChoice: a1.correctChoice,
+        correctChoice: a1.correctChoice,
+        isCorrect: true,
+        answeredAt: exportedAt,
+        mode: 'normal_practice',
+        sessionId: 'a1-backup',
+        version: 1,
+      },
+      {
+        subjectId: 'a2',
+        code: a2.code,
+        selectedChoice: a2.correctChoice,
+        correctChoice: a2.correctChoice,
+        isCorrect: true,
+        answeredAt: exportedAt,
+        mode: 'normal_practice',
+        sessionId: 'a2-backup',
+        version: 1,
+      },
+    ]);
+
+    const backup = await new DataManagementRepository(source).createBackup(exportedAt);
+    const validation = validateBackupDocument(backup, allQuestions, allIdentity);
+    if (!validation.ok) {
+      throw new Error('backup validation failed');
+    }
+    await new DataManagementRepository(target).restore(validation.value);
+
+    expect(await target.answerAttempts.where('subjectId').equals('a1').count()).toBe(1);
+    expect(await target.answerAttempts.where('subjectId').equals('a2').count()).toBe(1);
   });
 });

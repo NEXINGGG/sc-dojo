@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -161,6 +162,10 @@ export function main() {
   }
 
   console.log(`checked: ${questionsPayload.questions.length} questions`);
+  execFileSync(process.execPath, [join(rootDir, 'scripts', 'validate-a2-data.mjs')], {
+    cwd: rootDir,
+    stdio: 'inherit',
+  });
   console.log('PASSED: no data validation errors');
 }
 

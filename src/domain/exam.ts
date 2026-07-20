@@ -6,6 +6,7 @@ import type {
   ExamSubmissionReason,
   ExamType,
 } from '../database/types';
+import { getSubjectConfig, type SubjectId } from './subject';
 import type { ChoiceId, Question } from '../types/question';
 
 export const EXAM_QUESTION_COUNT = 30;
@@ -60,8 +61,25 @@ export function getExamAnswerSource(
 export function selectExamQuestionCodes(
   examType: ExamType,
   source: readonly Question[],
+  random?: () => number,
+): string[];
+export function selectExamQuestionCodes(
+  subjectId: SubjectId,
+  examType: ExamType,
+  source: readonly Question[],
+  random?: () => number,
+): string[];
+export function selectExamQuestionCodes(
+  subjectOrExamType: SubjectId | ExamType,
+  examTypeOrSource: ExamType | readonly Question[],
+  sourceOrRandom?: readonly Question[] | (() => number),
   random: () => number = Math.random,
 ): string[] {
+  const usesSubjectId = subjectOrExamType === 'a1' || subjectOrExamType === 'a2';
+  const subjectId: SubjectId = usesSubjectId ? subjectOrExamType : 'a1';
+  const examType = usesSubjectId ? (examTypeOrSource as ExamType) : subjectOrExamType;
+  const source = (usesSubjectId ? sourceOrRandom : examTypeOrSource) as readonly Question[];
+  const randomizer = (usesSubjectId ? random : sourceOrRandom) as (() => number) | undefined;
   if (examType === 'fixed_1' || examType === 'fixed_2') {
     const questionSetId = examType === 'fixed_1' ? 'mock_exam_1' : 'mock_exam_2';
     const selected = source.filter((question) => question.questionSet.id === questionSetId);
@@ -70,14 +88,15 @@ export function selectExamQuestionCodes(
   }
 
   const activeQuestions = source.filter((question) => question.status === 'active');
-  if (activeQuestions.length < EXAM_QUESTION_COUNT) {
+  const { questionCount } = getSubjectConfig(subjectId).exam;
+  if (activeQuestions.length < questionCount) {
     throw new ExamDataError(
-      'ランダム模試に必要な30問を用意できません。問題データを確認してください。',
+      `ランダム模試に必要な${questionCount}問を用意できません。問題データを確認してください。`,
     );
   }
 
-  return shuffle(activeQuestions, random)
-    .slice(0, EXAM_QUESTION_COUNT)
+  return shuffle(activeQuestions, randomizer ?? Math.random)
+    .slice(0, questionCount)
     .map((question) => question.code);
 }
 
@@ -85,16 +104,39 @@ export function createExamSession(
   examType: ExamType,
   questionCodes: readonly string[],
   options: { id: string; now: string },
+): ExamSessionRow;
+export function createExamSession(
+  subjectId: SubjectId,
+  examType: ExamType,
+  questionCodes: readonly string[],
+  options: { id: string; now: string },
+): ExamSessionRow;
+export function createExamSession(
+  subjectOrExamType: SubjectId | ExamType,
+  examTypeOrCodes: ExamType | readonly string[],
+  questionCodesOrOptions: readonly string[] | { id: string; now: string },
+  options?: { id: string; now: string },
 ): ExamSessionRow {
-  validateQuestionCodes(questionCodes);
-  const startedAt = new Date(options.now);
+  const usesSubjectId = subjectOrExamType === 'a1' || subjectOrExamType === 'a2';
+  const subjectId: SubjectId = usesSubjectId ? subjectOrExamType : 'a1';
+  const examType = usesSubjectId ? (examTypeOrCodes as ExamType) : subjectOrExamType;
+  const questionCodes = (
+    usesSubjectId ? questionCodesOrOptions : examTypeOrCodes
+  ) as readonly string[];
+  const sessionOptions = (usesSubjectId ? options : questionCodesOrOptions) as {
+    id: string;
+    now: string;
+  };
+  validateQuestionCodes(questionCodes, subjectId);
+  const startedAt = new Date(sessionOptions.now);
 
   if (Number.isNaN(startedAt.getTime())) {
     throw new ExamDataError('模試の開始時刻が不正です。もう一度開始してください。');
   }
 
   return {
-    id: options.id,
+    id: sessionOptions.id,
+    subjectId,
     version: 1,
     status: 'in_progress',
     examType,
@@ -102,9 +144,11 @@ export function createExamSession(
     answers: {},
     reviewCodes: [],
     currentIndex: 0,
-    startedAt: options.now,
-    deadlineAt: new Date(startedAt.getTime() + EXAM_DURATION_MILLISECONDS).toISOString(),
-    updatedAt: options.now,
+    startedAt: sessionOptions.now,
+    deadlineAt: new Date(
+      startedAt.getTime() + getSubjectConfig(subjectId).exam.durationSeconds * 1000,
+    ).toISOString(),
+    updatedAt: sessionOptions.now,
   };
 }
 
@@ -206,7 +250,7 @@ export function gradeExam(
   submittedAt: string,
   submissionReason: ExamSubmissionReason,
 ): ExamResultRow {
-  validateQuestionCodes(session.questionCodes);
+  validateQuestionCodes(session.questionCodes, session.subjectId);
   const submitted = new Date(submittedAt);
   const started = new Date(session.startedAt);
   const deadline = new Date(session.deadlineAt);
@@ -266,6 +310,7 @@ export function gradeExam(
   const total = session.questionCodes.length;
   return {
     id: session.id,
+    subjectId: session.subjectId,
     version: 1,
     examSessionId: session.id,
     examType: session.examType,
@@ -282,7 +327,7 @@ export function gradeExam(
     unanswered,
     score: Math.round((correct / total) * 100),
     correctRate: Math.round((correct / total) * 100),
-    passed: correct >= EXAM_PASSING_CORRECT_COUNT,
+    passed: correct >= getSubjectConfig(session.subjectId).exam.passingCorrectCount,
     submissionReason,
     categoryResults,
     domainResults,
@@ -296,16 +341,28 @@ export function createExamSessionId(): string {
   return `exam-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function validateExamQuestionPool(questions: readonly Question[], label: string): void {
-  if (questions.length !== EXAM_QUESTION_COUNT) {
-    throw new ExamDataError(`${label}は30問である必要があります。問題データを確認してください。`);
+function validateExamQuestionPool(
+  questions: readonly Question[],
+  label: string,
+  subjectId: SubjectId = questions[0]?.subjectId ?? 'a1',
+): void {
+  const { questionCount } = getSubjectConfig(subjectId).exam;
+  if (questions.length !== questionCount) {
+    throw new ExamDataError(
+      `${label}は${questionCount}問である必要があります。問題データを確認してください。`,
+    );
   }
-  validateQuestionCodes(questions.map((question) => question.code));
+  validateQuestionCodes(
+    questions.map((question) => question.code),
+    subjectId,
+  );
 }
 
-function validateQuestionCodes(questionCodes: readonly string[]): void {
-  if (questionCodes.length !== EXAM_QUESTION_COUNT) {
-    throw new ExamDataError('模試は30問で作成する必要があります。');
+function validateQuestionCodes(questionCodes: readonly string[], subjectId: SubjectId): void {
+  if (questionCodes.length !== getSubjectConfig(subjectId).exam.questionCount) {
+    throw new ExamDataError(
+      `模試は${getSubjectConfig(subjectId).exam.questionCount}問で作成する必要があります。`,
+    );
   }
   if (new Set(questionCodes).size !== questionCodes.length) {
     throw new ExamDataError('模試の問題に重複があります。問題データを確認してください。');

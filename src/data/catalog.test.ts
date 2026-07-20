@@ -4,6 +4,7 @@ import {
   getCategoryById,
   getDomainForQuestion,
   getQuestionsInSet,
+  getSubjectCatalog,
   questions,
 } from './catalog';
 
@@ -29,5 +30,14 @@ describe('問題データカタログ', () => {
   it('固定模試1・2を各30問参照できる', () => {
     expect(getQuestionsInSet('mock_exam_1')).toHaveLength(30);
     expect(getQuestionsInSet('mock_exam_2')).toHaveLength(30);
+  });
+
+  it('loads A-2 questions and both fixed exam sets separately', () => {
+    const a2 = getSubjectCatalog('a2');
+
+    expect(a2.questions).toHaveLength(240);
+    expect(a2.questions[0]).toMatchObject({ id: '1001', code: 'A2-001', subjectId: 'a2' });
+    expect(a2.getQuestionsInSet('mock_exam_1')).toHaveLength(25);
+    expect(a2.getQuestionsInSet('mock_exam_2')).toHaveLength(25);
   });
 });

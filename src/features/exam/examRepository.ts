@@ -16,6 +16,7 @@ import {
   gradeExam,
 } from '../../domain/exam';
 import { ensureLearningDataReady } from '../learning/learningRepository';
+import type { SubjectId } from '../../domain/subject';
 
 export interface ExamTypeHistorySummary {
   attempts: number;
@@ -44,29 +45,35 @@ export class ExamPersistenceError extends Error {
 }
 
 export class ExamRepository {
-  constructor(private readonly database: A1DojoDatabase) {}
+  constructor(
+    private readonly database: A1DojoDatabase,
+    private readonly subjectId: SubjectId = 'a1',
+  ) {}
 
   async get(sessionId: string): Promise<ExamSessionRow | undefined> {
     await ensureLearningDataReady(this.database);
-    return this.database.examSessions.get(sessionId);
+    return this.database.examSessions
+      .where('[subjectId+id]')
+      .equals([this.subjectId, sessionId])
+      .first();
   }
 
   async getInProgress(): Promise<ExamSessionRow | undefined> {
     await ensureLearningDataReady(this.database);
-    return this.database.examSessions.where('status').equals('in_progress').first();
+    return this.database.examSessions
+      .where('[subjectId+status]')
+      .equals([this.subjectId, 'in_progress'])
+      .first();
   }
 
   async createInProgress(session: ExamSessionRow): Promise<void> {
     await ensureLearningDataReady(this.database);
-    if (session.status !== 'in_progress') {
+    if (session.status !== 'in_progress' || session.subjectId !== this.subjectId) {
       throw new ExamPersistenceError('開始前の模試だけを保存できます。');
     }
 
     await this.database.transaction('rw', this.database.examSessions, async () => {
-      const existing = await this.database.examSessions
-        .where('status')
-        .equals('in_progress')
-        .first();
+      const existing = await this.getInProgress();
       if (existing !== undefined) {
         throw new ActiveExamSessionExistsError(existing);
       }
@@ -76,12 +83,12 @@ export class ExamRepository {
 
   async saveInProgress(session: ExamSessionRow): Promise<void> {
     await ensureLearningDataReady(this.database);
-    if (session.status !== 'in_progress') {
+    if (session.status !== 'in_progress' || session.subjectId !== this.subjectId) {
       throw new ExamPersistenceError('提出済みの模試は変更できません。');
     }
 
     await this.database.transaction('rw', this.database.examSessions, async () => {
-      const current = await this.database.examSessions.get(session.id);
+      const current = await this.get(session.id);
       if (current === undefined) {
         throw new ExamPersistenceError('保存済みの模試が見つかりません。');
       }
@@ -95,7 +102,7 @@ export class ExamRepository {
   async discardInProgress(sessionId: string): Promise<void> {
     await ensureLearningDataReady(this.database);
     await this.database.transaction('rw', this.database.examSessions, async () => {
-      const current = await this.database.examSessions.get(sessionId);
+      const current = await this.get(sessionId);
       if (current?.status === 'in_progress') {
         await this.database.examSessions.delete(sessionId);
       }
@@ -111,18 +118,24 @@ export class ExamRepository {
 
     return this.database.transaction(
       'rw',
-      this.database.examSessions,
-      this.database.examResults,
-      this.database.answerAttempts,
-      this.database.questionProgress,
-      this.database.learningDays,
+      [
+        this.database.examSessions,
+        this.database.examResults,
+        this.database.answerAttempts,
+        this.database.questionProgress,
+        this.database.learningDays,
+        this.database.learningDaysBySubject,
+      ],
       async () => {
-        const existingResult = await this.database.examResults.get(sessionId);
+        const existingResult = await this.database.examResults
+          .where('[subjectId+examSessionId]')
+          .equals([this.subjectId, sessionId])
+          .first();
         if (existingResult !== undefined) {
           return { result: existingResult, created: false };
         }
 
-        const session = await this.database.examSessions.get(sessionId);
+        const session = await this.get(sessionId);
         if (session === undefined) {
           throw new ExamPersistenceError('保存済みの模試が見つかりません。');
         }
@@ -138,7 +151,7 @@ export class ExamRepository {
             session,
             new Map(
               session.questionCodes
-                .map((code) => [code, getQuestionByCode(code)] as const)
+                .map((code) => [code, getQuestionByCode(code, this.subjectId)] as const)
                 .filter(
                   (entry): entry is readonly [string, NonNullable<(typeof entry)[1]>] =>
                     entry[1] !== undefined,
@@ -191,12 +204,19 @@ export class ExamRepository {
 
   async getResult(sessionId: string): Promise<ExamResultRow | undefined> {
     await ensureLearningDataReady(this.database);
-    return this.database.examResults.get(sessionId);
+    return this.database.examResults
+      .where('[subjectId+examSessionId]')
+      .equals([this.subjectId, sessionId])
+      .first();
   }
 
   async listResults(): Promise<readonly ExamResultRow[]> {
     await ensureLearningDataReady(this.database);
-    const results = await this.database.examResults.orderBy('submittedAt').reverse().toArray();
+    const results = await this.database.examResults
+      .where('subjectId')
+      .equals(this.subjectId)
+      .sortBy('submittedAt');
+    results.reverse();
     return results;
   }
 
@@ -241,14 +261,15 @@ async function saveExamAnswerAttempts(
       continue;
     }
     const existing = await database.answerAttempts
-      .where('[sessionId+code]')
-      .equals([result.examSessionId, code])
+      .where('[subjectId+sessionId+code]')
+      .equals([result.subjectId, result.examSessionId, code])
       .first();
     if (existing !== undefined) {
       continue;
     }
 
     const attempt: Omit<AnswerAttemptRow, 'id'> = {
+      subjectId: result.subjectId,
       code,
       selectedChoice: questionResult.selectedChoice,
       correctChoice: questionResult.correctChoice,
@@ -260,15 +281,22 @@ async function saveExamAnswerAttempts(
     };
     await database.answerAttempts.add(attempt);
 
-    const progress = await database.questionProgress.get(code);
+    const progress = await database.questionProgress
+      .where('[subjectId+code]')
+      .equals([result.subjectId, code])
+      .first();
     await database.questionProgress.put(applyAnswerToQuestionProgress(progress, attempt));
     const date = getAsiaTokyoDate(new Date(result.submittedAt));
-    const currentDay = await database.learningDays.get(date);
+    const currentDay = await database.learningDaysBySubject.get([result.subjectId, date]);
     const nextDay: LearningDayRow = {
+      subjectId: result.subjectId,
       date,
       answerCount: (currentDay?.answerCount ?? 0) + 1,
       updatedAt: result.submittedAt,
     };
-    await database.learningDays.put(nextDay);
+    await database.learningDaysBySubject.put(nextDay);
+    if (result.subjectId === 'a1') {
+      await database.learningDays.put(nextDay);
+    }
   }
 }

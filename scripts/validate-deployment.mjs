@@ -82,8 +82,11 @@ if (learningChunk !== undefined) {
   const questions = JSON.parse(
     readFileSync(join(rootDirectory, 'data/questions.json'), 'utf8'),
   ).questions;
+  const a2Questions = JSON.parse(
+    readFileSync(join(rootDirectory, 'data/a2-questions.json'), 'utf8'),
+  ).questions;
   assert(questions.length === 240, 'questions.jsonの問題数が240問ではありません。');
-  const missingCodes = questions
+  const missingCodes = [...questions, ...a2Questions]
     .map((question) => question.code)
     .filter((code) => !learningSource.includes(code));
   assert(
@@ -129,7 +132,7 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(`deployment artifacts: ${distFiles.length} files checked`);
-  console.log(`PWA base: ${expectedBase}, 240 questions precached`);
+  console.log(`PWA base: ${expectedBase}, A-1/A-2 questions precached`);
 }
 
 function assert(condition, message) {

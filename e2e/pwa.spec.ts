@@ -27,8 +27,8 @@ test('本番previewでmanifest・Service Workerを登録し、オフラインで
     };
   });
   expect(manifest).toMatchObject({
-    name: 'ネットワークスペシャリスト A1道場',
-    short_name: 'A1道場',
+    name: 'ネットワークスペシャリスト NW道場',
+    short_name: 'NW道場',
     display: 'standalone',
   });
   expect(manifest?.icons).toEqual(

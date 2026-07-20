@@ -1,4 +1,5 @@
 import type { PracticeFilters } from '../domain/practice';
+import type { SubjectId } from '../domain/subject';
 import type { ChoiceId } from '../types/question';
 
 export type PracticeAnswerSource =
@@ -11,6 +12,7 @@ export type ExamType = 'fixed_1' | 'fixed_2' | 'random';
 export type ExamSubmissionReason = 'manual' | 'timeout';
 
 export interface QuestionProgressRow {
+  subjectId: SubjectId;
   code: string;
   attemptCount: number;
   correctCount: number;
@@ -26,6 +28,7 @@ export interface QuestionProgressRow {
 
 export interface AnswerAttemptRow {
   id?: number;
+  subjectId: SubjectId;
   code: string;
   selectedChoice: ChoiceId;
   correctChoice: ChoiceId;
@@ -46,6 +49,7 @@ export interface PracticeSessionAnswer {
 
 export interface PracticeSessionRow {
   id: string;
+  subjectId: SubjectId;
   version: 1;
   status: 'in_progress' | 'completed';
   mode?: PracticeAnswerSource;
@@ -60,6 +64,7 @@ export interface PracticeSessionRow {
 
 export interface PracticeResultRow {
   id: string;
+  subjectId: SubjectId;
   version: 1;
   sessionId: string;
   mode: PracticeAnswerSource;
@@ -78,6 +83,7 @@ export interface PracticeResultRow {
 
 export interface ExamSessionRow {
   id: string;
+  subjectId: SubjectId;
   version: 1;
   status: 'in_progress' | 'submitted';
   examType: ExamType;
@@ -110,6 +116,7 @@ export interface ExamScoreBreakdownRow {
 
 export interface ExamResultRow {
   id: string;
+  subjectId: SubjectId;
   version: 1;
   examSessionId: string;
   examType: ExamType;
@@ -133,6 +140,7 @@ export interface ExamResultRow {
 }
 
 export interface LearningDayRow {
+  subjectId: SubjectId;
   date: string;
   answerCount: number;
   updatedAt: string;
@@ -144,6 +152,7 @@ export type ReducedMotionPreference = 'system' | 'reduce' | 'no_preference';
 
 export interface SettingRow {
   key: 'appearance';
+  selectedSubject: SubjectId;
   theme: ThemePreference;
   fontSize: FontSizePreference;
   reducedMotion: ReducedMotionPreference;

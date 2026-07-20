@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { getCategoryById, getDomainForQuestion, getQuestionByCode } from '../data/catalog';
@@ -18,10 +18,11 @@ import {
 import { ExamRepository } from '../features/exam/examRepository';
 import { usePwa } from '../features/pwa/PwaContext';
 import type { ChoiceId } from '../types/question';
-
-const exams = new ExamRepository(database);
+import { useSubject } from '../features/subjects/SubjectContext';
 
 export function ExamPage() {
+  const { subjectId } = useSubject();
+  const exams = useMemo(() => new ExamRepository(database, subjectId), [subjectId]);
   const navigate = useNavigate();
   const { confirmPersistenceSaved, reportPersistenceFailure } = usePwa();
   const { sessionId } = useParams();
@@ -62,7 +63,7 @@ export function ExamPage() {
         setIsSubmitConfirming(false);
       }
     },
-    [confirmPersistenceSaved, navigate, reportPersistenceFailure],
+    [confirmPersistenceSaved, exams, navigate, reportPersistenceFailure],
   );
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export function ExamPage() {
     return () => {
       isCurrent = false;
     };
-  }, [navigate, sessionId]);
+  }, [exams, navigate, sessionId]);
 
   useEffect(() => {
     if (sessionIdForTimer === undefined || deadlineAtForTimer === undefined) {
@@ -184,7 +185,7 @@ export function ExamPage() {
     );
   }
 
-  const question = getQuestionByCode(session.questionCodes[session.currentIndex]);
+  const question = getQuestionByCode(session.questionCodes[session.currentIndex], subjectId);
   if (question === undefined) {
     return (
       <section className="surface-card recovery-card">
@@ -200,7 +201,7 @@ export function ExamPage() {
   const review = activeSession.reviewCodes.includes(currentQuestion.code);
   const summary = getExamSubmissionSummary(activeSession);
   const domain = getDomainForQuestion(currentQuestion);
-  const category = getCategoryById(currentQuestion.categoryId);
+  const category = getCategoryById(currentQuestion.categoryId, subjectId);
   const isLastQuestion = activeSession.currentIndex === activeSession.questionCodes.length - 1;
   const progress = Math.round(
     ((activeSession.currentIndex + 1) / activeSession.questionCodes.length) * 100,

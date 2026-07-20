@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { questions } from '../../data/catalog';
+import { getSubjectCatalog, questions } from '../../data/catalog';
 import { createDatabase, type A1DojoDatabase } from '../../database/database';
 import {
   completePracticeSession,
@@ -183,5 +183,48 @@ describe('LearningRepository', () => {
       sessionId: completed.id,
       total: 1,
     });
+  });
+
+  it('keeps A-1 and A-2 favorites, attempts, and dashboards separate', async () => {
+    const database = createTestDatabase();
+    const a1 = questions[0];
+    const a2 = getSubjectCatalog('a2').questions[0];
+    const a1Repository = new LearningRepository(database, 'a1');
+    const a2Repository = new LearningRepository(database, 'a2');
+    const a1Session = createPracticeSession([a1.code], defaultPracticeFilters, {
+      id: 'a1-session',
+      now: '2026-07-18T00:00:00.000Z',
+      subjectId: 'a1',
+    });
+    const a2Session = createPracticeSession([a2.code], defaultPracticeFilters, {
+      id: 'a2-session',
+      now: '2026-07-18T00:00:00.000Z',
+      subjectId: 'a2',
+    });
+    const confirmedA1 = confirmPracticeAnswer(
+      a1Session,
+      a1,
+      a1.correctChoice,
+      '2026-07-18T00:01:00.000Z',
+    );
+    const confirmedA2 = confirmPracticeAnswer(
+      a2Session,
+      a2,
+      a2.correctChoice,
+      '2026-07-18T00:02:00.000Z',
+    );
+    if (!confirmedA1.ok || !confirmedA2.ok) {
+      throw new Error('test setup failed');
+    }
+
+    await a1Repository.recordConfirmedPracticeAnswer(confirmedA1.session, a1);
+    await a2Repository.recordConfirmedPracticeAnswer(confirmedA2.session, a2);
+    await a1Repository.setFavorite(a1.code, true, '2026-07-18T00:03:00.000Z');
+    await a2Repository.setFavorite(a2.code, true, '2026-07-18T00:04:00.000Z');
+
+    expect((await a1Repository.getProgressMap()).has(a1.code)).toBe(true);
+    expect((await a1Repository.getProgressMap()).has(a2.code)).toBe(false);
+    expect((await a2Repository.getProgressMap()).has(a2.code)).toBe(true);
+    expect((await a2Repository.getProgressMap()).has(a1.code)).toBe(false);
   });
 });

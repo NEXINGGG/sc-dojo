@@ -6,6 +6,7 @@ import type {
   QuestionProgressRow,
   PracticeAnswerSource,
 } from '../database/types';
+import type { SubjectId } from './subject';
 import type { Question } from '../types/question';
 
 export type PracticeAnswerStatus = 'all' | 'unanswered' | 'incorrect' | 'favorite';
@@ -68,8 +69,13 @@ export function matchesPracticeAnswerStatus(
   }
 }
 
-export function createEmptyQuestionProgress(code: string, updatedAt: string): QuestionProgressRow {
+export function createEmptyQuestionProgress(
+  code: string,
+  updatedAt: string,
+  subjectId: SubjectId = 'a1',
+): QuestionProgressRow {
   return {
+    subjectId,
     code,
     attemptCount: 0,
     correctCount: 0,
@@ -81,9 +87,13 @@ export function createEmptyQuestionProgress(code: string, updatedAt: string): Qu
 
 export function applyAnswerToQuestionProgress(
   current: QuestionProgressRow | undefined,
-  attempt: Pick<AnswerAttemptRow, 'code' | 'selectedChoice' | 'isCorrect' | 'answeredAt'>,
+  attempt: Pick<
+    AnswerAttemptRow,
+    'subjectId' | 'code' | 'selectedChoice' | 'isCorrect' | 'answeredAt'
+  >,
 ): QuestionProgressRow {
-  const base = current ?? createEmptyQuestionProgress(attempt.code, attempt.answeredAt);
+  const base =
+    current ?? createEmptyQuestionProgress(attempt.code, attempt.answeredAt, attempt.subjectId);
 
   return {
     ...base,
@@ -196,6 +206,7 @@ export function createPracticeResult(
 
   return {
     id: session.id,
+    subjectId: session.subjectId,
     version: 1,
     sessionId: session.id,
     mode: session.mode ?? getPracticeModeForAnswerStatus(session.filters.answerStatus ?? 'all'),
