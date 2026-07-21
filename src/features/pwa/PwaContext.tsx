@@ -12,7 +12,8 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
 import { APP_VERSION } from '../../app/appVersion';
 import { database } from '../../database/database';
 
-type ServiceWorkerStatus = 'preparing' | 'ready' | 'unavailable' | 'error';
+type ServiceWorkerStatus =
+  'preparing' | 'ready' | 'unsupported' | 'unregistered' | 'registration_error';
 type InstallOutcome = 'accepted' | 'dismissed';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -29,6 +30,7 @@ interface PwaContextValue {
   serviceWorkerError?: string;
   needsUpdate: boolean;
   isUpdateDismissed: boolean;
+  isCheckingForUpdate: boolean;
   isUpdating: boolean;
   updateError?: string;
   updateCheckMessage?: string;
@@ -57,16 +59,20 @@ const INSTALL_SUGGESTION_DISMISSED_KEY = 'a1-dojo:pwa-install-suggestion-dismiss
 
 export function PwaProvider({ children }: PropsWithChildren) {
   const registrationRef = useRef<ServiceWorkerRegistration | undefined>(undefined);
+  const needsUpdateRef = useRef(false);
+  const updateCheckInFlightRef = useRef(false);
+  const updateApplyInFlightRef = useRef(false);
   const deferredInstallPrompt = useRef<BeforeInstallPromptEvent | undefined>(undefined);
   const [isOnline, setIsOnline] = useState(getOnlineState);
   const [serviceWorkerStatus, setServiceWorkerStatus] = useState<ServiceWorkerStatus>(
-    isServiceWorkerSupported() ? 'preparing' : 'unavailable',
+    isServiceWorkerSupported() ? 'preparing' : 'unsupported',
   );
   const [serviceWorkerError, setServiceWorkerError] = useState<string>();
   const [isOfflineReady, setIsOfflineReady] = useState(false);
   const [isOfflineReadyNoticeVisible, setIsOfflineReadyNoticeVisible] = useState(false);
   const [needsUpdate, setNeedsUpdate] = useState(false);
   const [isUpdateDismissed, setIsUpdateDismissed] = useState(false);
+  const [isCheckingForUpdate, setIsCheckingForUpdate] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string>();
   const [updateCheckMessage, setUpdateCheckMessage] = useState<string>();
@@ -90,30 +96,59 @@ export function PwaProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
-  const { updateServiceWorker } = useRegisterSW({
+  const markUpdateAvailable = useCallback(() => {
+    needsUpdateRef.current = true;
+    setNeedsUpdate(true);
+    setIsUpdateDismissed(false);
+    setUpdateError(undefined);
+    setUpdateCheckMessage(undefined);
+  }, []);
+
+  const {
+    needRefresh: [needRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
     onNeedRefresh() {
-      setNeedsUpdate(true);
-      setIsUpdateDismissed(false);
-      setUpdateError(undefined);
-      setUpdateCheckMessage(undefined);
+      markUpdateAvailable();
     },
     onOfflineReady: markOfflineReady,
     onRegisteredSW(_scriptUrl, registration) {
       registrationRef.current = registration;
-      if (registration !== undefined) {
-        setServiceWorkerStatus('ready');
-        void navigator.serviceWorker?.ready.then(markOfflineReady).catch(() => {
-          // 登録済みでもキャッシュの確認に失敗した場合は、通常のWebアプリとして継続する。
+      if (registration === undefined) {
+        setServiceWorkerStatus('unregistered');
+        setServiceWorkerError(
+          'Service Workerが登録されていません。オンラインで再読み込みして、オフライン準備を完了してください。',
+        );
+        return;
+      }
+
+      setServiceWorkerStatus('ready');
+      setServiceWorkerError(undefined);
+      if (registration.waiting !== null) {
+        markUpdateAvailable();
+      }
+      const ready = navigator.serviceWorker?.ready;
+      if (ready !== undefined) {
+        void ready.then(markOfflineReady).catch((error: unknown) => {
+          logPwaError('Service Worker ready check failed', error);
         });
       }
     },
-    onRegisterError() {
-      setServiceWorkerStatus('error');
+    onRegisterError(error: unknown) {
+      registrationRef.current = undefined;
+      setServiceWorkerStatus('registration_error');
       setServiceWorkerError(
-        'オフライン準備を完了できませんでした。オンライン接続中は通常どおり利用できます。',
+        'Service Workerを登録できませんでした。オンラインで再読み込みして、もう一度お試しください。',
       );
+      logPwaError('Service Worker registration failed', error);
     },
   });
+
+  useEffect(() => {
+    if (needRefresh) {
+      markUpdateAvailable();
+    }
+  }, [markUpdateAvailable, needRefresh]);
 
   useEffect(() => {
     const goOnline = () => setIsOnline(true);
@@ -173,59 +208,124 @@ export function PwaProvider({ children }: PropsWithChildren) {
   }, []);
 
   const requestUpdate = useCallback(async () => {
-    if (!needsUpdate || isUpdating) {
+    if (updateApplyInFlightRef.current || isUpdating) {
+      return;
+    }
+    const registration = registrationRef.current;
+    if (!isServiceWorkerSupported()) {
+      const message = 'このブラウザはService Workerに対応していないため、更新を適用できません。';
+      setUpdateError(message);
+      throw new PwaUpdateError('unsupported', message);
+    }
+    if (registration === undefined) {
+      const message =
+        'Service Workerが登録されていないため、更新を適用できません。再読み込みしてください。';
+      setServiceWorkerStatus('unregistered');
+      setUpdateError(message);
+      throw new PwaUpdateError('unregistered', message);
+    }
+    if (!isNavigatorOnline()) {
+      const message =
+        'オフラインのため更新を適用できません。接続を確認してから再試行してください。';
+      setUpdateError(message);
+      throw new PwaUpdateError('offline', message);
+    }
+    if (!needsUpdateRef.current && registration.waiting === null) {
+      setUpdateError(undefined);
+      setUpdateCheckMessage('現在のバージョンが最新です。');
       return;
     }
     if (dataOperationCount > 0) {
       const message = '復元または全消去の処理中です。完了してから更新してください。';
       setUpdateError(message);
-      throw new PwaUpdateError(message);
+      throw new PwaUpdateError('data_operation', message);
     }
     if (persistenceFailure !== undefined) {
       const message =
         '学習状態を保存できていません。画面の案内に従って保存を完了してから更新してください。';
       setUpdateError(message);
-      throw new PwaUpdateError(message);
+      throw new PwaUpdateError('persistence', message);
     }
 
+    updateApplyInFlightRef.current = true;
     setIsUpdating(true);
     setUpdateError(undefined);
+    let learningStateSaved = false;
     try {
       await confirmLearningStateSaved();
+      learningStateSaved = true;
       await updateServiceWorker(true);
+      needsUpdateRef.current = false;
       setNeedsUpdate(false);
-    } catch {
-      const message = '更新を適用できませんでした。通信状態を確認して、もう一度お試しください。';
+    } catch (error) {
+      logPwaError('Service Worker update apply failed', error);
+      const message = !learningStateSaved
+        ? '学習状態を保存できなかったため、更新を適用していません。保存状態を確認してから再試行してください。'
+        : '更新を適用できませんでした。接続状態を確認して、もう一度お試しください。';
       setUpdateError(message);
-      throw new PwaUpdateError(message);
+      throw new PwaUpdateError('apply_failed', message);
     } finally {
+      updateApplyInFlightRef.current = false;
       setIsUpdating(false);
     }
-  }, [dataOperationCount, isUpdating, needsUpdate, persistenceFailure, updateServiceWorker]);
+  }, [dataOperationCount, isUpdating, persistenceFailure, updateServiceWorker]);
 
   const checkForUpdate = useCallback(async () => {
+    if (updateCheckInFlightRef.current || isCheckingForUpdate) {
+      return;
+    }
+    if (!isServiceWorkerSupported()) {
+      const message = 'このブラウザはService Workerに対応していないため、更新を確認できません。';
+      setUpdateError(message);
+      throw new PwaUpdateError('unsupported', message);
+    }
+    if (!isNavigatorOnline()) {
+      const message =
+        'オフラインのため更新を確認できません。接続を確認してから再試行してください。';
+      setUpdateError(message);
+      throw new PwaUpdateError('offline', message);
+    }
     if (dataOperationCount > 0) {
       const message = '復元または全消去の処理中は、更新を確認できません。';
       setUpdateError(message);
-      throw new PwaUpdateError(message);
+      throw new PwaUpdateError('data_operation', message);
     }
     const registration = registrationRef.current;
     if (registration === undefined) {
-      setUpdateCheckMessage('更新の確認は、オフライン準備が完了してから利用できます。');
-      return;
+      const message =
+        'Service Workerが登録されていないため、更新を確認できません。再読み込みしてください。';
+      setServiceWorkerStatus('unregistered');
+      setUpdateError(message);
+      throw new PwaUpdateError('unregistered', message);
     }
+
+    updateCheckInFlightRef.current = true;
+    setIsCheckingForUpdate(true);
     setUpdateError(undefined);
     setUpdateCheckMessage(undefined);
     try {
       await registration.update();
-      setUpdateCheckMessage('更新を確認しました。新しいバージョンがあればお知らせします。');
-    } catch {
-      const message =
-        '更新を確認できませんでした。オンライン接続を確認して、もう一度お試しください。';
+      await Promise.resolve();
+      if (needsUpdateRef.current || registration.waiting !== null) {
+        markUpdateAvailable();
+        return;
+      }
+      setUpdateCheckMessage('現在のバージョンが最新です。');
+    } catch (error) {
+      logPwaError('Service Worker update check failed', error);
+      const message = isServiceWorkerScriptFetchError(error)
+        ? '更新用のService Worker（sw.js）を取得できませんでした。接続を確認してから再試行してください。'
+        : '更新の確認に失敗しました。時間をおいてもう一度お試しください。';
       setUpdateError(message);
-      throw new PwaUpdateError(message);
+      throw new PwaUpdateError(
+        isServiceWorkerScriptFetchError(error) ? 'script_fetch_failed' : 'check_failed',
+        message,
+      );
+    } finally {
+      updateCheckInFlightRef.current = false;
+      setIsCheckingForUpdate(false);
     }
-  }, [dataOperationCount]);
+  }, [dataOperationCount, isCheckingForUpdate, markUpdateAvailable]);
 
   const requestInstall = useCallback(async () => {
     const prompt = deferredInstallPrompt.current;
@@ -260,6 +360,7 @@ export function PwaProvider({ children }: PropsWithChildren) {
       serviceWorkerError,
       needsUpdate,
       isUpdateDismissed,
+      isCheckingForUpdate,
       isUpdating,
       updateError,
       updateCheckMessage,
@@ -297,6 +398,7 @@ export function PwaProvider({ children }: PropsWithChildren) {
       isIos,
       isIosSafari,
       isUpdateDismissed,
+      isCheckingForUpdate,
       isUpdating,
       needsUpdate,
       persistenceFailure,
@@ -316,7 +418,18 @@ export function PwaProvider({ children }: PropsWithChildren) {
 }
 
 export class PwaUpdateError extends Error {
-  constructor(message: string) {
+  constructor(
+    readonly kind:
+      | 'unsupported'
+      | 'unregistered'
+      | 'offline'
+      | 'data_operation'
+      | 'persistence'
+      | 'script_fetch_failed'
+      | 'check_failed'
+      | 'apply_failed',
+    message: string,
+  ) {
     super(message);
     this.name = 'PwaUpdateError';
   }
@@ -345,6 +458,25 @@ async function confirmLearningStateSaved(): Promise<void> {
       ]);
     },
   );
+}
+
+function isNavigatorOnline(): boolean {
+  return typeof navigator === 'undefined' || navigator.onLine;
+}
+
+function isServiceWorkerScriptFetchError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+  return /sw\.js|service\s*worker|failed to fetch|network/i.test(error.message);
+}
+
+function logPwaError(operation: string, error: unknown): void {
+  if (error instanceof Error) {
+    console.error(`[PWA] ${operation}: ${error.name}: ${error.message}`, error);
+    return;
+  }
+  console.error(`[PWA] ${operation}:`, error);
 }
 
 function getOnlineState(): boolean {

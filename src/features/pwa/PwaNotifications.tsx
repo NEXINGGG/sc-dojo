@@ -18,19 +18,15 @@ export function PwaNotifications() {
     dismissUpdate,
   } = usePwa();
   const [showExamConfirmation, setShowExamConfirmation] = useState(false);
-  const [actionError, setActionError] = useState<string>();
   const isExamInProgress = /^\/exam\/[^/]+$/.test(location.pathname);
   const showUpdate = needsUpdate && !isUpdateDismissed;
 
   async function applyUpdate() {
-    setActionError(undefined);
     try {
       await requestUpdate();
       setShowExamConfirmation(false);
     } catch {
-      setActionError(
-        '更新できませんでした。保存状態とネットワーク接続を確認して、もう一度お試しください。',
-      );
+      // 詳細な利用者向けメッセージはPWA Contextで状態別に設定します。
     }
   }
 
@@ -76,8 +72,8 @@ export function PwaNotifications() {
             <div>
               <strong>新しいバージョンがあります</strong>
               <p>学習状態を保存して更新できます。</p>
-              {(updateError ?? actionError) ? (
-                <p className="notification-error">{updateError ?? actionError}</p>
+              {updateError !== undefined ? (
+                <p className="notification-error">{updateError}</p>
               ) : null}
               {isDataOperationInProgress ? <p>復元または全消去の完了後に更新できます。</p> : null}
             </div>

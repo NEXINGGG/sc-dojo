@@ -25,6 +25,16 @@ describe('Cloudflare Pages公開設定', () => {
     expect(headers).toContain('/manifest.webmanifest');
     expect(headers).toContain('/assets/*');
     expect(headers).toContain('immutable');
+    expect(headers).toMatch(/\/index\.html\s+Cache-Control: no-cache, must-revalidate/s);
+    expect(headers).toMatch(/\/manifest\.webmanifest\s+Cache-Control: no-cache, must-revalidate/s);
+    expect(headers).toMatch(/\/sw\.js\s+Cache-Control: no-cache, no-store, must-revalidate/s);
+    expect(headers).not.toContain(
+      '/index.html\n  Cache-Control: public, max-age=31536000, immutable',
+    );
+    expect(headers).not.toContain(
+      '/manifest.webmanifest\n  Cache-Control: public, max-age=31536000, immutable',
+    );
+    expect(headers).not.toContain('/sw.js\n  Cache-Control: public, max-age=31536000, immutable');
   });
 
   it('個人利用向けの検索除外設定をソースに含める', () => {

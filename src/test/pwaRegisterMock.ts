@@ -9,11 +9,13 @@ export interface PwaRegisterOptions {
 
 export const pwaRegisterMock = {
   options: undefined as PwaRegisterOptions | undefined,
+  needRefresh: false,
   updateServiceWorker: vi.fn<(reloadPage?: boolean) => Promise<void>>(),
 };
 
 export function resetPwaRegisterMock(): void {
   pwaRegisterMock.options = undefined;
+  pwaRegisterMock.needRefresh = false;
   pwaRegisterMock.updateServiceWorker.mockReset();
   pwaRegisterMock.updateServiceWorker.mockResolvedValue(undefined);
 }
@@ -21,7 +23,7 @@ export function resetPwaRegisterMock(): void {
 export function useRegisterSW(options?: PwaRegisterOptions) {
   pwaRegisterMock.options = options;
   return {
-    needRefresh: [false, () => undefined] as const,
+    needRefresh: [pwaRegisterMock.needRefresh, () => undefined] as const,
     offlineReady: [false, () => undefined] as const,
     updateServiceWorker: pwaRegisterMock.updateServiceWorker,
   };

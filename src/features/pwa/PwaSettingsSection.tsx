@@ -11,6 +11,7 @@ export function PwaSettingsSection() {
     serviceWorkerError,
     needsUpdate,
     isUpdateDismissed,
+    isCheckingForUpdate,
     isUpdating,
     updateError,
     updateCheckMessage,
@@ -27,30 +28,24 @@ export function PwaSettingsSection() {
     dismissInstallSuggestion,
   } = usePwa();
   const [showGuide, setShowGuide] = useState(false);
-  const [message, setMessage] = useState<string>();
 
   async function install() {
-    setMessage(undefined);
     await requestInstall();
   }
 
   async function checkUpdate() {
-    setMessage(undefined);
     try {
       await checkForUpdate();
     } catch {
-      setMessage('更新を確認できませんでした。オンライン接続を確認して、もう一度お試しください。');
+      // 詳細な利用者向けメッセージはPWA Contextで状態別に設定します。
     }
   }
 
   async function update() {
-    setMessage(undefined);
     try {
       await requestUpdate();
     } catch {
-      setMessage(
-        '更新できませんでした。保存状態とネットワーク接続を確認して、もう一度お試しください。',
-      );
+      // 詳細な利用者向けメッセージはPWA Contextで状態別に設定します。
     }
   }
 
@@ -85,9 +80,9 @@ export function PwaSettingsSection() {
       {serviceWorkerError !== undefined ? (
         <p className="settings-inline-error">{serviceWorkerError}</p>
       ) : null}
-      {(updateError ?? message) ? (
+      {updateError !== undefined ? (
         <p className="settings-inline-error" role="alert">
-          {updateError ?? message}
+          {updateError}
         </p>
       ) : null}
       {updateCheckMessage !== undefined ? (
@@ -130,11 +125,11 @@ export function PwaSettingsSection() {
         ) : (
           <button
             className="secondary-button"
-            disabled={isDataOperationInProgress}
+            disabled={isCheckingForUpdate || isDataOperationInProgress}
             onClick={() => void checkUpdate()}
             type="button"
           >
-            更新を確認する
+            {isCheckingForUpdate ? '更新を確認中…' : '更新を確認する'}
           </button>
         )}
       </div>
@@ -174,11 +169,13 @@ export function PwaSettingsSection() {
 }
 
 function offlineStatusLabel(
-  serviceWorkerStatus: 'preparing' | 'ready' | 'unavailable' | 'error',
+  serviceWorkerStatus:
+    'preparing' | 'ready' | 'unsupported' | 'unregistered' | 'registration_error',
   isOfflineReady: boolean,
 ): string {
   if (isOfflineReady) return '準備済み（オフラインでも利用可能）';
-  if (serviceWorkerStatus === 'unavailable') return 'このブラウザでは利用できません';
-  if (serviceWorkerStatus === 'error') return '準備できませんでした';
+  if (serviceWorkerStatus === 'unsupported') return 'このブラウザでは利用できません';
+  if (serviceWorkerStatus === 'unregistered') return 'Service Workerが未登録です';
+  if (serviceWorkerStatus === 'registration_error') return 'Service Workerを登録できませんでした';
   return '準備中（本番環境で初回読込み後に完了）';
 }

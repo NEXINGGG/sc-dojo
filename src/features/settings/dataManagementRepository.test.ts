@@ -21,7 +21,7 @@ import {
   createPracticeSession,
   defaultPracticeFilters,
 } from '../../domain/practice';
-import { DataManagementRepository } from './dataManagementRepository';
+import { APP_VERSION, DataManagementRepository } from './dataManagementRepository';
 
 const databaseNames: string[] = [];
 const exportedAt = '2026-07-18T00:00:00.000Z';
@@ -174,6 +174,7 @@ describe('DataManagementRepository', () => {
     expect(JSON.stringify(backup)).not.toContain(questions[0].question);
     expect(JSON.stringify(backup)).not.toContain(questions[0].explanation);
     expect(backup.questionData).toEqual(allIdentity);
+    expect(backup.appVersion).toBe(APP_VERSION);
     database.close();
   });
 

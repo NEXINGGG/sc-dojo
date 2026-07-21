@@ -1,5 +1,25 @@
 import { expect, test } from '@playwright/test';
 
+test('本番previewで更新がなければ最新のバージョンと表示する', async ({ page }) => {
+  const browserErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') {
+      browserErrors.push(message.text());
+    }
+  });
+
+  await page.goto('/#/settings');
+  await expect(page.getByRole('heading', { name: '設定', exact: true })).toBeVisible();
+  await page.waitForFunction(async () => {
+    await navigator.serviceWorker?.ready;
+    return navigator.serviceWorker?.controller !== null;
+  });
+
+  await page.getByRole('button', { name: '更新を確認する' }).click();
+  await expect(page.getByText('現在のバージョンが最新です。')).toBeVisible();
+  expect(browserErrors).toEqual([]);
+});
+
 test('本番previewでmanifest・Service Workerを登録し、オフラインでも主要画面を開ける', async ({
   context,
   page,
