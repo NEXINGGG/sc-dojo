@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "categories": [
+    {
+      "categoryId": "routing_redundancy",
+      "name": "ルーティング・冗長化",
+      "order": 1
+    },
+    {
+      "categoryId": "operations_troubleshooting",
+      "name": "運用・トラブルシューティング",
+      "order": 2
+    },
+    {
+      "categoryId": "http_web_protocols",
+      "name": "HTTP・Webプロトコル",
+      "order": 3
+    },
+    {
+      "categoryId": "nat_addressing",
+      "name": "NAT・アドレス設計",
+      "order": 4
+    },
+    {
+      "categoryId": "security_gateway",
+      "name": "セキュリティゲートウェイ",
+      "order": 5
+    },
+    {
+      "categoryId": "bgp_internet_routing",
+      "name": "BGP・インターネット経路制御",
+      "order": 6
+    },
+    {
+      "categoryId": "ddos_cdn",
+      "name": "CDN・DDoS対策",
+      "order": 7
+    },
+    {
+      "categoryId": "sdwan_vpn",
+      "name": "SD-WAN・VPN",
+      "order": 8
+    },
+    {
+      "categoryId": "proxy_wpad",
+      "name": "プロキシ・PAC・WPAD",
+      "order": 9
+    },
+    {
+      "categoryId": "cloud_networking",
+      "name": "クラウドネットワーク",
+      "order": 10
+    },
+    {
+      "categoryId": "multicast",
+      "name": "IPマルチキャスト",
+      "order": 11
+    },
+    {
+      "categoryId": "wireless_lan",
+      "name": "無線LAN",
+      "order": 12
+    },
+    {
+      "categoryId": "lan_design",
+      "name": "LAN設計",
+      "order": 13
+    },
+    {
+      "categoryId": "network_security",
+      "name": "ネットワークセキュリティ",
+      "order": 14
+    }
+  ]
+}

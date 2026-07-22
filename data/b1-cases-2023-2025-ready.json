@@ -1,0 +1,5999 @@
+{
+  "schemaVersion": 2,
+  "subjectId": "b1",
+  "coverage": {
+    "years": [
+      2023,
+      2024,
+      2025
+    ],
+    "caseCount": 9,
+    "questionUnitCount": 83,
+    "examFormat": {
+      "durationMinutes": 90,
+      "presentedCases": 3,
+      "selectedCases": 2,
+      "responseType": "written"
+    }
+  },
+  "contentPolicy": {
+    "fullOfficialQuestionTextIncluded": false,
+    "officialFiguresIncluded": false,
+    "officialAnswerTablesReproducedInFull": false,
+    "description": "公式PDFを問題表示の正本とし、アプリ用には設問位置、答案欄、字数制限、短い正答値、解答概念及び採点方式だけを構造化。"
+  },
+  "cases": [
+    {
+      "caseId": "B1-2025-Q1",
+      "subjectId": "b1",
+      "year": 2025,
+      "questionNumber": 1,
+      "title": "冗長化ネットワークのルータ更改と無停止メンテナンス",
+      "categoryIds": [
+        "routing_redundancy",
+        "operations_troubleshooting"
+      ],
+      "topics": [
+        "OSPF",
+        "VRRP",
+        "経路収束",
+        "コスト変更",
+        "切戻し",
+        "作業手順"
+      ],
+      "estimatedMinutes": 45,
+      "source": {
+        "provider": "IPA",
+        "exam": "ネットワークスペシャリスト",
+        "sectionAtTime": "午後Ⅰ",
+        "currentEquivalent": "科目B-1",
+        "questionPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_pm1_qs.pdf",
+        "answerPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_pm1_ans.pdf",
+        "commentaryPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_pm1_cmnt.pdf",
+        "yearPageUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2025r07.html",
+        "questionPdfPagesZeroBased": [
+          2,
+          7
+        ],
+        "modified": true,
+        "modificationNote": "問題文全文は収録せず、設問の趣旨・解答概念・出典位置を要約構造化。"
+      },
+      "purposeSummary": "冗長化された企業ネットワークで、OSPF・VRRPを用いて通信停止を抑えながらルータを更改する設計・作業判断を問う。",
+      "commentarySummary": "OSPF経路収束、十分に大きなコスト設定、障害時に素早く切り戻せる手順設計が重点。",
+      "body": {
+        "mode": "official_pdf_reference_or_user_imported_pdf",
+        "fullTextIncluded": false,
+        "figuresIncluded": false,
+        "transcriptionStatus": "not_required_for_pdf_reference_mode",
+        "pageRangeZeroBased": [
+          2,
+          7
+        ],
+        "appReady": true,
+        "offlineAvailability": "公式PDFを利用者が端末へ登録した場合に利用可能"
+      },
+      "questionUnits": [
+        {
+          "label": "設問1(1)",
+          "answerType": "multi_blank",
+          "promptSummary": "ネットワーク構成・機器役割に関する3語の穴埋め",
+          "answerConcepts": [
+            "バックボーン",
+            "ルータ",
+            "デフォルトゲートウェイ"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問1(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q1-U01",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "a",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "バックボーン"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "b",
+              "label": "b",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "ルータ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "c",
+              "label": "c",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "デフォルトゲートウェイ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "バックボーン",
+              "ルータ",
+              "デフォルトゲートウェイ"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(2)",
+          "answerType": "description",
+          "promptSummary": "OSPF認証を行わない場合の問題を説明",
+          "answerConcepts": [
+            "不正なOSPFルータとの隣接",
+            "不正な経路交換"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問1(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q1-U02",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "①"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 35,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "不正なOSPFルータとの隣接",
+              "不正な経路交換"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(3)",
+          "answerType": "short_text",
+          "promptSummary": "R31のAS_PATH長をR30と比較してどう設定するか",
+          "answerConcepts": [
+            "値を長くする"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問1(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q1-U03",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "②"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "長くする",
+                "長くする。"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "R31のAS_PATH長をR30より長くする"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(4)",
+          "answerType": "description",
+          "promptSummary": "電源投入後に待つべきOSPFルータの状態",
+          "answerConcepts": [
+            "OSPF経路情報が収束済み"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問1(4)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "経路情報の収束を明確に書けるかがポイント。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q1-U04",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "③"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "OSPF経路情報の収束完了"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(1)",
+          "answerType": "mapping",
+          "promptSummary": "本社・支社ごとの通信経路を選択",
+          "answerConcepts": [
+            "大阪本社はウ",
+            "東京支社はア・イ"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q1-U05",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "④"
+            ],
+            "figureRefs": [
+              "図1"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "osaka",
+              "label": "大阪本社",
+              "inputKind": "multi_select",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "ウ"
+              ],
+              "orderMatters": false,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "tokyo",
+              "label": "東京支社",
+              "inputKind": "multi_select",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "ア",
+                "イ"
+              ],
+              "orderMatters": false,
+              "expectedCount": 2,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "大阪本社はウ",
+              "東京支社はアとイ"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(2)",
+          "answerType": "numeric_or_term",
+          "promptSummary": "通信を迂回させるためのOSPFコスト設定",
+          "answerConcepts": [
+            "65535など十分大きい値"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "単に増やすだけでなく十分大きい値にする。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q1-U06",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "⑤"
+            ],
+            "figureRefs": [],
+            "tableRefs": [
+              "表2"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 30,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "OSPFコストを十分大きい値へ変更",
+              "例:65535"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(3)",
+          "answerType": "description",
+          "promptSummary": "設定変更より物理IF閉塞を選ぶ運用上の理由",
+          "answerConcepts": [
+            "素早く切り戻せる"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "想定外障害時の影響最小化と切戻し速度が要点。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q1-U07",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "⑥"
+            ],
+            "figureRefs": [],
+            "tableRefs": [
+              "表2"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 30,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "物理インタフェース閉塞の方が素早く切り戻せる"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(4)",
+          "answerType": "description",
+          "promptSummary": "配線誤りを防ぐ現場作業",
+          "answerConcepts": [
+            "ケーブルへラベル付与"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(4)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q1-U08",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "表2"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "イーサネットケーブルへラベルを付与"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(5)",
+          "answerType": "ordered_sequence",
+          "promptSummary": "更改作業の対象機器を手順順に列挙",
+          "answerConcepts": [
+            "L3SW10",
+            "R11",
+            "R20",
+            "R30"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(5)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q1-U09",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "⑦"
+            ],
+            "figureRefs": [
+              "図1"
+            ],
+            "tableRefs": [
+              "表2"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "step1",
+              "label": "①",
+              "inputKind": "device_name",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "L3SW10"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "step2",
+              "label": "②",
+              "inputKind": "device_name",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "R11"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "step3",
+              "label": "③",
+              "inputKind": "device_name",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "R20"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "step4",
+              "label": "④",
+              "inputKind": "device_name",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "R30"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "L3SW10→R11→R20→R30"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        }
+      ]
+    },
+    {
+      "caseId": "B1-2025-Q2",
+      "subjectId": "b1",
+      "year": 2025,
+      "questionNumber": 2,
+      "title": "学校ネットワークのHTTP/2・NAPTトラブルシューティング",
+      "categoryIds": [
+        "operations_troubleshooting",
+        "http_web_protocols",
+        "nat_addressing"
+      ],
+      "topics": [
+        "DHCPリレー",
+        "PoE+",
+        "NAPT",
+        "HTTP/1.1",
+        "HTTP/2",
+        "QUIC/UDP",
+        "タイマー調整"
+      ],
+      "estimatedMinutes": 45,
+      "source": {
+        "provider": "IPA",
+        "exam": "ネットワークスペシャリスト",
+        "sectionAtTime": "午後Ⅰ",
+        "currentEquivalent": "科目B-1",
+        "questionPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_pm1_qs.pdf",
+        "answerPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_pm1_ans.pdf",
+        "commentaryPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_pm1_cmnt.pdf",
+        "yearPageUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2025r07.html",
+        "questionPdfPagesZeroBased": [
+          8,
+          14
+        ],
+        "modified": true,
+        "modificationNote": "問題文全文は収録せず、設問の趣旨・解答概念・出典位置を要約構造化。"
+      },
+      "purposeSummary": "学校ネットワークの障害分析を題材に、HTTP、DHCP、NAPT、HTTP/2の基本と論理的な切分けを問う。",
+      "commentarySummary": "DHCPリレーの動作、事実から仮説を組み立てる切分け、HTTP/2のストリームID、UDP保持時間の調整が重点。",
+      "body": {
+        "mode": "official_pdf_reference_or_user_imported_pdf",
+        "fullTextIncluded": false,
+        "figuresIncluded": false,
+        "transcriptionStatus": "not_required_for_pdf_reference_mode",
+        "pageRangeZeroBased": [
+          8,
+          14
+        ],
+        "appReady": true,
+        "offlineAvailability": "公式PDFを利用者が端末へ登録した場合に利用可能"
+      },
+      "questionUnits": [
+        {
+          "label": "設問1(1)",
+          "answerType": "multi_blank",
+          "promptSummary": "IPアドレス種別と給電規格の穴埋め",
+          "answerConcepts": [
+            "プライベート",
+            "グローバル",
+            "PoE+"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問1(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q2-U01",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 12,
+            "printedPage": 13,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "a",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "プライベート"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "b",
+              "label": "b",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "グローバル"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "c",
+              "label": "c",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "PoE+",
+                "PoE＋"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "プライベート",
+              "グローバル",
+              "PoE+"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(2)",
+          "answerType": "description",
+          "promptSummary": "DHCPリレーがサーバへ伝える情報",
+          "answerConcepts": [
+            "PCが属するセグメント"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問1(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "DHCPリレーの基本動作を問う。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q2-U02",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": [
+              12,
+              13
+            ],
+            "printedPage": [
+              13,
+              14
+            ],
+            "underlineRefs": [
+              "①"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 15,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "PCが属するセグメントの識別"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(1)",
+          "answerType": "description",
+          "promptSummary": "特定機器故障と断定できない理由",
+          "answerConcepts": [
+            "一部かつ不特定のPCで発生"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問2(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "本文事実を整理して仮説の範囲を絞る。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q2-U03",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [
+              "②"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 40,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "一部かつ不特定のPCだけで発生している"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(2)",
+          "answerType": "term",
+          "promptSummary": "トラフィック制御の目的を表す語",
+          "answerConcepts": [
+            "帯域確保"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問2(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q2-U04",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "d",
+              "label": "d",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "帯域確保"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "帯域確保型"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(3)",
+          "answerType": "selection",
+          "promptSummary": "調査対象となる通信・操作を選択",
+          "answerConcepts": [
+            "(iii)",
+            "(iv)"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問2(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q2-U05",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answers",
+              "label": "該当項目",
+              "inputKind": "multi_select",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "iii",
+                "iv",
+                "ⅲ",
+                "ⅳ"
+              ],
+              "orderMatters": false,
+              "expectedCount": 2,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "ⅲとⅳ"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(4)",
+          "answerType": "multi_numeric",
+          "promptSummary": "PC台数とNAPTエントリー数を算出",
+          "answerConcepts": [
+            "PC台数327",
+            "エントリー数120000"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問2(4)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q2-U06",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [
+              "③"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "pcCount",
+              "label": "PC台数",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "327"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "entryCount",
+              "label": "エントリー数",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "120000",
+                "120,000"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "PC台数327",
+              "NAPTエントリー数120000"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(1)",
+          "answerType": "description",
+          "promptSummary": "HTTP/1.1で後続処理が待たされる理由",
+          "answerConcepts": [
+            "先行処理の完了待ち"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問3(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q2-U07",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [
+              "④"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 30,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "先行処理が完了するまで後続処理が待つ"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(2)",
+          "answerType": "multi_blank",
+          "promptSummary": "HTTP/2のリクエスト・レスポンス・ストリームID・並列処理の穴埋め",
+          "answerConcepts": [
+            "リクエスト",
+            "レスポンス",
+            "ストリームID",
+            "並列"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問3(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "ストリームIDが頻出の弱点。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q2-U08",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "e",
+              "label": "e",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "リクエスト"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "f",
+              "label": "f",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "レスポンス"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "g",
+              "label": "g",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "ストリームID",
+                "ストリーム ID"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "h",
+              "label": "h",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "並列"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "リクエスト",
+              "レスポンス",
+              "ストリームID",
+              "並列"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(3)",
+          "answerType": "description",
+          "promptSummary": "UDP保持時間の調整内容と効果",
+          "answerConcepts": [
+            "保持時間を300秒未満へ短縮",
+            "未使用UDPフローのNAPTエントリーを早期削除"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問3(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "タイマー調整と資源解放の因果関係を書く。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q2-U09",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [
+              "⑤"
+            ],
+            "figureRefs": [],
+            "tableRefs": [
+              "表2"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "adjustment",
+              "label": "調整内容",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "effect",
+              "label": "効果",
+              "inputKind": "description",
+              "maxLength": 45,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "UDP保持時間を300秒未満へ短縮",
+              "未使用UDPフローのNAPTエントリーを早期削除"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        }
+      ]
+    },
+    {
+      "caseId": "B1-2025-Q3",
+      "subjectId": "b1",
+      "year": 2025,
+      "questionNumber": 3,
+      "title": "プロキシサーバからSWGサービスへの移行",
+      "categoryIds": [
+        "security_gateway",
+        "cloud_networking",
+        "network_security"
+      ],
+      "topics": [
+        "SWG",
+        "syslog",
+        "認証",
+        "TLS検査",
+        "C&C",
+        "ファイアウォール",
+        "経路設計"
+      ],
+      "estimatedMinutes": 45,
+      "source": {
+        "provider": "IPA",
+        "exam": "ネットワークスペシャリスト",
+        "sectionAtTime": "午後Ⅰ",
+        "currentEquivalent": "科目B-1",
+        "questionPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_pm1_qs.pdf",
+        "answerPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_pm1_ans.pdf",
+        "commentaryPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_pm1_cmnt.pdf",
+        "yearPageUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2025r07.html",
+        "questionPdfPagesZeroBased": [
+          15,
+          20
+        ],
+        "modified": true,
+        "modificationNote": "問題文全文は収録せず、設問の趣旨・解答概念・出典位置を要約構造化。"
+      },
+      "purposeSummary": "既存プロキシからクラウド型セキュアWebゲートウェイへ移行する際の構成、ログ、認証、経路、通信制御を問う。",
+      "commentarySummary": "隔離環境と社内環境を混同しないこと、通信経路を漏れなく追うことが重点。",
+      "body": {
+        "mode": "official_pdf_reference_or_user_imported_pdf",
+        "fullTextIncluded": false,
+        "figuresIncluded": false,
+        "transcriptionStatus": "not_required_for_pdf_reference_mode",
+        "pageRangeZeroBased": [
+          15,
+          20
+        ],
+        "appReady": true,
+        "offlineAvailability": "公式PDFを利用者が端末へ登録した場合に利用可能"
+      },
+      "questionUnits": [
+        {
+          "label": "設問1(1)",
+          "answerType": "description",
+          "promptSummary": "複数ログの時刻同期・集中管理が必要な理由",
+          "answerConcepts": [
+            "複数機器のログを時系列で確認"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U01",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 18,
+            "printedPage": 19,
+            "underlineRefs": [
+              "①"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "複数機器のログを時系列で照合"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(2)",
+          "answerType": "multi_answer",
+          "promptSummary": "SWGで利用する代表的機能を二つ記述",
+          "answerConcepts": [
+            "宛先FQDN/IPのブロック",
+            "Webアクセス履歴確認",
+            "利用者認証"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U02",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 18,
+            "printedPage": 19,
+            "underlineRefs": [
+              "②"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "purpose1",
+              "label": "目的1",
+              "inputKind": "description",
+              "maxLength": 35,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "purpose2",
+              "label": "目的2",
+              "inputKind": "description",
+              "maxLength": 35,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "登録FQDN/IP宛て通信のブロック",
+              "Webアクセス履歴確認",
+              "利用者認証のうち二つ"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": "複数の解答例から二つを記述するため自己採点を基本とする。"
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(3)",
+          "answerType": "term",
+          "promptSummary": "端末と利用者の対応確認に使うログ",
+          "answerConcepts": [
+            "L3SWのDHCPリースログ"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U03",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 18,
+            "printedPage": 19,
+            "underlineRefs": [
+              "③"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "ログ名",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "L3SWのDHCPリースログ",
+                "L3SW の DHCP リースログ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "L3SWのDHCPリースログ"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(4)",
+          "answerType": "multi_blank",
+          "promptSummary": "ログ・認証連携先の穴埋め",
+          "answerConcepts": [
+            "syslogサーバ",
+            "認証サーバ"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(4)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U04",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "表1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "a",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "syslogサーバ",
+                "syslog サーバ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "b",
+              "label": "b",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "認証サーバ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "syslogサーバ",
+              "認証サーバ"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(5)",
+          "answerType": "multi_numeric",
+          "promptSummary": "プロキシ系通信のポート番号",
+          "answerConcepts": [
+            "10080",
+            "443"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(5)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U05",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "表1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "c",
+              "label": "c",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "10080"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "d",
+              "label": "d",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "443"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "10080",
+              "443"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(1)",
+          "answerType": "term",
+          "promptSummary": "TLS検査で端末へ配布する証明書",
+          "answerConcepts": [
+            "SWGサービスのルート証明書"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問2(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U06",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [
+              "④"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "証明書",
+              "inputKind": "term",
+              "maxLength": 20,
+              "acceptedAnswers": [
+                "SWGサービスのルート証明書",
+                "SWG サービスのルート証明書",
+                "ルート証明書"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "SWGサービスのルート証明書"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(2)",
+          "answerType": "term",
+          "promptSummary": "隔離環境での通信先となる悪性サーバ種別",
+          "answerConcepts": [
+            "C&Cサーバ"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問2(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "隔離環境での動作条件を読み違えない。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U07",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [
+              "⑤"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "外部通信先",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "C&Cサーバ",
+                "C＆Cサーバ",
+                "C&C サーバ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "C&Cサーバ"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(1)",
+          "answerType": "selection",
+          "promptSummary": "移行対象となる経路・通信番号を選択",
+          "answerConcepts": [
+            "2",
+            "7"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問3(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U08",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [
+              "⑥"
+            ],
+            "figureRefs": [],
+            "tableRefs": [
+              "表1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "rules",
+              "label": "項番",
+              "inputKind": "multi_select",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "2",
+                "7"
+              ],
+              "orderMatters": false,
+              "expectedCount": 2,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "表1の項番2と7"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(2)",
+          "answerType": "ordered_sequence",
+          "promptSummary": "移行後の通信経路を記号で順序回答",
+          "answerConcepts": [
+            "B",
+            "A",
+            "H",
+            "I",
+            "E",
+            "I",
+            "K"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問3(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "通信経路の記述漏れに注意。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U09",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [
+              "⑦"
+            ],
+            "figureRefs": [
+              "図2"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "route",
+              "label": "経路",
+              "inputKind": "sequence",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "B",
+                "A",
+                "H",
+                "I",
+                "E",
+                "I",
+                "K"
+              ],
+              "orderMatters": true,
+              "expectedCount": 7,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "B→A→H→I→E→I→K"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(3)",
+          "answerType": "firewall_rule",
+          "promptSummary": "送信元・宛先・プロトコル/ポートを記述",
+          "answerConcepts": [
+            "送信元:内部セグメント又はソフトE",
+            "宛先:SWGサービス",
+            "TCP/443"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問3(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U10",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [
+              "⑧"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "source",
+              "label": "送信元",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "内部セグメント",
+                "ソフトE",
+                "ソフト E"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "destination",
+              "label": "宛先",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "SWGサービス",
+                "SWG サービス"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "protocolPort",
+              "label": "プロトコル/宛先ポート",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "TCP/443",
+                "TCP 443",
+                "TCP:443"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "送信元は内部セグメント又はソフトE",
+              "宛先SWGサービス",
+              "TCP/443"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(4)",
+          "answerType": "description",
+          "promptSummary": "クラウドサービス側のアクセス許可設定変更",
+          "answerConcepts": [
+            "許可送信元をSWG-GIPへ変更"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問3(4)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U11",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [
+              "⑨"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 35,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "K社SaaSの許可送信元をSWG-GIPへ変更"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(5)",
+          "answerType": "multi_answer",
+          "promptSummary": "直接通信・経路短縮の利点を記述",
+          "answerConcepts": [
+            "機器や回線の負荷軽減",
+            "RTT短縮",
+            "可用性向上"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問3(5)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2025-Q3-U12",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [
+              "⑩"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "利点",
+              "inputKind": "description",
+              "maxLength": 10,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "経由機器・回線の負荷軽減",
+              "RTT短縮",
+              "可用性向上のいずれか"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        }
+      ]
+    },
+    {
+      "caseId": "B1-2024-Q1",
+      "subjectId": "b1",
+      "year": 2024,
+      "questionNumber": 1,
+      "title": "CDN・BGP・DDoS対策",
+      "categoryIds": [
+        "bgp_internet_routing",
+        "ddos_cdn",
+        "network_security"
+      ],
+      "topics": [
+        "ロードバランサ",
+        "BGP属性",
+        "IX",
+        "IRR",
+        "経路ハイジャック",
+        "RTBH",
+        "FlowSpec"
+      ],
+      "estimatedMinutes": 45,
+      "source": {
+        "provider": "IPA",
+        "exam": "ネットワークスペシャリスト",
+        "sectionAtTime": "午後Ⅰ",
+        "currentEquivalent": "科目B-1",
+        "questionPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_pm1_qs.pdf",
+        "answerPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_pm1_ans.pdf",
+        "commentaryPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_pm1_cmnt.pdf",
+        "yearPageUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2024r06.html",
+        "questionPdfPagesZeroBased": [
+          2,
+          7
+        ],
+        "modified": true,
+        "modificationNote": "問題文全文は収録せず、設問の趣旨・解答概念・出典位置を要約構造化。"
+      },
+      "purposeSummary": "広域コンテンツ配信を題材に、ロードバランサ、BGP、CDN、DDoS対策を問う。",
+      "commentarySummary": "BGP属性とトラフィック方向、IRR・経路ハイジャック対策の理解が重点。",
+      "body": {
+        "mode": "official_pdf_reference_or_user_imported_pdf",
+        "fullTextIncluded": false,
+        "figuresIncluded": false,
+        "transcriptionStatus": "not_required_for_pdf_reference_mode",
+        "pageRangeZeroBased": [
+          2,
+          7
+        ],
+        "appReady": true,
+        "offlineAvailability": "公式PDFを利用者が端末へ登録した場合に利用可能"
+      },
+      "questionUnits": [
+        {
+          "label": "設問1(1)",
+          "answerType": "description",
+          "promptSummary": "ICMPだけのヘルスチェックで検知できない障害",
+          "answerConcepts": [
+            "HTTPサーバプロセス停止を検知できない"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問1(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q1-U01",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "①"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 50,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "ICMP応答はあるがHTTPサーバプロセス停止を検知できない"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(2)",
+          "answerType": "multi_blank",
+          "promptSummary": "負荷分散方式とネットワークアドレスの穴埋め",
+          "answerConcepts": [
+            "最少接続数",
+            "172.22.1.0/24"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問1(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q1-U02",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "ア",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "最少接続数"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "i",
+              "label": "イ",
+              "inputKind": "cidr",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "172.22.1.0/24"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "最少接続数",
+              "172.22.1.0/24"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(3)",
+          "answerType": "term",
+          "promptSummary": "該当するネットワーク機器",
+          "answerConcepts": [
+            "LB"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問1(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q1-U03",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [],
+            "figureRefs": [
+              "図1"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "装置記号",
+              "inputKind": "symbol",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "LB"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "LB"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(1)",
+          "answerType": "multi_blank",
+          "promptSummary": "BGP属性値の大小関係",
+          "answerConcepts": [
+            "大きい",
+            "小さい"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "BGP属性の優先順位を正しく理解する。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q1-U04",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "②"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "u",
+              "label": "ウ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "大きい"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "e",
+              "label": "エ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "小さい"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "大きい",
+              "小さい"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(2)",
+          "answerType": "term",
+          "promptSummary": "ISP間接続の場",
+          "answerConcepts": [
+            "IX"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q1-U05",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": [
+              6,
+              7
+            ],
+            "printedPage": [
+              7,
+              8
+            ],
+            "underlineRefs": [
+              "②"
+            ],
+            "figureRefs": [
+              "図2"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "接続場所",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "IX"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "IX"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(3)",
+          "answerType": "description",
+          "promptSummary": "IRR登録等で防ぐ対象",
+          "answerConcepts": [
+            "不正なBGP接続"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q1-U06",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 7,
+            "printedPage": 8,
+            "underlineRefs": [
+              "③"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 10,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "不正なBGP接続の防止"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(4)",
+          "answerType": "description",
+          "promptSummary": "不正経路受信によるサービス影響",
+          "answerConcepts": [
+            "不正経路のアドレスブロック宛てに配信不可"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(4)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "経路が影響する通信方向を取り違えない。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q1-U07",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 7,
+            "printedPage": 8,
+            "underlineRefs": [
+              "④"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 40,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "不正経路に含まれるアドレスブロックへ配信不能"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(1)",
+          "answerType": "description",
+          "promptSummary": "攻撃元に近い位置で遮断する利点",
+          "answerConcepts": [
+            "攻撃パケットを上流で遮断"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問3(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q1-U08",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 7,
+            "printedPage": 8,
+            "underlineRefs": [],
+            "figureRefs": [
+              "図3"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 30,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "攻撃パケットを攻撃元に近い位置で遮断"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(2)",
+          "answerType": "description",
+          "promptSummary": "FlowSpec等がより細かい条件で有利な理由",
+          "answerConcepts": [
+            "より詳細な条件で選別・破棄"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問3(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q1-U09",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 7,
+            "printedPage": 8,
+            "underlineRefs": [
+              "⑤"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 30,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "より細かい条件で通信を選別して破棄"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        }
+      ]
+    },
+    {
+      "caseId": "B1-2024-Q2",
+      "subjectId": "b1",
+      "year": 2024,
+      "questionNumber": 2,
+      "title": "企業ネットワークへのSD-WAN導入",
+      "categoryIds": [
+        "sdwan_vpn",
+        "routing_redundancy",
+        "bgp_internet_routing"
+      ],
+      "topics": [
+        "SD-WAN",
+        "CE/PE",
+        "BGP再配布",
+        "OSPF外部LSA",
+        "IPsec",
+        "BFD",
+        "トラフィックエンジニアリング"
+      ],
+      "estimatedMinutes": 45,
+      "source": {
+        "provider": "IPA",
+        "exam": "ネットワークスペシャリスト",
+        "sectionAtTime": "午後Ⅰ",
+        "currentEquivalent": "科目B-1",
+        "questionPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_pm1_qs.pdf",
+        "answerPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_pm1_ans.pdf",
+        "commentaryPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_pm1_cmnt.pdf",
+        "yearPageUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2024r06.html",
+        "questionPdfPagesZeroBased": [
+          8,
+          14
+        ],
+        "modified": true,
+        "modificationNote": "問題文全文は収録せず、設問の趣旨・解答概念・出典位置を要約構造化。"
+      },
+      "purposeSummary": "企業ネットワークへのSD-WAN導入を題材に、基盤となるIPネットワーク、BGP、OSPF、IPsec、BFDを問う。",
+      "commentarySummary": "OSPFの外部LSAとBFDによる高速障害検知の理解が重点。",
+      "body": {
+        "mode": "official_pdf_reference_or_user_imported_pdf",
+        "fullTextIncluded": false,
+        "figuresIncluded": false,
+        "transcriptionStatus": "not_required_for_pdf_reference_mode",
+        "pageRangeZeroBased": [
+          8,
+          14
+        ],
+        "appReady": true,
+        "offlineAvailability": "公式PDFを利用者が端末へ登録した場合に利用可能"
+      },
+      "questionUnits": [
+        {
+          "label": "設問1",
+          "answerType": "multi_blank",
+          "promptSummary": "SD-WAN・BGP・DMZ・PBRに関する6語の穴埋め",
+          "answerConcepts": [
+            "カスタマー",
+            "再配布",
+            "DMZ",
+            "eBGP",
+            "プライベート",
+            "ポリシーベース"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問1",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q2-U01",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "ア",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "カスタマー"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "i",
+              "label": "イ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "再配布"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "u",
+              "label": "ウ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "DMZ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "e",
+              "label": "エ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "eBGP",
+                "EBGP"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "o",
+              "label": "オ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "プライベート"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "ka",
+              "label": "カ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "ポリシーベース"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "カスタマー",
+              "再配布",
+              "DMZ",
+              "eBGP",
+              "プライベート",
+              "ポリシーベース"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(1)",
+          "answerType": "multi_blank",
+          "promptSummary": "広告経路とAS_PATHを回答",
+          "answerConcepts": [
+            "10.3.0.0/16",
+            "64500 64500"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問2(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q2-U02",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [
+              "①"
+            ],
+            "figureRefs": [],
+            "tableRefs": [
+              "表1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "a",
+              "inputKind": "cidr",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "10.3.0.0/16"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "b",
+              "label": "b",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "64500 64500",
+                "64500,64500"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "10.3.0.0/16",
+              "64500 64500"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(2)",
+          "answerType": "multi_blank",
+          "promptSummary": "AS番号の穴埋め",
+          "answerConcepts": [
+            "65500",
+            "65500",
+            "65500",
+            "65500"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問2(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q2-U03",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [
+              "②"
+            ],
+            "figureRefs": [],
+            "tableRefs": [
+              "表2"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "c",
+              "label": "c",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "65500"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "d",
+              "label": "d",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "65500"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "e",
+              "label": "e",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "65500"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "f",
+              "label": "f",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "65500"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "全て65500"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(1)",
+          "answerType": "description",
+          "promptSummary": "設定ミスで発生する障害",
+          "answerConcepts": [
+            "ルーティングループ"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問3(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q2-U04",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [
+              "③"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 20,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "ルーティングループ"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(2)",
+          "answerType": "multi_answer",
+          "promptSummary": "OSPFのLSAタイプと生成機器",
+          "answerConcepts": [
+            "Type5又は外部LSA",
+            "ルータ3"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問3(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "OSPF外部LSAの役割が重点。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q2-U05",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [
+              "④"
+            ],
+            "figureRefs": [
+              "図1"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "lsaType",
+              "label": "LSAタイプ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "Type5",
+                "Type 5",
+                "外部LSA",
+                "外部 LSA"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "device",
+              "label": "生成機器",
+              "inputKind": "device_name",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "ルータ3",
+                "ルータ 3"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "Type5又は外部LSA",
+              "ルータ3"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問4(1)",
+          "answerType": "multi_answer",
+          "promptSummary": "IPsecトンネル確立に必要な情報",
+          "answerConcepts": [
+            "相手IPアドレス",
+            "鍵情報"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問4(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q2-U06",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [
+              "⑤"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "info1",
+              "label": "情報1",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "info2",
+              "label": "情報2",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "IPsecトンネル確立先のIPアドレス",
+              "鍵情報"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問4(2)",
+          "answerType": "description",
+          "promptSummary": "BFDを組み合わせる目的",
+          "answerConcepts": [
+            "IPsecトンネル障害の高速検出"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問4(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "BFDの用途を理解する。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q2-U07",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 13,
+            "printedPage": 14,
+            "underlineRefs": [
+              "⑥"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 35,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "IPsecトンネル障害を高速検出"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問5(1)",
+          "answerType": "selection",
+          "promptSummary": "指定条件のトンネル識別子",
+          "answerConcepts": [
+            "TE023",
+            "TE032"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問5(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q2-U08",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": [
+              13,
+              14
+            ],
+            "printedPage": [
+              14,
+              15
+            ],
+            "underlineRefs": [
+              "⑦"
+            ],
+            "figureRefs": [
+              "図3"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "te",
+              "label": "通過TE",
+              "inputKind": "multi_select",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "TE023",
+                "TE032"
+              ],
+              "orderMatters": false,
+              "expectedCount": 2,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "TE023とTE032"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問5(2)",
+          "answerType": "selection",
+          "promptSummary": "別条件のトンネル識別子",
+          "answerConcepts": [
+            "TE123",
+            "TE132"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問5(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q2-U09",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 14,
+            "printedPage": 15,
+            "underlineRefs": [],
+            "figureRefs": [
+              "図3"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "te",
+              "label": "通過TE",
+              "inputKind": "multi_select",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "TE123",
+                "TE132"
+              ],
+              "orderMatters": false,
+              "expectedCount": 2,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "TE123とTE132"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        }
+      ]
+    },
+    {
+      "caseId": "B1-2024-Q3",
+      "subjectId": "b1",
+      "year": 2024,
+      "questionNumber": 3,
+      "title": "ローカルブレイクアウトとプロキシ自動設定",
+      "categoryIds": [
+        "sdwan_vpn",
+        "proxy_wpad",
+        "nat_addressing"
+      ],
+      "topics": [
+        "IPsec",
+        "ESP",
+        "トンネルIF",
+        "PAC",
+        "WPAD",
+        "DHCP",
+        "DNS",
+        "プロキシ"
+      ],
+      "estimatedMinutes": 45,
+      "source": {
+        "provider": "IPA",
+        "exam": "ネットワークスペシャリスト",
+        "sectionAtTime": "午後Ⅰ",
+        "currentEquivalent": "科目B-1",
+        "questionPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_pm1_qs.pdf",
+        "answerPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_pm1_ans.pdf",
+        "commentaryPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_pm1_cmnt.pdf",
+        "yearPageUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2024r06.html",
+        "questionPdfPagesZeroBased": [
+          15,
+          20
+        ],
+        "modified": true,
+        "modificationNote": "問題文全文は収録せず、設問の趣旨・解答概念・出典位置を要約構造化。"
+      },
+      "purposeSummary": "ローカルブレイクアウトを題材に、IPsec VPN、プロキシ自動設定、Web Proxy Auto-Discoveryを問う。",
+      "commentarySummary": "事前共有鍵、ESPの暗号化範囲、プライベートアドレス範囲の端点、WPADの仕組みが重点。",
+      "body": {
+        "mode": "official_pdf_reference_or_user_imported_pdf",
+        "fullTextIncluded": false,
+        "figuresIncluded": false,
+        "transcriptionStatus": "not_required_for_pdf_reference_mode",
+        "pageRangeZeroBased": [
+          15,
+          20
+        ],
+        "appReady": true,
+        "offlineAvailability": "公式PDFを利用者が端末へ登録した場合に利用可能"
+      },
+      "questionUnits": [
+        {
+          "label": "設問1(1)",
+          "answerType": "term",
+          "promptSummary": "拠点間VPNの構成方式",
+          "answerConcepts": [
+            "ハブアンドスポーク"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U01",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "ア",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "ハブアンドスポーク",
+                "ハブ・アンド・スポーク"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "ハブアンドスポーク"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(2)",
+          "answerType": "term",
+          "promptSummary": "IPsec認証で用いる鍵方式",
+          "answerConcepts": [
+            "事前共有鍵"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "IPsecの基本用語。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U02",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [
+              "①"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "鍵の呼称",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "事前共有鍵",
+                "PSK"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "事前共有鍵"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(3)",
+          "answerType": "description",
+          "promptSummary": "拠点ごとに鍵を分ける利点",
+          "answerConcepts": [
+            "鍵漏えい時の影響範囲縮小"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U03",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [
+              "②"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "鍵漏えい時の影響範囲を縮小"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(4)",
+          "answerType": "multi_answer",
+          "promptSummary": "ESPトンネルモードで暗号化される図中範囲",
+          "answerConcepts": [
+            "元IPヘッダー",
+            "元のIPパケット",
+            "ESPトレーラ"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(4)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "ESPヘッダー自体は暗号化範囲に含めない。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U04",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 19,
+            "printedPage": 20,
+            "underlineRefs": [
+              "③"
+            ],
+            "figureRefs": [
+              "図2"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "ranges",
+              "label": "暗号化範囲",
+              "inputKind": "multi_select",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "IPヘッダー",
+                "元のIPパケット",
+                "ESPトレーラ"
+              ],
+              "orderMatters": false,
+              "expectedCount": 3,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "元IPヘッダー",
+              "元IPパケット",
+              "ESPトレーラ"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": "図中の記号での回答を公式PDFと照合する必要がある。"
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(5)",
+          "answerType": "description",
+          "promptSummary": "トンネルIFのアドレス設定方式",
+          "answerConcepts": [
+            "インタフェースへIPアドレスを割り当てない"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(5)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U05",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": [
+              19,
+              20
+            ],
+            "printedPage": [
+              20,
+              21
+            ],
+            "underlineRefs": [
+              "④"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 30,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "インタフェースへIPアドレスを割り当てない"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問1(6)",
+          "answerType": "description",
+          "promptSummary": "本社経由通信による問題",
+          "answerConcepts": [
+            "転送負荷の増大"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1(6)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U06",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 20,
+            "printedPage": 21,
+            "underlineRefs": [
+              "⑤"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "影響",
+              "inputKind": "description",
+              "maxLength": 10,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "転送負荷の増大"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(1)",
+          "answerType": "short_text",
+          "promptSummary": "対象通信でプロキシを使うか",
+          "answerConcepts": [
+            "利用しない"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問2(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U07",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 20,
+            "printedPage": 21,
+            "underlineRefs": [],
+            "figureRefs": [
+              "図4"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "プロキシ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "利用しない"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "利用しない"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(2)",
+          "answerType": "term",
+          "promptSummary": "使用するプロキシFQDN",
+          "answerConcepts": [
+            "proxy.a-sha.jp"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問2(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U08",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 20,
+            "printedPage": 21,
+            "underlineRefs": [],
+            "figureRefs": [
+              "図4"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "プロキシ名",
+              "inputKind": "url_or_fqdn",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "proxy.a-sha.jp"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "proxy.a-sha.jp"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(3)",
+          "answerType": "ip_range",
+          "promptSummary": "RFC1918範囲の先頭と末尾",
+          "answerConcepts": [
+            "172.16.0.0",
+            "172.31.255.255"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問2(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "範囲端点も含める。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U09",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 20,
+            "printedPage": 21,
+            "underlineRefs": [],
+            "figureRefs": [
+              "図4"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "first",
+              "label": "最初のIPアドレス",
+              "inputKind": "ip_address",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "172.16.0.0"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "last",
+              "label": "最後のIPアドレス",
+              "inputKind": "ip_address",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "172.31.255.255"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "172.16.0.0",
+              "172.31.255.255"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(4)",
+          "answerType": "description",
+          "promptSummary": "ローカルブレイクアウトの効果",
+          "answerConcepts": [
+            "本社プロキシ負荷軽減"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問2(4)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U10",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 20,
+            "printedPage": 21,
+            "underlineRefs": [],
+            "figureRefs": [
+              "図4"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "効果",
+              "inputKind": "description",
+              "maxLength": 20,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "本社プロキシサーバの負荷軽減"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(5)",
+          "answerType": "description",
+          "promptSummary": "PAC条件を分ける必要がある理由",
+          "answerConcepts": [
+            "UTMプロキシのFQDNが異なる"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問2(5)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U11",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 20,
+            "printedPage": 21,
+            "underlineRefs": [
+              "⑥"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "理由",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "支社ごとにUTMプロキシのFQDNが異なる"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(1)",
+          "answerType": "multi_blank",
+          "promptSummary": "WPADが利用する探索機能・プロトコル・設定値",
+          "answerConcepts": [
+            "DHCP",
+            "DNS",
+            "HTTP",
+            "URL"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問3(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "URLまで含めた仕組みを押さえる。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U12",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 20,
+            "printedPage": 21,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "i",
+              "label": "イ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "DHCP",
+                "DNS"
+              ],
+              "orderMatters": false,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "u",
+              "label": "ウ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "DHCP",
+                "DNS"
+              ],
+              "orderMatters": false,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "e",
+              "label": "エ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "HTTP"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "o",
+              "label": "オ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "URL"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "イとウはDHCPとDNSの順不同",
+              "エはHTTP",
+              "オはURL"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": "イとウは組合せとしてDHCPとDNSが一つずつ入れば正解。"
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(2)",
+          "answerType": "description",
+          "promptSummary": "WPAD悪用時の影響",
+          "answerConcepts": [
+            "不正プロキシへ中継される"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問3(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2024-Q3-U13",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 20,
+            "printedPage": 21,
+            "underlineRefs": [
+              "⑦"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "脅威",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "不正プロキシサーバへ中継される"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        }
+      ]
+    },
+    {
+      "caseId": "B1-2023-Q1",
+      "subjectId": "b1",
+      "year": 2023,
+      "questionNumber": 1,
+      "title": "Webシステム更改：HTTP/2・TLS・クラウド経路",
+      "categoryIds": [
+        "http_web_protocols",
+        "cloud_networking",
+        "routing_redundancy"
+      ],
+      "topics": [
+        "HTTP/2",
+        "TLS",
+        "ALPN",
+        "DNS",
+        "リバースプロキシ",
+        "クラウド経路",
+        "負荷分散"
+      ],
+      "estimatedMinutes": 45,
+      "source": {
+        "provider": "IPA",
+        "exam": "ネットワークスペシャリスト",
+        "sectionAtTime": "午後Ⅰ",
+        "currentEquivalent": "科目B-1",
+        "questionPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_qs.pdf",
+        "answerPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_ans.pdf",
+        "commentaryPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_cmnt.pdf",
+        "yearPageUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2023r05.html",
+        "questionPdfPagesZeroBased": [
+          1,
+          6
+        ],
+        "modified": true,
+        "modificationNote": "問題文全文は収録せず、設問の趣旨・解答概念・出典位置を要約構造化。"
+      },
+      "purposeSummary": "Webシステムの一部クラウド移行とHTTP/2導入を題材に、HTTP/2、TLS、ALPN、経路設定、負荷分散を問う。",
+      "commentarySummary": "HTTP/2の基本用語、ALPNの役割、通信開始シーケンスの意味が重点。",
+      "body": {
+        "mode": "official_pdf_reference_or_user_imported_pdf",
+        "fullTextIncluded": false,
+        "figuresIncluded": false,
+        "transcriptionStatus": "not_required_for_pdf_reference_mode",
+        "pageRangeZeroBased": [
+          1,
+          6
+        ],
+        "appReady": true,
+        "offlineAvailability": "公式PDFを利用者が端末へ登録した場合に利用可能"
+      },
+      "questionUnits": [
+        {
+          "label": "設問1",
+          "answerType": "multi_blank",
+          "promptSummary": "リバースプロキシ、DNS、HTTP/2、TLS関連の6語の穴埋め",
+          "answerConcepts": [
+            "リバース",
+            "権威",
+            "キャッシュ",
+            "ストリーム",
+            ":method",
+            "TLS"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問1",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "HTTP/2の用語が重点。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q1-U01",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "a",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "リバース"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "b",
+              "label": "b",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "権威"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "c",
+              "label": "c",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "キャッシュ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "d",
+              "label": "d",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "ストリーム"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "e",
+              "label": "e",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                ":method",
+                "method"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "f",
+              "label": "f",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "TLS"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "リバース",
+              "権威",
+              "キャッシュ",
+              "ストリーム",
+              ":method",
+              "TLS"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(1)",
+          "answerType": "description",
+          "promptSummary": "HTTP/1.1でレスポンス順序に制約がある理由・動作",
+          "answerConcepts": [
+            "リクエスト受信順にレスポンスを返す必要"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q1-U02",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "①"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 35,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "リクエスト受信順にレスポンスを返す"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(2)",
+          "answerType": "description",
+          "promptSummary": "ALPNを使う目的",
+          "answerConcepts": [
+            "TCP上位のアプリケーションプロトコルを通信開始時に決定"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問2(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "ALPNを暗号方式と混同しない。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q1-U03",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "②"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 30,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "通信開始時にTCP上位のアプリケーションプロトコルを決定"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(1)",
+          "answerType": "selection",
+          "promptSummary": "通信開始シーケンス中の該当メッセージを選択",
+          "answerConcepts": [
+            "(d)",
+            "(e)"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問3(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q1-U04",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "③"
+            ],
+            "figureRefs": [
+              "図3"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "sequence",
+              "label": "シーケンス部分",
+              "inputKind": "multi_select",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "d",
+                "e"
+              ],
+              "orderMatters": false,
+              "expectedCount": 2,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "dとe"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(2)",
+          "answerType": "description",
+          "promptSummary": "ALPNで交換する内容",
+          "answerConcepts": [
+            "クライアントが利用可能なアプリケーション層プロトコル"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問3(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q1-U05",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "③"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 35,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "クライアントが利用可能なアプリケーション層プロトコル"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問4(1)",
+          "answerType": "multi_blank",
+          "promptSummary": "クラウド移行後の経路・アドレスを回答",
+          "answerConcepts": [
+            "172.21.10.0/24",
+            "172.21.11.2",
+            "172.21.11.1"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問4(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q1-U06",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "表1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "ア",
+              "inputKind": "cidr",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "172.21.10.0/24"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "i",
+              "label": "イ",
+              "inputKind": "ip_address",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "172.21.11.2"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "u",
+              "label": "ウ",
+              "inputKind": "ip_address",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "172.21.11.1"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "172.21.10.0/24",
+              "172.21.11.2",
+              "172.21.11.1"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問4(2)",
+          "answerType": "selection_with_reason",
+          "promptSummary": "負荷分散装置の動作モードと理由",
+          "answerConcepts": [
+            "アプリケーションモード",
+            "HTTP/2をHTTP/1.1へ変換して負荷分散"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問1 設問4(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q1-U07",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 6,
+            "printedPage": 7,
+            "underlineRefs": [
+              "④"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "mode",
+              "label": "動作モード",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "アプリケーションモード"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "reason",
+              "label": "理由",
+              "inputKind": "description",
+              "maxLength": 35,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "アプリケーションモード",
+              "HTTP/2をHTTP/1.1へ変換して負荷分散"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        }
+      ]
+    },
+    {
+      "caseId": "B1-2023-Q2",
+      "subjectId": "b1",
+      "year": 2023,
+      "questionNumber": 2,
+      "title": "IPマルチキャストによる映像配信",
+      "categoryIds": [
+        "multicast",
+        "lan_design"
+      ],
+      "topics": [
+        "PIM-SM",
+        "SSM",
+        "IGMPv3",
+        "ディストリビューションツリー",
+        "マルチキャストアドレス設計"
+      ],
+      "estimatedMinutes": 45,
+      "source": {
+        "provider": "IPA",
+        "exam": "ネットワークスペシャリスト",
+        "sectionAtTime": "午後Ⅰ",
+        "currentEquivalent": "科目B-1",
+        "questionPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_qs.pdf",
+        "answerPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_ans.pdf",
+        "commentaryPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_cmnt.pdf",
+        "yearPageUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2023r05.html",
+        "questionPdfPagesZeroBased": [
+          7,
+          12
+        ],
+        "modified": true,
+        "modificationNote": "問題文全文は収録せず、設問の趣旨・解答概念・出典位置を要約構造化。"
+      },
+      "purposeSummary": "多数のIPカメラ映像配信を題材に、PIM-SM、SSM、IGMPv3、帯域、アドレス設計を問う。",
+      "commentarySummary": "ディストリビューションツリー、IGMPv2とv3の差、ネットワーク構成に応じた変更点が重点。",
+      "body": {
+        "mode": "official_pdf_reference_or_user_imported_pdf",
+        "fullTextIncluded": false,
+        "figuresIncluded": false,
+        "transcriptionStatus": "not_required_for_pdf_reference_mode",
+        "pageRangeZeroBased": [
+          7,
+          12
+        ],
+        "appReady": true,
+        "offlineAvailability": "公式PDFを利用者が端末へ登録した場合に利用可能"
+      },
+      "questionUnits": [
+        {
+          "label": "設問1",
+          "answerType": "multi_blank",
+          "promptSummary": "IPマルチキャスト関連の7語の穴埋め",
+          "answerConcepts": [
+            "フラッディング",
+            "IGMP",
+            "マルチキャスト",
+            "ツリー",
+            "PIM-SM",
+            "SSM",
+            "復号"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問1",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "ディストリビューションツリーの概念が重点。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q2-U01",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 12,
+            "printedPage": 13,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "ア",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "フラッディング"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "i",
+              "label": "イ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "IGMP"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "u",
+              "label": "ウ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "マルチキャスト"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "e",
+              "label": "エ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "ツリー"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "o",
+              "label": "オ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "PIM-SM",
+                "PIM SM"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "ka",
+              "label": "カ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "SSM"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "ki",
+              "label": "キ",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "復号"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "フラッディング",
+              "IGMP",
+              "マルチキャスト",
+              "ツリー",
+              "PIM-SM",
+              "SSM",
+              "復号"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(1)",
+          "answerType": "description",
+          "promptSummary": "ユニキャスト配信の通信量上の問題",
+          "answerConcepts": [
+            "受信者数に応じて送信元通信量が増加"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問2(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q2-U02",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 12,
+            "printedPage": 13,
+            "underlineRefs": [
+              "①"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 35,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "レシーバ数に応じてソース通信量が増加"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(2)",
+          "answerType": "numeric",
+          "promptSummary": "必要帯域を計算",
+          "answerConcepts": [
+            "160"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問2(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q2-U03",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 12,
+            "printedPage": 13,
+            "underlineRefs": [
+              "②"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "Mbit/s",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "160"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "160"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(3)",
+          "answerType": "description",
+          "promptSummary": "IGMPv3/SSMを踏まえたアドレス設計変更",
+          "answerConcepts": [
+            "各カメラに個別IPと個別グループアドレス"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問2(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "本文全体からIGMPv2とv3の差を読む。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q2-U04",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 12,
+            "printedPage": 13,
+            "underlineRefs": [
+              "③"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 45,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "全IPカメラへ個別IPアドレスと個別グループアドレス"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(1)",
+          "answerType": "description",
+          "promptSummary": "SSM採用による設計上の利点",
+          "answerConcepts": [
+            "グループアドレス設計が容易"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問3(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q2-U05",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 12,
+            "printedPage": 13,
+            "underlineRefs": [
+              "④"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "解答",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "グループアドレス設計が容易"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(2)",
+          "answerType": "multi_answer",
+          "promptSummary": "管理に必要な情報を二つ回答",
+          "answerConcepts": [
+            "グループアドレス",
+            "インタフェース"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問3(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q2-U06",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 12,
+            "printedPage": 13,
+            "underlineRefs": [
+              "⑤"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "info1",
+              "label": "情報1",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "グループアドレス"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "info2",
+              "label": "情報2",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "インタフェース",
+                "インターフェース"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "グループアドレス",
+              "インタフェース"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(3)",
+          "answerType": "multi_blank",
+          "promptSummary": "通信先機器とポート",
+          "answerConcepts": [
+            "カメラ管理サーバ",
+            "443"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問3(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q2-U07",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 12,
+            "printedPage": 13,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "表1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "device",
+              "label": "Ⅰ 機器名",
+              "inputKind": "device_name",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "カメラ管理サーバ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "port",
+              "label": "Ⅱ ポート番号",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "443"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "カメラ管理サーバ",
+              "443"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問4(1)",
+          "answerType": "multi_answer",
+          "promptSummary": "変更対象機器とプロトコル",
+          "answerConcepts": [
+            "L3SW11・L3SW21",
+            "L2SW11・L2SW21",
+            "IGMPv3"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問4(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "構成とプロトコルの関係を追う。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q2-U08",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 12,
+            "printedPage": 13,
+            "underlineRefs": [
+              "⑥"
+            ],
+            "figureRefs": [
+              "図1"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "devicesA",
+              "label": "(a) 機器",
+              "inputKind": "multi_select",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "L3SW11",
+                "L3SW21"
+              ],
+              "orderMatters": false,
+              "expectedCount": 2,
+              "notes": null
+            },
+            {
+              "fieldId": "devicesB",
+              "label": "(b) 機器",
+              "inputKind": "multi_select",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "L2SW11",
+                "L2SW21"
+              ],
+              "orderMatters": false,
+              "expectedCount": 2,
+              "notes": null
+            },
+            {
+              "fieldId": "protocol",
+              "label": "(c) プロトコル",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "IGMPv3",
+                "IGMP v3"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "L3SW11・L3SW21",
+              "L2SW11・L2SW21",
+              "IGMPv3"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問4(2)",
+          "answerType": "description",
+          "promptSummary": "運用変更を最小化できる理由",
+          "answerConcepts": [
+            "Webページ改修だけで対応可能"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "concept_assisted_self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問2 設問4(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q2-U09",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 12,
+            "printedPage": 13,
+            "underlineRefs": [
+              "⑦"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "利点",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "Webページ改修だけで対応完了"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        }
+      ]
+    },
+    {
+      "caseId": "B1-2023-Q3",
+      "subjectId": "b1",
+      "year": 2023,
+      "questionNumber": 3,
+      "title": "新校舎の無線LAN・有線LAN設計",
+      "categoryIds": [
+        "wireless_lan",
+        "lan_design"
+      ],
+      "topics": [
+        "トライバンド",
+        "チャネルボンディング",
+        "DFS",
+        "PoE++",
+        "マルチギガビット",
+        "スタック",
+        "リンクアグリゲーション"
+      ],
+      "estimatedMinutes": 45,
+      "source": {
+        "provider": "IPA",
+        "exam": "ネットワークスペシャリスト",
+        "sectionAtTime": "午後Ⅰ",
+        "currentEquivalent": "科目B-1",
+        "questionPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_qs.pdf",
+        "answerPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_ans.pdf",
+        "commentaryPdfUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_cmnt.pdf",
+        "yearPageUrl": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2023r05.html",
+        "questionPdfPagesZeroBased": [
+          13,
+          18
+        ],
+        "modified": true,
+        "modificationNote": "問題文全文は収録せず、設問の趣旨・解答概念・出典位置を要約構造化。"
+      },
+      "purposeSummary": "新校舎のLAN導入を題材に、無線LAN固有技術と有線LANを含む全体設計を問う。",
+      "commentarySummary": "無線LAN製品用語、周波数帯の特性、トライバンドの利点、トラフィック流量計算が重点。",
+      "body": {
+        "mode": "official_pdf_reference_or_user_imported_pdf",
+        "fullTextIncluded": false,
+        "figuresIncluded": false,
+        "transcriptionStatus": "not_required_for_pdf_reference_mode",
+        "pageRangeZeroBased": [
+          13,
+          18
+        ],
+        "appReady": true,
+        "offlineAvailability": "公式PDFを利用者が端末へ登録した場合に利用可能"
+      },
+      "questionUnits": [
+        {
+          "label": "設問1",
+          "answerType": "multi_blank",
+          "promptSummary": "無線LAN・PoE・有線LAN関連の8語の穴埋め",
+          "answerConcepts": [
+            "トライバンド",
+            "アンテナ",
+            "パスワード",
+            "チャネルボンディング",
+            "PoE++",
+            "マルチギガビットイーサネット",
+            "スタック",
+            "DHCPリレーエージェント"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問1",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "製品仕様で使われる基本用語が重点。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q3-U01",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 17,
+            "printedPage": 18,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "a",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "トライバンド"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "b",
+              "label": "b",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "アンテナ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "c",
+              "label": "c",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "パスワード"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "d",
+              "label": "d",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "チャネルボンディング"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "e",
+              "label": "e",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "PoE++",
+                "PoE＋＋"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "f",
+              "label": "f",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "マルチギガビットイーサネット"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "g",
+              "label": "g",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "スタック"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "h",
+              "label": "h",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "DHCPリレーエージェント",
+                "DHCP リレーエージェント"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "トライバンド",
+              "アンテナ",
+              "パスワード",
+              "チャネルボンディング",
+              "PoE++",
+              "マルチギガビットイーサネット",
+              "スタック",
+              "DHCPリレーエージェント"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(1)",
+          "answerType": "selection_with_reason",
+          "promptSummary": "利用周波数帯とトライバンドの利点",
+          "answerConcepts": [
+            "W52/W53",
+            "W56",
+            "より多くの端末が安定通信"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問2(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "周波数帯の種類と特性を押さえる。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q3-U02",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": [
+              17,
+              18
+            ],
+            "printedPage": [
+              18,
+              19
+            ],
+            "underlineRefs": [
+              "①"
+            ],
+            "figureRefs": [],
+            "tableRefs": [
+              "表1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "band1",
+              "label": "周波数帯1",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "W52/W53",
+                "W52・W53"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "band2",
+              "label": "周波数帯2",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "W56"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "benefit",
+              "label": "利点",
+              "inputKind": "description",
+              "maxLength": 30,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "W52/W53",
+              "W56",
+              "デュアルバンドより多くの端末が安定通信"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問2(2)",
+          "answerType": "multi_answer",
+          "promptSummary": "DFS対象帯域・動作・利用者影響",
+          "answerConcepts": [
+            "W53",
+            "W56",
+            "検知チャネル停止後に別チャネルへ遷移",
+            "接続断・通信断が不定期発生"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問2(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q3-U03",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 18,
+            "printedPage": 19,
+            "underlineRefs": [
+              "②"
+            ],
+            "figureRefs": [],
+            "tableRefs": [
+              "表1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "band1",
+              "label": "周波数帯1",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "W53"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "band2",
+              "label": "周波数帯2",
+              "inputKind": "term",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "W56"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "operation",
+              "label": "APの動作",
+              "inputKind": "description",
+              "maxLength": 40,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "impact",
+              "label": "端末への影響",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "W53とW56",
+              "検知チャネルを停止し別チャネルへ遷移",
+              "接続断又は通信断"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(1)",
+          "answerType": "numeric",
+          "promptSummary": "必要帯域を計算",
+          "answerConcepts": [
+            "800"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "automatic",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問3(1)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": "桁間違いに注意。",
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q3-U04",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 18,
+            "printedPage": 19,
+            "underlineRefs": [
+              "③"
+            ],
+            "figureRefs": [],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "answer",
+              "label": "Mbps",
+              "inputKind": "number",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "800"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "automatic",
+            "exactAutomaticEligible": true,
+            "officialAnswerConcepts": [
+              "800"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(2)",
+          "answerType": "selection_with_reason",
+          "promptSummary": "リンク集約が有効な区間と理由",
+          "answerConcepts": [
+            "区間(ii)",
+            "平常時にリンク本数分の帯域を同時利用"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問3(2)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q3-U05",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 18,
+            "printedPage": 19,
+            "underlineRefs": [
+              "④",
+              "⑤"
+            ],
+            "figureRefs": [
+              "図1"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "section",
+              "label": "区間",
+              "inputKind": "symbol",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "ii",
+                "(ii)",
+                "Ⅱ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "reason",
+              "label": "理由",
+              "inputKind": "description",
+              "maxLength": 30,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "区間(ii)",
+              "平常時にリンク本数分の帯域を同時利用"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        },
+        {
+          "label": "設問3(3)",
+          "answerType": "multi_answer",
+          "promptSummary": "ループ防止対象機器と作業ミス",
+          "answerConcepts": [
+            "AP",
+            "フロアL2SW",
+            "動画コンテンツサーバ",
+            "ループとなる誤接続・設定ミス"
+          ],
+          "acceptedAliases": [],
+          "gradingMode": "self_grade",
+          "officialSourceLocator": {
+            "answerTableRef": "問3 設問3(3)",
+            "questionTextStatus": "official_pdf_reference_only"
+          },
+          "commentaryInsight": null,
+          "transcriptionStatus": "summary_structured",
+          "requiresManualPromptTranscription": false,
+          "questionId": "B1-2023-Q3-U06",
+          "readyForApp": true,
+          "deliveryMode": "official_pdf_plus_answer_form",
+          "promptTextIncluded": false,
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 18,
+            "printedPage": 19,
+            "underlineRefs": [
+              "⑥"
+            ],
+            "figureRefs": [
+              "図1"
+            ],
+            "tableRefs": []
+          },
+          "answerFields": [
+            {
+              "fieldId": "device1",
+              "label": "機器1",
+              "inputKind": "device_name",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "AP"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "device2",
+              "label": "機器2",
+              "inputKind": "device_name",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "フロアL2SW",
+                "フロア L2SW"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "device3",
+              "label": "機器3",
+              "inputKind": "device_name",
+              "maxLength": null,
+              "acceptedAnswers": [
+                "動画コンテンツサーバ"
+              ],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            },
+            {
+              "fieldId": "mistake",
+              "label": "作業ミス",
+              "inputKind": "description",
+              "maxLength": 25,
+              "acceptedAnswers": [],
+              "orderMatters": true,
+              "expectedCount": 1,
+              "notes": null
+            }
+          ],
+          "grading": {
+            "mode": "concept_assisted_self_grade",
+            "exactAutomaticEligible": false,
+            "officialAnswerConcepts": [
+              "AP",
+              "フロアL2SW",
+              "動画コンテンツサーバ",
+              "ループ状態になる誤接続又は設定ミス"
+            ],
+            "notice": "アプリの判定は学習用の参考判定であり、IPAの正式採点ではない。",
+            "caution": null
+          },
+          "implementationDecision": "設問文・本文・図表は公式PDFで確認し、アプリ側には答案欄、字数制限、解答形式、参考判定及び解説を表示する。"
+        }
+      ]
+    }
+  ],
+  "implementationProfile": {
+    "status": "ready_for_pdf_reference_implementation",
+    "decisionDate": "2026-07-21",
+    "caseCount": 9,
+    "questionUnitCount": 83,
+    "questionDelivery": {
+      "default": "official_pdf_online_reference",
+      "offlineOption": "user_imported_official_pdf_stored_in_indexeddb",
+      "bundledOfficialPdf": false,
+      "bundledOfficialFigures": false
+    },
+    "copyrightSafeDesign": "公式問題文・図表をアプリ配信物へ複製せず、公式PDF参照と答案フォームを組み合わせる。"
+  }
+}

@@ -1,4 +1,4 @@
-export const subjectIds = ['a1', 'a2'] as const;
+export const subjectIds = ['a1', 'a2', 'b1'] as const;
 
 export type SubjectId = (typeof subjectIds)[number];
 
@@ -43,6 +43,19 @@ export const subjectConfigs: Readonly<Record<SubjectId, SubjectConfig>> = {
       passingScorePercent: 60,
     },
   },
+  b1: {
+    id: 'b1',
+    label: 'B-1 ネットワーク記述式',
+    shortLabel: 'B-1',
+    description: '公式PDFを参照して、記述式の答案を練習します。',
+    questionCount: 83,
+    exam: {
+      questionCount: 2,
+      durationSeconds: 90 * 60,
+      passingCorrectCount: 0,
+      passingScorePercent: 0,
+    },
+  },
 };
 
 export function getSubjectConfig(subjectId: SubjectId): SubjectConfig {
@@ -50,5 +63,5 @@ export function getSubjectConfig(subjectId: SubjectId): SubjectConfig {
 }
 
 export function isSubjectId(value: unknown): value is SubjectId {
-  return value === 'a1' || value === 'a2';
+  return value === 'a1' || value === 'a2' || value === 'b1';
 }

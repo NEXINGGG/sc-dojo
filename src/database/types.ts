@@ -1,6 +1,7 @@
 import type { PracticeFilters } from '../domain/practice';
 import type { SubjectId } from '../domain/subject';
 import type { ChoiceId } from '../types/question';
+import type { B1AnswerValues, B1SelfGrade } from '../domain/b1';
 
 export type PracticeAnswerSource =
   'normal_practice' | 'review_unanswered' | 'review_incorrect' | 'review_favorite';
@@ -165,4 +166,59 @@ export interface MetadataRow {
   storageVersion: number;
   questionDataVersion: number;
   updatedAt: string;
+}
+
+export interface B1PdfFileRow {
+  subjectId: 'b1';
+  year: number;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  updatedAt: string;
+  blob: Blob;
+}
+
+export interface B1PdfRegistrationMetadata {
+  subjectId: 'b1';
+  year: number;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  updatedAt: string;
+}
+
+export interface B1PracticeSessionRow {
+  id: string;
+  subjectId: 'b1';
+  version: 1;
+  status: 'in_progress' | 'completed';
+  caseId: string;
+  unitIds: string[];
+  answers: Record<string, B1AnswerValues>;
+  selfGrades: Record<string, B1SelfGrade>;
+  reviewQuestionIds: string[];
+  currentIndex: number;
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string;
+}
+
+export interface B1MockSessionRow {
+  id: string;
+  subjectId: 'b1';
+  version: 1;
+  status: 'in_progress' | 'submitted' | 'completed';
+  year: number;
+  caseIds: string[];
+  unitIds: string[];
+  answers: Record<string, B1AnswerValues>;
+  selfGrades: Record<string, B1SelfGrade>;
+  reviewQuestionIds: string[];
+  currentIndex: number;
+  startedAt: string;
+  deadlineAt: string;
+  updatedAt: string;
+  submittedAt?: string;
+  submissionReason?: ExamSubmissionReason;
+  completedAt?: string;
 }

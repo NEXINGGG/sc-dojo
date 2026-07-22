@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { b1Cases } from '../data/b1';
 import { questionDataVersion, questions } from '../data/catalog';
 import { createExamSession, gradeExam } from './exam';
 import {
@@ -104,7 +105,7 @@ describe('バックアップ形式', () => {
     });
     expect(
       validateBackupDocument(
-        { ...createBackupDocument(createInput()), formatVersion: 3 },
+        { ...createBackupDocument(createInput()), formatVersion: 4 },
         questions,
         identity,
       ),
@@ -234,6 +235,65 @@ describe('バックアップ形式', () => {
     expect(invalid).toMatchObject({ ok: true });
     if (invalid.ok) {
       expect(invalid.value.document.data.mockExamResults).toHaveLength(0);
+    }
+  });
+
+  it('B-1 sessions and PDF metadata round-trip without PDF blobs, and older backups default to empty B-1 data', () => {
+    const caseItem = b1Cases[0];
+    const b1 = {
+      practiceSessions: [
+        {
+          id: 'b1-practice-1',
+          subjectId: 'b1' as const,
+          version: 1 as const,
+          status: 'in_progress' as const,
+          caseId: caseItem.caseId,
+          unitIds: caseItem.questionUnits.map((unit) => unit.questionId),
+          answers: { [caseItem.questionUnits[0].questionId]: { a: 'バックボーン' } },
+          selfGrades: {},
+          reviewQuestionIds: [],
+          currentIndex: 0,
+          createdAt: exportedAt,
+          updatedAt: exportedAt,
+        },
+      ],
+      mockSessions: [],
+      pdfRegistrations: [
+        {
+          subjectId: 'b1' as const,
+          year: 2025,
+          fileName: 'ipa-2025.pdf',
+          mimeType: 'application/pdf',
+          size: 1234,
+          updatedAt: exportedAt,
+        },
+      ],
+    };
+    const document = createBackupDocument(createInput({ b1 }));
+    const result = validateBackupDocument(document, questions, identity);
+    const oldVersion = validateBackupDocument(
+      {
+        ...document,
+        formatVersion: 2,
+        backupVersion: 2,
+        data: { ...document.data, b1: undefined },
+      },
+      questions,
+      identity,
+    );
+
+    expect(result).toMatchObject({ ok: true });
+    if (result.ok) {
+      expect(result.value.document.data.b1).toEqual(b1);
+      expect(JSON.stringify(result.value.document.data.b1)).not.toContain('blob');
+    }
+    expect(oldVersion).toMatchObject({ ok: true });
+    if (oldVersion.ok) {
+      expect(oldVersion.value.document.data.b1).toEqual({
+        practiceSessions: [],
+        mockSessions: [],
+        pdfRegistrations: [],
+      });
     }
   });
 

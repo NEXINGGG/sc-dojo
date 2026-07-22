@@ -5,7 +5,7 @@ import { database } from '../database/database';
 import { allQuestions } from '../data/catalog';
 import {
   createQuestionDataIdentity,
-  parseBackupJson,
+  parseBackupJsonWithB1,
   validateBackupFileSize,
   type BackupPreview,
   type ValidatedBackup,
@@ -100,7 +100,7 @@ export function SettingsPage() {
 
     setIsBusy(true);
     try {
-      const validation = parseBackupJson(
+      const validation = await parseBackupJsonWithB1(
         await readBackupFileAsText(file),
         allQuestions,
         questionDataIdentity,
@@ -407,7 +407,7 @@ export function SettingsPage() {
 
       {dialog === 'clear-learning-data' && (
         <ConfirmDialog
-          description="回答履歴、お気に入り、途中セッション、演習結果、模試結果、学習日記録を削除します。元に戻せません。表示設定は残ります。"
+          description="回答履歴、お気に入り、途中セッション、演習結果、模試結果、学習日記録と、端末へ登録したB-1公式PDFを削除します。元に戻せません。表示設定は残ります。"
           title="学習データを全消去しますか？"
         >
           <p className="dialog-inline-help">必要なら、先にバックアップを作成できます。</p>
@@ -512,6 +512,18 @@ function DataSummary({ summary }: { summary: StoredDataSummary | undefined }) {
           <dt>DBスキーマ</dt>
           <dd>v{summary.databaseSchemaVersion}</dd>
         </div>
+        <div>
+          <dt>B-1登録PDF</dt>
+          <dd>{summary.b1RegisteredPdfCount}年度分</dd>
+        </div>
+        <div>
+          <dt>未完了B-1演習</dt>
+          <dd>{summary.b1InProgressPractice ? 'あり' : 'なし'}</dd>
+        </div>
+        <div>
+          <dt>未完了B-1模試</dt>
+          <dd>{summary.b1InProgressMock ? 'あり' : 'なし'}</dd>
+        </div>
       </dl>
     </>
   );
@@ -570,6 +582,18 @@ function RestoreDialog({
         <div>
           <dt>未完了模試</dt>
           <dd>{preview.mockExamSessionCount > 0 ? 'あり' : 'なし'}</dd>
+        </div>
+        <div>
+          <dt>未完了B-1演習</dt>
+          <dd>{preview.b1PracticeSessionCount > 0 ? 'あり' : 'なし'}</dd>
+        </div>
+        <div>
+          <dt>B-1模試</dt>
+          <dd>{preview.b1MockSessionCount}件</dd>
+        </div>
+        <div>
+          <dt>B-1登録PDFの情報</dt>
+          <dd>{preview.b1PdfRegistrationCount}年度分（PDF本体は復元しません）</dd>
         </div>
         <div>
           <dt>表示設定</dt>

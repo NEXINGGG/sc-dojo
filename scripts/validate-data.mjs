@@ -166,6 +166,10 @@ export function main() {
     cwd: rootDir,
     stdio: 'inherit',
   });
+  execFileSync(process.execPath, [join(rootDir, 'scripts', 'validate-b1-ready.mjs')], {
+    cwd: rootDir,
+    stdio: 'inherit',
+  });
   console.log('PASSED: no data validation errors');
 }
 

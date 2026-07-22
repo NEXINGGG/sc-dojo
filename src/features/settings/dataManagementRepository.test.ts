@@ -6,6 +6,7 @@ import {
   questionDataVersion,
   questions,
 } from '../../data/catalog';
+import { b1Cases } from '../../data/b1';
 import {
   createBackupDocument,
   createQuestionDataIdentity,
@@ -24,19 +25,25 @@ import {
 import { APP_VERSION, DataManagementRepository } from './dataManagementRepository';
 
 const databaseNames: string[] = [];
+const testDatabases: A1DojoDatabase[] = [];
 const exportedAt = '2026-07-18T00:00:00.000Z';
 const identity = createQuestionDataIdentity(questions, questionDataVersion);
 const allIdentity = createQuestionDataIdentity(allQuestions, 1);
 
 afterEach(async () => {
   vi.restoreAllMocks();
+  for (const database of testDatabases.splice(0)) {
+    database.close();
+  }
   await Promise.all(databaseNames.splice(0).map(async (name) => indexedDB.deleteDatabase(name)));
 });
 
 function createTestDatabase(): A1DojoDatabase {
   const name = `a1-dojo-data-management-${crypto.randomUUID()}`;
   databaseNames.push(name);
-  return createDatabase(name);
+  const database = createDatabase(name);
+  testDatabases.push(database);
+  return database;
 }
 
 function createValidatedBackup(): ValidatedBackup {
@@ -308,5 +315,69 @@ describe('DataManagementRepository', () => {
 
     expect(await target.answerAttempts.where('subjectId').equals('a1').count()).toBe(1);
     expect(await target.answerAttempts.where('subjectId').equals('a2').count()).toBe(1);
+  });
+
+  it('backs up B-1 answers and PDF metadata without exporting or recreating PDF blobs', async () => {
+    const source = createTestDatabase();
+    const target = createTestDatabase();
+    await Promise.all([initializeDatabase(source), initializeDatabase(target)]);
+    const caseItem = b1Cases[0];
+    await source.b1PracticeSessions.put({
+      id: 'b1-practice-backup',
+      subjectId: 'b1',
+      version: 1,
+      status: 'in_progress',
+      caseId: caseItem.caseId,
+      unitIds: caseItem.questionUnits.map((unit) => unit.questionId),
+      answers: { [caseItem.questionUnits[0].questionId]: { a: 'バックボーン' } },
+      selfGrades: {},
+      reviewQuestionIds: [],
+      currentIndex: 0,
+      createdAt: exportedAt,
+      updatedAt: exportedAt,
+    });
+    await source.b1PdfFiles.put({
+      subjectId: 'b1',
+      year: 2025,
+      fileName: 'ipa-2025.pdf',
+      mimeType: 'application/pdf',
+      size: 8,
+      updatedAt: exportedAt,
+      blob: new Blob(['%PDF-1.7'], { type: 'application/pdf' }),
+    });
+
+    const backup = await new DataManagementRepository(source).createBackup(exportedAt);
+    expect(backup.data.b1.pdfRegistrations).toEqual([
+      {
+        subjectId: 'b1',
+        year: 2025,
+        fileName: 'ipa-2025.pdf',
+        mimeType: 'application/pdf',
+        size: 8,
+        updatedAt: exportedAt,
+      },
+    ]);
+    expect(JSON.stringify(backup.data.b1)).not.toContain('blob');
+
+    const validation = validateBackupDocument(backup, allQuestions, allIdentity);
+    if (!validation.ok) throw new Error('B-1 backup validation failed');
+    await target.b1PdfFiles.put({
+      subjectId: 'b1',
+      year: 2024,
+      fileName: 'local-only.pdf',
+      mimeType: 'application/pdf',
+      size: 8,
+      updatedAt: exportedAt,
+      blob: new Blob(['%PDF-1.7'], { type: 'application/pdf' }),
+    });
+    await new DataManagementRepository(target).restore(validation.value);
+
+    await expect(target.b1PracticeSessions.get('b1-practice-backup')).resolves.toMatchObject({
+      subjectId: 'b1',
+      answers: { [caseItem.questionUnits[0].questionId]: { a: 'バックボーン' } },
+    });
+    await expect(target.b1PdfFiles.get(2024)).resolves.toMatchObject({
+      fileName: 'local-only.pdf',
+    });
   });
 });

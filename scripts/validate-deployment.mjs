@@ -110,6 +110,15 @@ const inspectableFiles = distFiles.filter((file) =>
 );
 const joinedSource = inspectableFiles.map((file) => readText(file)).join('\n');
 assert(
+  !distFiles.some((file) => /\.pdf$/i.test(file)),
+  'dist/ に公式PDFを含めないでください。利用者が登録したPDFはIndexedDBだけに保存します。',
+);
+const serviceWorkerSource = existsSync(join(distDirectory, 'sw.js')) ? readText('sw.js') : '';
+assert(
+  !/\.pdf(?:["'`?]|$)|ipa\.go\.jp/i.test(serviceWorkerSource),
+  'Service Workerのprecacheに公式PDFまたはIPAのPDF URLを含めないでください。',
+);
+assert(
   !/(?:[A-Za-z]:\\|file:\/\/|\/Users\/|\/home\/)/.test(joinedSource),
   'dist/に絶対ローカルパスが含まれています。',
 );
@@ -132,7 +141,7 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(`deployment artifacts: ${distFiles.length} files checked`);
-  console.log(`PWA base: ${expectedBase}, A-1/A-2 questions precached`);
+  console.log(`PWA base: ${expectedBase}, A-1/A-2とB-1アプリデータをprecache（公式PDFは除外）`);
 }
 
 function assert(condition, message) {

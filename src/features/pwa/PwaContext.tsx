@@ -449,11 +449,19 @@ async function confirmLearningStateSaved(): Promise<void> {
   await database.open();
   await database.transaction(
     'rw',
-    [database.practiceSessions, database.examSessions, database.settings],
+    [
+      database.practiceSessions,
+      database.examSessions,
+      database.b1PracticeSessions,
+      database.b1MockSessions,
+      database.settings,
+    ],
     async () => {
       await Promise.all([
         database.practiceSessions.where('status').equals('in_progress').first(),
         database.examSessions.where('status').equals('in_progress').first(),
+        database.b1PracticeSessions.where('status').equals('in_progress').first(),
+        database.b1MockSessions.where('status').equals('in_progress').first(),
         database.settings.get('appearance'),
       ]);
     },

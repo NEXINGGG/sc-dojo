@@ -28,6 +28,9 @@ describe('A1DojoDatabase', () => {
       'metadata',
       'practiceResults',
       'learningDaysBySubject',
+      'b1PdfFiles',
+      'b1PracticeSessions',
+      'b1MockSessions',
     ]);
 
     database.close();
@@ -74,7 +77,7 @@ describe('A1DojoDatabase', () => {
     const upgraded = createDatabase(name);
     await initializeDatabase(upgraded);
 
-    expect(upgraded.verno).toBe(5);
+    expect(upgraded.verno).toBe(7);
     await expect(upgraded.questionProgress.get('A1-001')).resolves.toMatchObject({
       favorite: true,
       attemptCount: 2,
@@ -93,6 +96,9 @@ describe('A1DojoDatabase', () => {
       shuffleChoices: true,
       selectedSubject: 'a1',
     });
+    await expect(upgraded.b1PdfFiles.count()).resolves.toBe(0);
+    await expect(upgraded.b1PracticeSessions.count()).resolves.toBe(0);
+    await expect(upgraded.b1MockSessions.count()).resolves.toBe(0);
     upgraded.close();
   });
 });

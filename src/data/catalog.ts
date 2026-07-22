@@ -78,6 +78,8 @@ export interface SubjectCatalog {
   getQuestionsInSet: (questionSetId: string) => readonly Question[];
 }
 
+type ChoiceSubjectId = Exclude<SubjectId, 'b1'>;
+
 function toChoice(choice: RawChoice): Choice {
   return { id: choice.id, text: choice.text };
 }
@@ -145,7 +147,7 @@ function createCatalog(
   };
 }
 
-const catalogs: Readonly<Record<SubjectId, SubjectCatalog>> = {
+const catalogs: Readonly<Record<ChoiceSubjectId, SubjectCatalog>> = {
   a1: createCatalog(
     'a1',
     a1QuestionsPayload as RawQuestionPayload,
@@ -165,6 +167,9 @@ const allQuestionByCode = new Map(
 );
 
 export function getSubjectCatalog(subjectId: SubjectId): SubjectCatalog {
+  if (subjectId === 'b1') {
+    throw new Error('B-1は公式PDF参照方式のため、四肢択一の問題カタログを使用しません。');
+  }
   return catalogs[subjectId];
 }
 
@@ -178,24 +183,36 @@ export const domains = catalogs.a1.domains;
 export const allQuestions: readonly Question[] = [...catalogs.a1.questions, ...catalogs.a2.questions];
 
 export function getQuestionByCode(code: string, subjectId?: SubjectId): Question | undefined {
+  if (subjectId === 'b1') {
+    return undefined;
+  }
   return subjectId === undefined ? allQuestionByCode.get(code) : catalogs[subjectId].getQuestionByCode(code);
 }
 
 export function getCategoryById(categoryId: string, subjectId: SubjectId = 'a1'): Category | undefined {
+  if (subjectId === 'b1') {
+    return undefined;
+  }
   return catalogs[subjectId].getCategoryById(categoryId);
 }
 
 export function getDomainById(domainId: string, subjectId: SubjectId = 'a1'): Domain | undefined {
+  if (subjectId === 'b1') {
+    return undefined;
+  }
   return catalogs[subjectId].getDomainById(domainId);
 }
 
 export function getDomainForQuestion(question: Question): Domain | undefined {
-  return catalogs[question.subjectId].getDomainById(question.domainId);
+  return getDomainById(question.domainId, question.subjectId);
 }
 
 export function getQuestionsInSet(
   questionSetId: string,
   subjectId: SubjectId = 'a1',
 ): readonly Question[] {
+  if (subjectId === 'b1') {
+    return [];
+  }
   return catalogs[subjectId].getQuestionsInSet(questionSetId);
 }

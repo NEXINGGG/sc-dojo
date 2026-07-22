@@ -5,8 +5,10 @@ import { App } from '../App';
 import { categories, questions } from '../data/catalog';
 import { database } from '../database/database';
 import type { AnswerAttemptRow } from '../database/types';
+import { waitForRouteLoadingToFinish } from '../test/routeLoading';
 
 async function clearLearningData() {
+  await database.open();
   await Promise.all([
     database.practiceSessions.clear(),
     database.practiceResults.clear(),
@@ -15,6 +17,8 @@ async function clearLearningData() {
     database.answerAttempts.clear(),
     database.questionProgress.clear(),
     database.learningDays.clear(),
+    database.learningDaysBySubject.clear(),
+    database.settings.clear(),
   ]);
 }
 
@@ -43,6 +47,7 @@ beforeEach(async () => {
 afterEach(async () => {
   cleanup();
   await clearLearningData();
+  database.close();
   window.location.hash = '#/';
 });
 
@@ -51,7 +56,10 @@ describe('成績画面', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '成績' })).toBeInTheDocument();
+    await waitForRouteLoadingToFinish();
+    expect(
+      await screen.findByRole('heading', { name: '成績' }, { timeout: 5_000 }),
+    ).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'カテゴリ別成績' })).toBeInTheDocument();
     expect(screen.getByText('現在、強い苦手分野はありません')).toBeInTheDocument();
     expect(screen.getByText('まだ模試を受験していません')).toBeInTheDocument();

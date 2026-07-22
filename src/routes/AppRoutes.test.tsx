@@ -1,9 +1,20 @@
 import { cleanup, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { App } from '../App';
+import { database } from '../database/database';
+import { waitForRouteLoadingToFinish } from '../test/routeLoading';
 
-afterEach(() => {
+beforeEach(async () => {
+  await database.open();
+  await database.settings.clear();
+  database.close();
+});
+
+afterEach(async () => {
   cleanup();
+  await database.open();
+  await database.settings.clear();
+  database.close();
   window.location.hash = '#/';
 });
 
@@ -23,14 +34,18 @@ describe('主要ルート', () => {
   ])('%s で %s を表示する', async (path, heading) => {
     renderRoute(path);
 
-    expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument();
+    await waitForRouteLoadingToFinish();
+    expect(
+      await screen.findByRole('heading', { name: heading }, { timeout: 5_000 }),
+    ).toBeInTheDocument();
   });
 
   it('存在しないURLで専用画面を表示する', async () => {
     renderRoute('/unknown-path');
 
+    await waitForRouteLoadingToFinish();
     expect(
-      await screen.findByRole('heading', { name: 'ページが見つかりません' }),
+      await screen.findByRole('heading', { name: 'ページが見つかりません' }, { timeout: 5_000 }),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'ホームへ戻る' })).toBeInTheDocument();
   });
@@ -38,7 +53,8 @@ describe('主要ルート', () => {
   it('主要ナビゲーションとテーマ切替にアクセシブルな名前がある', async () => {
     renderRoute('/');
 
-    await screen.findByRole('heading', { name: 'ホーム' });
+    await waitForRouteLoadingToFinish();
+    await screen.findByRole('heading', { name: 'ホーム' }, { timeout: 5_000 });
     for (const label of ['ホーム', '演習', '模試', '成績', '設定']) {
       expect(screen.getByRole('link', { name: label })).toBeInTheDocument();
     }

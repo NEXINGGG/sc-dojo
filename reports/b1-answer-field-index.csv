@@ -1,0 +1,153 @@
+﻿caseId,year,questionId,label,printedPage,fieldId,fieldLabel,inputKind,maxLength,gradingMode,acceptedAnswers,promptSummary
+B1-2025-Q1,2025,B1-2025-Q1-U01,設問1(1),7,a,a,term,,automatic,バックボーン,ネットワーク構成・機器役割に関する3語の穴埋め
+B1-2025-Q1,2025,B1-2025-Q1-U01,設問1(1),7,b,b,term,,automatic,ルータ,ネットワーク構成・機器役割に関する3語の穴埋め
+B1-2025-Q1,2025,B1-2025-Q1-U01,設問1(1),7,c,c,term,,automatic,デフォルトゲートウェイ,ネットワーク構成・機器役割に関する3語の穴埋め
+B1-2025-Q1,2025,B1-2025-Q1-U02,設問1(2),7,answer,解答,description,35,concept_assisted_self_grade,,OSPF認証を行わない場合の問題を説明
+B1-2025-Q1,2025,B1-2025-Q1-U03,設問1(3),7,answer,解答,term,,automatic,長くする / 長くする。,R31のAS_PATH長をR30と比較してどう設定するか
+B1-2025-Q1,2025,B1-2025-Q1-U04,設問1(4),7,answer,解答,description,25,concept_assisted_self_grade,,電源投入後に待つべきOSPFルータの状態
+B1-2025-Q1,2025,B1-2025-Q1-U05,設問2(1),7,osaka,大阪本社,multi_select,,automatic,ウ,本社・支社ごとの通信経路を選択
+B1-2025-Q1,2025,B1-2025-Q1-U05,設問2(1),7,tokyo,東京支社,multi_select,,automatic,ア / イ,本社・支社ごとの通信経路を選択
+B1-2025-Q1,2025,B1-2025-Q1-U06,設問2(2),7,answer,解答,description,30,concept_assisted_self_grade,,通信を迂回させるためのOSPFコスト設定
+B1-2025-Q1,2025,B1-2025-Q1-U07,設問2(3),7,answer,解答,description,30,concept_assisted_self_grade,,設定変更より物理IF閉塞を選ぶ運用上の理由
+B1-2025-Q1,2025,B1-2025-Q1-U08,設問2(4),7,answer,解答,description,25,concept_assisted_self_grade,,配線誤りを防ぐ現場作業
+B1-2025-Q1,2025,B1-2025-Q1-U09,設問2(5),7,step1,①,device_name,,automatic,L3SW10,更改作業の対象機器を手順順に列挙
+B1-2025-Q1,2025,B1-2025-Q1-U09,設問2(5),7,step2,②,device_name,,automatic,R11,更改作業の対象機器を手順順に列挙
+B1-2025-Q1,2025,B1-2025-Q1-U09,設問2(5),7,step3,③,device_name,,automatic,R20,更改作業の対象機器を手順順に列挙
+B1-2025-Q1,2025,B1-2025-Q1-U09,設問2(5),7,step4,④,device_name,,automatic,R30,更改作業の対象機器を手順順に列挙
+B1-2025-Q2,2025,B1-2025-Q2-U01,設問1(1),13,a,a,term,,automatic,プライベート,IPアドレス種別と給電規格の穴埋め
+B1-2025-Q2,2025,B1-2025-Q2-U01,設問1(1),13,b,b,term,,automatic,グローバル,IPアドレス種別と給電規格の穴埋め
+B1-2025-Q2,2025,B1-2025-Q2-U01,設問1(1),13,c,c,term,,automatic,PoE+ / PoE＋,IPアドレス種別と給電規格の穴埋め
+B1-2025-Q2,2025,B1-2025-Q2-U02,設問1(2),"[13, 14]",answer,解答,description,15,concept_assisted_self_grade,,DHCPリレーがサーバへ伝える情報
+B1-2025-Q2,2025,B1-2025-Q2-U03,設問2(1),14,answer,解答,description,40,concept_assisted_self_grade,,特定機器故障と断定できない理由
+B1-2025-Q2,2025,B1-2025-Q2-U04,設問2(2),14,d,d,term,,automatic,帯域確保,トラフィック制御の目的を表す語
+B1-2025-Q2,2025,B1-2025-Q2-U05,設問2(3),14,answers,該当項目,multi_select,,automatic,iii / iv / ⅲ / ⅳ,調査対象となる通信・操作を選択
+B1-2025-Q2,2025,B1-2025-Q2-U06,設問2(4),14,pcCount,PC台数,number,,automatic,327,PC台数とNAPTエントリー数を算出
+B1-2025-Q2,2025,B1-2025-Q2-U06,設問2(4),14,entryCount,エントリー数,number,,automatic,"120000 / 120,000",PC台数とNAPTエントリー数を算出
+B1-2025-Q2,2025,B1-2025-Q2-U07,設問3(1),14,answer,解答,description,30,concept_assisted_self_grade,,HTTP/1.1で後続処理が待たされる理由
+B1-2025-Q2,2025,B1-2025-Q2-U08,設問3(2),14,e,e,term,,automatic,リクエスト,HTTP/2のリクエスト・レスポンス・ストリームID・並列処理の穴埋め
+B1-2025-Q2,2025,B1-2025-Q2-U08,設問3(2),14,f,f,term,,automatic,レスポンス,HTTP/2のリクエスト・レスポンス・ストリームID・並列処理の穴埋め
+B1-2025-Q2,2025,B1-2025-Q2-U08,設問3(2),14,g,g,term,,automatic,ストリームID / ストリーム ID,HTTP/2のリクエスト・レスポンス・ストリームID・並列処理の穴埋め
+B1-2025-Q2,2025,B1-2025-Q2-U08,設問3(2),14,h,h,term,,automatic,並列,HTTP/2のリクエスト・レスポンス・ストリームID・並列処理の穴埋め
+B1-2025-Q2,2025,B1-2025-Q2-U09,設問3(3),14,adjustment,調整内容,description,25,concept_assisted_self_grade,,UDP保持時間の調整内容と効果
+B1-2025-Q2,2025,B1-2025-Q2-U09,設問3(3),14,effect,効果,description,45,concept_assisted_self_grade,,UDP保持時間の調整内容と効果
+B1-2025-Q3,2025,B1-2025-Q3-U01,設問1(1),19,answer,解答,description,25,concept_assisted_self_grade,,複数ログの時刻同期・集中管理が必要な理由
+B1-2025-Q3,2025,B1-2025-Q3-U02,設問1(2),19,purpose1,目的1,description,35,self_grade,,SWGで利用する代表的機能を二つ記述
+B1-2025-Q3,2025,B1-2025-Q3-U02,設問1(2),19,purpose2,目的2,description,35,self_grade,,SWGで利用する代表的機能を二つ記述
+B1-2025-Q3,2025,B1-2025-Q3-U03,設問1(3),19,answer,ログ名,term,,automatic,L3SWのDHCPリースログ / L3SW の DHCP リースログ,端末と利用者の対応確認に使うログ
+B1-2025-Q3,2025,B1-2025-Q3-U04,設問1(4),20,a,a,term,,automatic,syslogサーバ / syslog サーバ,ログ・認証連携先の穴埋め
+B1-2025-Q3,2025,B1-2025-Q3-U04,設問1(4),20,b,b,term,,automatic,認証サーバ,ログ・認証連携先の穴埋め
+B1-2025-Q3,2025,B1-2025-Q3-U05,設問1(5),20,c,c,number,,automatic,10080,プロキシ系通信のポート番号
+B1-2025-Q3,2025,B1-2025-Q3-U05,設問1(5),20,d,d,number,,automatic,443,プロキシ系通信のポート番号
+B1-2025-Q3,2025,B1-2025-Q3-U06,設問2(1),20,answer,証明書,term,20,automatic,SWGサービスのルート証明書 / SWG サービスのルート証明書 / ルート証明書,TLS検査で端末へ配布する証明書
+B1-2025-Q3,2025,B1-2025-Q3-U07,設問2(2),20,answer,外部通信先,term,,automatic,C&Cサーバ / C＆Cサーバ / C&C サーバ,隔離環境での通信先となる悪性サーバ種別
+B1-2025-Q3,2025,B1-2025-Q3-U08,設問3(1),20,rules,項番,multi_select,,automatic,2 / 7,移行対象となる経路・通信番号を選択
+B1-2025-Q3,2025,B1-2025-Q3-U09,設問3(2),20,route,経路,sequence,,automatic,B / A / H / I / E / I / K,移行後の通信経路を記号で順序回答
+B1-2025-Q3,2025,B1-2025-Q3-U10,設問3(3),20,source,送信元,term,,automatic,内部セグメント / ソフトE / ソフト E,送信元・宛先・プロトコル/ポートを記述
+B1-2025-Q3,2025,B1-2025-Q3-U10,設問3(3),20,destination,宛先,term,,automatic,SWGサービス / SWG サービス,送信元・宛先・プロトコル/ポートを記述
+B1-2025-Q3,2025,B1-2025-Q3-U10,設問3(3),20,protocolPort,プロトコル/宛先ポート,term,,automatic,TCP/443 / TCP 443 / TCP:443,送信元・宛先・プロトコル/ポートを記述
+B1-2025-Q3,2025,B1-2025-Q3-U11,設問3(4),20,answer,解答,description,35,concept_assisted_self_grade,,クラウドサービス側のアクセス許可設定変更
+B1-2025-Q3,2025,B1-2025-Q3-U12,設問3(5),20,answer,利点,description,10,concept_assisted_self_grade,,直接通信・経路短縮の利点を記述
+B1-2024-Q1,2024,B1-2024-Q1-U01,設問1(1),7,answer,解答,description,50,concept_assisted_self_grade,,ICMPだけのヘルスチェックで検知できない障害
+B1-2024-Q1,2024,B1-2024-Q1-U02,設問1(2),7,a,ア,term,,automatic,最少接続数,負荷分散方式とネットワークアドレスの穴埋め
+B1-2024-Q1,2024,B1-2024-Q1-U02,設問1(2),7,i,イ,cidr,,automatic,172.22.1.0/24,負荷分散方式とネットワークアドレスの穴埋め
+B1-2024-Q1,2024,B1-2024-Q1-U03,設問1(3),7,answer,装置記号,symbol,,automatic,LB,該当するネットワーク機器
+B1-2024-Q1,2024,B1-2024-Q1-U04,設問2(1),7,u,ウ,term,,automatic,大きい,BGP属性値の大小関係
+B1-2024-Q1,2024,B1-2024-Q1-U04,設問2(1),7,e,エ,term,,automatic,小さい,BGP属性値の大小関係
+B1-2024-Q1,2024,B1-2024-Q1-U05,設問2(2),"[7, 8]",answer,接続場所,term,,automatic,IX,ISP間接続の場
+B1-2024-Q1,2024,B1-2024-Q1-U06,設問2(3),8,answer,解答,description,10,concept_assisted_self_grade,,IRR登録等で防ぐ対象
+B1-2024-Q1,2024,B1-2024-Q1-U07,設問2(4),8,answer,解答,description,40,concept_assisted_self_grade,,不正経路受信によるサービス影響
+B1-2024-Q1,2024,B1-2024-Q1-U08,設問3(1),8,answer,解答,description,30,concept_assisted_self_grade,,攻撃元に近い位置で遮断する利点
+B1-2024-Q1,2024,B1-2024-Q1-U09,設問3(2),8,answer,解答,description,30,concept_assisted_self_grade,,FlowSpec等がより細かい条件で有利な理由
+B1-2024-Q2,2024,B1-2024-Q2-U01,設問1,14,a,ア,term,,automatic,カスタマー,SD-WAN・BGP・DMZ・PBRに関する6語の穴埋め
+B1-2024-Q2,2024,B1-2024-Q2-U01,設問1,14,i,イ,term,,automatic,再配布,SD-WAN・BGP・DMZ・PBRに関する6語の穴埋め
+B1-2024-Q2,2024,B1-2024-Q2-U01,設問1,14,u,ウ,term,,automatic,DMZ,SD-WAN・BGP・DMZ・PBRに関する6語の穴埋め
+B1-2024-Q2,2024,B1-2024-Q2-U01,設問1,14,e,エ,term,,automatic,eBGP / EBGP,SD-WAN・BGP・DMZ・PBRに関する6語の穴埋め
+B1-2024-Q2,2024,B1-2024-Q2-U01,設問1,14,o,オ,term,,automatic,プライベート,SD-WAN・BGP・DMZ・PBRに関する6語の穴埋め
+B1-2024-Q2,2024,B1-2024-Q2-U01,設問1,14,ka,カ,term,,automatic,ポリシーベース,SD-WAN・BGP・DMZ・PBRに関する6語の穴埋め
+B1-2024-Q2,2024,B1-2024-Q2-U02,設問2(1),14,a,a,cidr,,automatic,10.3.0.0/16,広告経路とAS_PATHを回答
+B1-2024-Q2,2024,B1-2024-Q2-U02,設問2(1),14,b,b,term,,automatic,"64500 64500 / 64500,64500",広告経路とAS_PATHを回答
+B1-2024-Q2,2024,B1-2024-Q2-U03,設問2(2),14,c,c,number,,automatic,65500,AS番号の穴埋め
+B1-2024-Q2,2024,B1-2024-Q2-U03,設問2(2),14,d,d,number,,automatic,65500,AS番号の穴埋め
+B1-2024-Q2,2024,B1-2024-Q2-U03,設問2(2),14,e,e,number,,automatic,65500,AS番号の穴埋め
+B1-2024-Q2,2024,B1-2024-Q2-U03,設問2(2),14,f,f,number,,automatic,65500,AS番号の穴埋め
+B1-2024-Q2,2024,B1-2024-Q2-U04,設問3(1),14,answer,解答,description,20,concept_assisted_self_grade,,設定ミスで発生する障害
+B1-2024-Q2,2024,B1-2024-Q2-U05,設問3(2),14,lsaType,LSAタイプ,term,,automatic,Type5 / Type 5 / 外部LSA / 外部 LSA,OSPFのLSAタイプと生成機器
+B1-2024-Q2,2024,B1-2024-Q2-U05,設問3(2),14,device,生成機器,device_name,,automatic,ルータ3 / ルータ 3,OSPFのLSAタイプと生成機器
+B1-2024-Q2,2024,B1-2024-Q2-U06,設問4(1),14,info1,情報1,description,25,self_grade,,IPsecトンネル確立に必要な情報
+B1-2024-Q2,2024,B1-2024-Q2-U06,設問4(1),14,info2,情報2,description,25,self_grade,,IPsecトンネル確立に必要な情報
+B1-2024-Q2,2024,B1-2024-Q2-U07,設問4(2),14,answer,解答,description,35,concept_assisted_self_grade,,BFDを組み合わせる目的
+B1-2024-Q2,2024,B1-2024-Q2-U08,設問5(1),"[14, 15]",te,通過TE,multi_select,,automatic,TE023 / TE032,指定条件のトンネル識別子
+B1-2024-Q2,2024,B1-2024-Q2-U09,設問5(2),15,te,通過TE,multi_select,,automatic,TE123 / TE132,別条件のトンネル識別子
+B1-2024-Q3,2024,B1-2024-Q3-U01,設問1(1),20,answer,ア,term,,automatic,ハブアンドスポーク / ハブ・アンド・スポーク,拠点間VPNの構成方式
+B1-2024-Q3,2024,B1-2024-Q3-U02,設問1(2),20,answer,鍵の呼称,term,,automatic,事前共有鍵 / PSK,IPsec認証で用いる鍵方式
+B1-2024-Q3,2024,B1-2024-Q3-U03,設問1(3),20,answer,解答,description,25,concept_assisted_self_grade,,拠点ごとに鍵を分ける利点
+B1-2024-Q3,2024,B1-2024-Q3-U04,設問1(4),20,ranges,暗号化範囲,multi_select,,self_grade,IPヘッダー / 元のIPパケット / ESPトレーラ,ESPトンネルモードで暗号化される図中範囲
+B1-2024-Q3,2024,B1-2024-Q3-U05,設問1(5),"[20, 21]",answer,解答,description,30,concept_assisted_self_grade,,トンネルIFのアドレス設定方式
+B1-2024-Q3,2024,B1-2024-Q3-U06,設問1(6),21,answer,影響,description,10,concept_assisted_self_grade,,本社経由通信による問題
+B1-2024-Q3,2024,B1-2024-Q3-U07,設問2(1),21,answer,プロキシ,term,,automatic,利用しない,対象通信でプロキシを使うか
+B1-2024-Q3,2024,B1-2024-Q3-U08,設問2(2),21,answer,プロキシ名,url_or_fqdn,,automatic,proxy.a-sha.jp,使用するプロキシFQDN
+B1-2024-Q3,2024,B1-2024-Q3-U09,設問2(3),21,first,最初のIPアドレス,ip_address,,automatic,172.16.0.0,RFC1918範囲の先頭と末尾
+B1-2024-Q3,2024,B1-2024-Q3-U09,設問2(3),21,last,最後のIPアドレス,ip_address,,automatic,172.31.255.255,RFC1918範囲の先頭と末尾
+B1-2024-Q3,2024,B1-2024-Q3-U10,設問2(4),21,answer,効果,description,20,concept_assisted_self_grade,,ローカルブレイクアウトの効果
+B1-2024-Q3,2024,B1-2024-Q3-U11,設問2(5),21,answer,理由,description,25,concept_assisted_self_grade,,PAC条件を分ける必要がある理由
+B1-2024-Q3,2024,B1-2024-Q3-U12,設問3(1),21,i,イ,term,,automatic,DHCP / DNS,WPADが利用する探索機能・プロトコル・設定値
+B1-2024-Q3,2024,B1-2024-Q3-U12,設問3(1),21,u,ウ,term,,automatic,DHCP / DNS,WPADが利用する探索機能・プロトコル・設定値
+B1-2024-Q3,2024,B1-2024-Q3-U12,設問3(1),21,e,エ,term,,automatic,HTTP,WPADが利用する探索機能・プロトコル・設定値
+B1-2024-Q3,2024,B1-2024-Q3-U12,設問3(1),21,o,オ,term,,automatic,URL,WPADが利用する探索機能・プロトコル・設定値
+B1-2024-Q3,2024,B1-2024-Q3-U13,設問3(2),21,answer,脅威,description,25,concept_assisted_self_grade,,WPAD悪用時の影響
+B1-2023-Q1,2023,B1-2023-Q1-U01,設問1,7,a,a,term,,automatic,リバース,リバースプロキシ、DNS、HTTP/2、TLS関連の6語の穴埋め
+B1-2023-Q1,2023,B1-2023-Q1-U01,設問1,7,b,b,term,,automatic,権威,リバースプロキシ、DNS、HTTP/2、TLS関連の6語の穴埋め
+B1-2023-Q1,2023,B1-2023-Q1-U01,設問1,7,c,c,term,,automatic,キャッシュ,リバースプロキシ、DNS、HTTP/2、TLS関連の6語の穴埋め
+B1-2023-Q1,2023,B1-2023-Q1-U01,設問1,7,d,d,term,,automatic,ストリーム,リバースプロキシ、DNS、HTTP/2、TLS関連の6語の穴埋め
+B1-2023-Q1,2023,B1-2023-Q1-U01,設問1,7,e,e,term,,automatic,:method / method,リバースプロキシ、DNS、HTTP/2、TLS関連の6語の穴埋め
+B1-2023-Q1,2023,B1-2023-Q1-U01,設問1,7,f,f,term,,automatic,TLS,リバースプロキシ、DNS、HTTP/2、TLS関連の6語の穴埋め
+B1-2023-Q1,2023,B1-2023-Q1-U02,設問2(1),7,answer,解答,description,35,concept_assisted_self_grade,,HTTP/1.1でレスポンス順序に制約がある理由・動作
+B1-2023-Q1,2023,B1-2023-Q1-U03,設問2(2),7,answer,解答,description,30,concept_assisted_self_grade,,ALPNを使う目的
+B1-2023-Q1,2023,B1-2023-Q1-U04,設問3(1),7,sequence,シーケンス部分,multi_select,,automatic,d / e,通信開始シーケンス中の該当メッセージを選択
+B1-2023-Q1,2023,B1-2023-Q1-U05,設問3(2),7,answer,解答,description,35,concept_assisted_self_grade,,ALPNで交換する内容
+B1-2023-Q1,2023,B1-2023-Q1-U06,設問4(1),7,a,ア,cidr,,automatic,172.21.10.0/24,クラウド移行後の経路・アドレスを回答
+B1-2023-Q1,2023,B1-2023-Q1-U06,設問4(1),7,i,イ,ip_address,,automatic,172.21.11.2,クラウド移行後の経路・アドレスを回答
+B1-2023-Q1,2023,B1-2023-Q1-U06,設問4(1),7,u,ウ,ip_address,,automatic,172.21.11.1,クラウド移行後の経路・アドレスを回答
+B1-2023-Q1,2023,B1-2023-Q1-U07,設問4(2),7,mode,動作モード,term,,concept_assisted_self_grade,アプリケーションモード,負荷分散装置の動作モードと理由
+B1-2023-Q1,2023,B1-2023-Q1-U07,設問4(2),7,reason,理由,description,35,concept_assisted_self_grade,,負荷分散装置の動作モードと理由
+B1-2023-Q2,2023,B1-2023-Q2-U01,設問1,13,a,ア,term,,automatic,フラッディング,IPマルチキャスト関連の7語の穴埋め
+B1-2023-Q2,2023,B1-2023-Q2-U01,設問1,13,i,イ,term,,automatic,IGMP,IPマルチキャスト関連の7語の穴埋め
+B1-2023-Q2,2023,B1-2023-Q2-U01,設問1,13,u,ウ,term,,automatic,マルチキャスト,IPマルチキャスト関連の7語の穴埋め
+B1-2023-Q2,2023,B1-2023-Q2-U01,設問1,13,e,エ,term,,automatic,ツリー,IPマルチキャスト関連の7語の穴埋め
+B1-2023-Q2,2023,B1-2023-Q2-U01,設問1,13,o,オ,term,,automatic,PIM-SM / PIM SM,IPマルチキャスト関連の7語の穴埋め
+B1-2023-Q2,2023,B1-2023-Q2-U01,設問1,13,ka,カ,term,,automatic,SSM,IPマルチキャスト関連の7語の穴埋め
+B1-2023-Q2,2023,B1-2023-Q2-U01,設問1,13,ki,キ,term,,automatic,復号,IPマルチキャスト関連の7語の穴埋め
+B1-2023-Q2,2023,B1-2023-Q2-U02,設問2(1),13,answer,解答,description,35,concept_assisted_self_grade,,ユニキャスト配信の通信量上の問題
+B1-2023-Q2,2023,B1-2023-Q2-U03,設問2(2),13,answer,Mbit/s,number,,automatic,160,必要帯域を計算
+B1-2023-Q2,2023,B1-2023-Q2-U04,設問2(3),13,answer,解答,description,45,concept_assisted_self_grade,,IGMPv3/SSMを踏まえたアドレス設計変更
+B1-2023-Q2,2023,B1-2023-Q2-U05,設問3(1),13,answer,解答,description,25,concept_assisted_self_grade,,SSM採用による設計上の利点
+B1-2023-Q2,2023,B1-2023-Q2-U06,設問3(2),13,info1,情報1,term,,automatic,グループアドレス,管理に必要な情報を二つ回答
+B1-2023-Q2,2023,B1-2023-Q2-U06,設問3(2),13,info2,情報2,term,,automatic,インタフェース / インターフェース,管理に必要な情報を二つ回答
+B1-2023-Q2,2023,B1-2023-Q2-U07,設問3(3),13,device,Ⅰ 機器名,device_name,,automatic,カメラ管理サーバ,通信先機器とポート
+B1-2023-Q2,2023,B1-2023-Q2-U07,設問3(3),13,port,Ⅱ ポート番号,number,,automatic,443,通信先機器とポート
+B1-2023-Q2,2023,B1-2023-Q2-U08,設問4(1),13,devicesA,(a) 機器,multi_select,,automatic,L3SW11 / L3SW21,変更対象機器とプロトコル
+B1-2023-Q2,2023,B1-2023-Q2-U08,設問4(1),13,devicesB,(b) 機器,multi_select,,automatic,L2SW11 / L2SW21,変更対象機器とプロトコル
+B1-2023-Q2,2023,B1-2023-Q2-U08,設問4(1),13,protocol,(c) プロトコル,term,,automatic,IGMPv3 / IGMP v3,変更対象機器とプロトコル
+B1-2023-Q2,2023,B1-2023-Q2-U09,設問4(2),13,answer,利点,description,25,concept_assisted_self_grade,,運用変更を最小化できる理由
+B1-2023-Q3,2023,B1-2023-Q3-U01,設問1,18,a,a,term,,automatic,トライバンド,無線LAN・PoE・有線LAN関連の8語の穴埋め
+B1-2023-Q3,2023,B1-2023-Q3-U01,設問1,18,b,b,term,,automatic,アンテナ,無線LAN・PoE・有線LAN関連の8語の穴埋め
+B1-2023-Q3,2023,B1-2023-Q3-U01,設問1,18,c,c,term,,automatic,パスワード,無線LAN・PoE・有線LAN関連の8語の穴埋め
+B1-2023-Q3,2023,B1-2023-Q3-U01,設問1,18,d,d,term,,automatic,チャネルボンディング,無線LAN・PoE・有線LAN関連の8語の穴埋め
+B1-2023-Q3,2023,B1-2023-Q3-U01,設問1,18,e,e,term,,automatic,PoE++ / PoE＋＋,無線LAN・PoE・有線LAN関連の8語の穴埋め
+B1-2023-Q3,2023,B1-2023-Q3-U01,設問1,18,f,f,term,,automatic,マルチギガビットイーサネット,無線LAN・PoE・有線LAN関連の8語の穴埋め
+B1-2023-Q3,2023,B1-2023-Q3-U01,設問1,18,g,g,term,,automatic,スタック,無線LAN・PoE・有線LAN関連の8語の穴埋め
+B1-2023-Q3,2023,B1-2023-Q3-U01,設問1,18,h,h,term,,automatic,DHCPリレーエージェント / DHCP リレーエージェント,無線LAN・PoE・有線LAN関連の8語の穴埋め
+B1-2023-Q3,2023,B1-2023-Q3-U02,設問2(1),"[18, 19]",band1,周波数帯1,term,,concept_assisted_self_grade,W52/W53 / W52・W53,利用周波数帯とトライバンドの利点
+B1-2023-Q3,2023,B1-2023-Q3-U02,設問2(1),"[18, 19]",band2,周波数帯2,term,,concept_assisted_self_grade,W56,利用周波数帯とトライバンドの利点
+B1-2023-Q3,2023,B1-2023-Q3-U02,設問2(1),"[18, 19]",benefit,利点,description,30,concept_assisted_self_grade,,利用周波数帯とトライバンドの利点
+B1-2023-Q3,2023,B1-2023-Q3-U03,設問2(2),19,band1,周波数帯1,term,,concept_assisted_self_grade,W53,DFS対象帯域・動作・利用者影響
+B1-2023-Q3,2023,B1-2023-Q3-U03,設問2(2),19,band2,周波数帯2,term,,concept_assisted_self_grade,W56,DFS対象帯域・動作・利用者影響
+B1-2023-Q3,2023,B1-2023-Q3-U03,設問2(2),19,operation,APの動作,description,40,concept_assisted_self_grade,,DFS対象帯域・動作・利用者影響
+B1-2023-Q3,2023,B1-2023-Q3-U03,設問2(2),19,impact,端末への影響,description,25,concept_assisted_self_grade,,DFS対象帯域・動作・利用者影響
+B1-2023-Q3,2023,B1-2023-Q3-U04,設問3(1),19,answer,Mbps,number,,automatic,800,必要帯域を計算
+B1-2023-Q3,2023,B1-2023-Q3-U05,設問3(2),19,section,区間,symbol,,concept_assisted_self_grade,ii / (ii) / Ⅱ,リンク集約が有効な区間と理由
+B1-2023-Q3,2023,B1-2023-Q3-U05,設問3(2),19,reason,理由,description,30,concept_assisted_self_grade,,リンク集約が有効な区間と理由
+B1-2023-Q3,2023,B1-2023-Q3-U06,設問3(3),19,device1,機器1,device_name,,concept_assisted_self_grade,AP,ループ防止対象機器と作業ミス
+B1-2023-Q3,2023,B1-2023-Q3-U06,設問3(3),19,device2,機器2,device_name,,concept_assisted_self_grade,フロアL2SW / フロア L2SW,ループ防止対象機器と作業ミス
+B1-2023-Q3,2023,B1-2023-Q3-U06,設問3(3),19,device3,機器3,device_name,,concept_assisted_self_grade,動画コンテンツサーバ,ループ防止対象機器と作業ミス
+B1-2023-Q3,2023,B1-2023-Q3-U06,設問3(3),19,mistake,作業ミス,description,25,concept_assisted_self_grade,,ループ防止対象機器と作業ミス

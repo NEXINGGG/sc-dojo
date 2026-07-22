@@ -8,7 +8,7 @@ import {
   type BackupDocument,
   type FavoriteBackupEntry,
   type ValidatedBackup,
-  validateBackupDocument,
+  validateBackupDocumentWithB1,
 } from '../../domain/backup';
 import {
   applyAnswerToQuestionProgress,
@@ -28,6 +28,9 @@ export interface StoredDataSummary {
   hasInProgressPractice: boolean;
   hasInProgressExam: boolean;
   databaseSchemaVersion: number;
+  b1RegisteredPdfCount: number;
+  b1InProgressPractice: boolean;
+  b1InProgressMock: boolean;
 }
 
 export class DataManagementError extends Error {
@@ -50,6 +53,9 @@ export class DataManagementRepository {
       learningDays,
       practiceSession,
       examSession,
+      b1PdfFiles,
+      b1PracticeSession,
+      b1MockSession,
     ] = await Promise.all([
       this.database.answerAttempts.toArray(),
       this.database.questionProgress.toArray(),
@@ -58,6 +64,9 @@ export class DataManagementRepository {
       this.database.learningDaysBySubject.count(),
       this.database.practiceSessions.where('status').equals('in_progress').first(),
       this.database.examSessions.where('status').equals('in_progress').first(),
+      this.database.b1PdfFiles.count(),
+      this.database.b1PracticeSessions.where('status').equals('in_progress').first(),
+      this.database.b1MockSessions.where('status').equals('in_progress').first(),
     ]);
 
     return {
@@ -70,6 +79,9 @@ export class DataManagementRepository {
       hasInProgressPractice: practiceSession !== undefined,
       hasInProgressExam: examSession !== undefined,
       databaseSchemaVersion: DATABASE_VERSION,
+      b1RegisteredPdfCount: b1PdfFiles,
+      b1InProgressPractice: b1PracticeSession !== undefined,
+      b1InProgressMock: b1MockSession !== undefined,
     };
   }
 
@@ -84,6 +96,9 @@ export class DataManagementRepository {
       examResults,
       learningDays,
       settings,
+      b1PracticeSessions,
+      b1MockSessions,
+      b1PdfFiles,
     ] = await Promise.all([
       this.database.answerAttempts.toArray(),
       this.database.questionProgress.toArray(),
@@ -93,6 +108,9 @@ export class DataManagementRepository {
       this.database.examResults.toArray(),
       this.database.learningDaysBySubject.toArray(),
       this.database.settings.toArray(),
+      this.database.b1PracticeSessions.toArray(),
+      this.database.b1MockSessions.toArray(),
+      this.database.b1PdfFiles.toArray(),
     ]);
     const document = createBackupDocument({
       exportedAt,
@@ -115,8 +133,20 @@ export class DataManagementRepository {
       mockExamResults: examResults,
       learningDays,
       settings,
+      b1: {
+        practiceSessions: b1PracticeSessions,
+        mockSessions: b1MockSessions,
+        pdfRegistrations: b1PdfFiles.map((row) => ({
+          subjectId: row.subjectId,
+          year: row.year,
+          fileName: row.fileName,
+          mimeType: row.mimeType,
+          size: row.size,
+          updatedAt: row.updatedAt,
+        })),
+      },
     });
-    const validation = validateBackupDocument(
+    const validation = await validateBackupDocumentWithB1(
       document,
       allQuestions,
       createQuestionDataIdentity(allQuestions, 1),
@@ -146,6 +176,8 @@ export class DataManagementRepository {
           this.database.learningDays,
           this.database.learningDaysBySubject,
           this.database.settings,
+          this.database.b1PracticeSessions,
+          this.database.b1MockSessions,
         ],
         async () => {
           await Promise.all([
@@ -158,6 +190,8 @@ export class DataManagementRepository {
             this.database.learningDays.clear(),
             this.database.learningDaysBySubject.clear(),
             this.database.settings.clear(),
+            this.database.b1PracticeSessions.clear(),
+            this.database.b1MockSessions.clear(),
           ]);
 
           if (data.answerHistory.length > 0) {
@@ -187,6 +221,12 @@ export class DataManagementRepository {
           if (data.settings.length > 0) {
             await this.database.settings.bulkPut(data.settings);
           }
+          if (data.b1.practiceSessions.length > 0) {
+            await this.database.b1PracticeSessions.bulkPut(data.b1.practiceSessions);
+          }
+          if (data.b1.mockSessions.length > 0) {
+            await this.database.b1MockSessions.bulkPut(data.b1.mockSessions);
+          }
         },
       );
     } catch {
@@ -210,6 +250,9 @@ export class DataManagementRepository {
           this.database.examResults,
           this.database.learningDays,
           this.database.learningDaysBySubject,
+          this.database.b1PdfFiles,
+          this.database.b1PracticeSessions,
+          this.database.b1MockSessions,
         ],
         async () => {
           await Promise.all([
@@ -221,6 +264,9 @@ export class DataManagementRepository {
             this.database.examResults.clear(),
             this.database.learningDays.clear(),
             this.database.learningDaysBySubject.clear(),
+            this.database.b1PdfFiles.clear(),
+            this.database.b1PracticeSessions.clear(),
+            this.database.b1MockSessions.clear(),
           ]);
         },
       );

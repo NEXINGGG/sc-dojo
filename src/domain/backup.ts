@@ -11,6 +11,9 @@ import {
   type PracticeSessionAnswer,
   type PracticeSessionRow,
   type SettingRow,
+  type B1MockSessionRow,
+  type B1PdfRegistrationMetadata,
+  type B1PracticeSessionRow,
 } from '../database/types';
 import { gradeExam } from './exam';
 import {
@@ -26,7 +29,7 @@ import type { ChoiceId, Difficulty, Question } from '../types/question';
 import { getSubjectConfig, isSubjectId, type SubjectId } from './subject';
 
 export const BACKUP_FORMAT = 'nw-a1-dojo-backup';
-export const BACKUP_FORMAT_VERSION = 2;
+export const BACKUP_FORMAT_VERSION = 3;
 export const MAX_BACKUP_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 export interface FavoriteBackupEntry {
@@ -50,6 +53,19 @@ export interface BackupData {
   mockExamResults: readonly ExamResultRow[];
   learningDays: readonly LearningDayRow[];
   settings: readonly SettingRow[];
+  b1: B1BackupData;
+}
+
+export interface B1BackupData {
+  practiceSessions: readonly B1PracticeSessionRow[];
+  mockSessions: readonly B1MockSessionRow[];
+  pdfRegistrations: readonly B1PdfRegistrationMetadata[];
+}
+
+interface B1ValidationCatalog {
+  getCase: (caseId: string) => { caseId: string; year: number } | undefined;
+  getUnitIds: (caseIds: readonly string[]) => readonly string[];
+  hasAnswerField: (questionId: string, fieldId: string) => boolean;
 }
 
 export interface BackupDocument {
@@ -63,7 +79,8 @@ export interface BackupDocument {
   data: BackupData;
 }
 
-export interface BackupCreateInput extends BackupData {
+export interface BackupCreateInput extends Omit<BackupData, 'b1'> {
+  b1?: B1BackupData;
   exportedAt: string;
   appVersion: string;
   databaseSchemaVersion: number;
@@ -91,6 +108,9 @@ export interface BackupPreview {
   normalPracticeResultCount: number;
   mockExamSessionCount: number;
   mockExamResultCount: number;
+  b1PracticeSessionCount: number;
+  b1MockSessionCount: number;
+  b1PdfRegistrationCount: number;
   learningDayCount: number;
   settings: DisplaySettings;
   unknownQuestionIdCount: number;
@@ -168,6 +188,7 @@ export function createBackupDocument(input: BackupCreateInput): BackupDocument {
       mockExamResults: input.mockExamResults,
       learningDays: input.learningDays,
       settings: input.settings,
+      b1: input.b1 ?? emptyB1BackupData(),
     },
   };
 }
@@ -208,6 +229,23 @@ export function parseBackupJson(
   return validateBackupDocument(parsed, questions, questionData);
 }
 
+export async function parseBackupJsonWithB1(
+  serialized: string,
+  questions: readonly Question[],
+  questionData: BackupQuestionDataIdentity,
+): Promise<BackupValidationResult> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(serialized) as unknown;
+  } catch {
+    return failure(
+      'invalid_json',
+      'JSONとして読み込めませんでした。正しいバックアップファイルを選んでください。',
+    );
+  }
+  return validateBackupDocumentWithB1(parsed, questions, questionData);
+}
+
 export function validateBackupFileSize(size: number): BackupValidationResult | undefined {
   if (!Number.isFinite(size) || size < 0 || size > MAX_BACKUP_FILE_SIZE_BYTES) {
     return failure(
@@ -223,6 +261,30 @@ export function validateBackupDocument(
   questions: readonly Question[],
   currentQuestionData: BackupQuestionDataIdentity,
 ): BackupValidationResult {
+  return validateBackupDocumentInternal(source, questions, currentQuestionData);
+}
+
+export async function validateBackupDocumentWithB1(
+  source: unknown,
+  questions: readonly Question[],
+  currentQuestionData: BackupQuestionDataIdentity,
+): Promise<BackupValidationResult> {
+  const b1 = await import('../data/b1');
+  return validateBackupDocumentInternal(source, questions, currentQuestionData, {
+    getCase: b1.getB1Case,
+    getUnitIds: b1.getB1UnitIds,
+    hasAnswerField: (questionId, fieldId) =>
+      b1.getB1QuestionUnit(questionId)?.answerFields.some((field) => field.fieldId === fieldId) ??
+      false,
+  });
+}
+
+function validateBackupDocumentInternal(
+  source: unknown,
+  questions: readonly Question[],
+  currentQuestionData: BackupQuestionDataIdentity,
+  b1Catalog?: B1ValidationCatalog,
+): BackupValidationResult {
   if (!isRecord(source)) {
     return failure(
       'invalid_format',
@@ -236,8 +298,12 @@ export function validateBackupDocument(
     );
   }
   if (
-    (source.formatVersion !== 1 && source.formatVersion !== BACKUP_FORMAT_VERSION) ||
-    (source.backupVersion !== 1 && source.backupVersion !== BACKUP_FORMAT_VERSION)
+    (source.formatVersion !== 1 &&
+      source.formatVersion !== 2 &&
+      source.formatVersion !== BACKUP_FORMAT_VERSION) ||
+    (source.backupVersion !== 1 &&
+      source.backupVersion !== 2 &&
+      source.backupVersion !== BACKUP_FORMAT_VERSION)
   ) {
     return failure('unsupported_version', 'このバックアップ形式のバージョンには対応していません。');
   }
@@ -300,6 +366,7 @@ export function validateBackupDocument(
   const mockExamResults = parseExamResults(mockExamResultsInput, collector);
   const learningDays = parseLearningDays(learningDaysInput, collector);
   const settings = parseSettings(settingsInput, collector, source.exportedAt);
+  const b1 = parseB1BackupData(data.b1, collector, b1Catalog);
 
   if (collector.unknownCodes.size > 0) {
     collector.warnings.push(
@@ -330,6 +397,7 @@ export function validateBackupDocument(
     mockExamResults,
     learningDays,
     settings,
+    b1,
   });
   const preview: BackupPreview = {
     exportedAt: document.exportedAt,
@@ -343,6 +411,9 @@ export function validateBackupDocument(
     normalPracticeResultCount: normalPracticeResults.length,
     mockExamSessionCount: mockExamSessions.length,
     mockExamResultCount: mockExamResults.length,
+    b1PracticeSessionCount: b1.practiceSessions.length,
+    b1MockSessionCount: b1.mockSessions.length,
+    b1PdfRegistrationCount: b1.pdfRegistrations.length,
     learningDayCount: learningDays.length,
     settings: normalizeDisplaySettings(settings[0]),
     unknownQuestionIdCount: collector.unknownCodes.size,
@@ -427,6 +498,264 @@ function parseFavorites(value: unknown[], collector: ValidationCollector): Favor
     });
   }
   return entries;
+}
+
+function emptyB1BackupData(): B1BackupData {
+  return { practiceSessions: [], mockSessions: [], pdfRegistrations: [] };
+}
+
+function parseB1BackupData(
+  value: unknown,
+  collector: ValidationCollector,
+  b1Catalog?: B1ValidationCatalog,
+): B1BackupData {
+  if (value === undefined) {
+    return emptyB1BackupData();
+  }
+  if (
+    !isRecord(value) ||
+    !Array.isArray(value.practiceSessions) ||
+    !Array.isArray(value.mockSessions) ||
+    !Array.isArray(value.pdfRegistrations)
+  ) {
+    collector.warnings.push('B-1のバックアップ形式が不正だったため、B-1データは復元しません。');
+    collector.excludedRecordCount += 1;
+    return emptyB1BackupData();
+  }
+  const practiceSessions = value.practiceSessions.flatMap((item) => {
+    const parsed = parseB1PracticeSession(item, b1Catalog);
+    if (parsed === undefined) {
+      exclude(collector);
+      return [];
+    }
+    return [parsed];
+  });
+  const mockSessions = value.mockSessions.flatMap((item) => {
+    const parsed = parseB1MockSession(item, b1Catalog);
+    if (parsed === undefined) {
+      exclude(collector);
+      return [];
+    }
+    return [parsed];
+  });
+  const pdfRegistrations = value.pdfRegistrations.flatMap((item) => {
+    const parsed = parseB1PdfRegistration(item);
+    if (parsed === undefined) {
+      exclude(collector);
+      return [];
+    }
+    return [parsed];
+  });
+  return {
+    practiceSessions: uniqueBy(practiceSessions, (session) => session.id),
+    mockSessions: uniqueBy(mockSessions, (session) => session.id),
+    pdfRegistrations: uniqueBy(pdfRegistrations, (registration) => String(registration.year)),
+  };
+}
+
+function parseB1PracticeSession(
+  value: unknown,
+  b1Catalog?: B1ValidationCatalog,
+): B1PracticeSessionRow | undefined {
+  if (
+    !isRecord(value) ||
+    !isNonEmptyString(value.id) ||
+    value.version !== 1 ||
+    !isB1PracticeStatus(value.status) ||
+    !isNonEmptyString(value.caseId) ||
+    !Array.isArray(value.unitIds) ||
+    !isRecord(value.answers) ||
+    !isRecord(value.selfGrades) ||
+    !Array.isArray(value.reviewQuestionIds) ||
+    !isIndex(value.currentIndex, value.unitIds.length) ||
+    !isIsoDate(value.createdAt) ||
+    !isIsoDate(value.updatedAt)
+  )
+    return undefined;
+  const caseItem = b1Catalog?.getCase(value.caseId);
+  if (
+    (b1Catalog !== undefined &&
+      (caseItem === undefined ||
+        !sameStringList(value.unitIds, b1Catalog.getUnitIds([caseItem.caseId])))) ||
+    !validB1SessionPayload(value, value.unitIds, b1Catalog)
+  )
+    return undefined;
+  if (value.status === 'completed' && !isIsoDate(value.completedAt)) return undefined;
+  const completedAt = isIsoDate(value.completedAt) ? value.completedAt : undefined;
+  return {
+    id: value.id,
+    subjectId: 'b1',
+    version: 1,
+    status: value.status,
+    caseId: value.caseId,
+    unitIds: [...value.unitIds],
+    answers: copyB1Answers(value.answers),
+    selfGrades: copyB1SelfGrades(value.selfGrades),
+    reviewQuestionIds: [...value.reviewQuestionIds],
+    currentIndex: value.currentIndex,
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt,
+    ...(completedAt === undefined ? {} : { completedAt }),
+  };
+}
+
+function parseB1MockSession(
+  value: unknown,
+  b1Catalog?: B1ValidationCatalog,
+): B1MockSessionRow | undefined {
+  if (
+    !isRecord(value) ||
+    !isNonEmptyString(value.id) ||
+    value.version !== 1 ||
+    !isB1MockStatus(value.status) ||
+    !isPositiveInteger(value.year) ||
+    !Array.isArray(value.caseIds) ||
+    !Array.isArray(value.unitIds) ||
+    !isRecord(value.answers) ||
+    !isRecord(value.selfGrades) ||
+    !Array.isArray(value.reviewQuestionIds) ||
+    !isIndex(value.currentIndex, value.unitIds.length) ||
+    !isIsoDate(value.startedAt) ||
+    !isIsoDate(value.deadlineAt) ||
+    !isIsoDate(value.updatedAt)
+  )
+    return undefined;
+  const cases = value.caseIds.map((caseId) =>
+    isNonEmptyString(caseId) ? b1Catalog?.getCase(caseId) : undefined,
+  );
+  if (
+    value.caseIds.length !== 2 ||
+    new Set(value.caseIds).size !== 2 ||
+    (b1Catalog !== undefined &&
+      (cases.some((item) => item === undefined || item.year !== value.year) ||
+        !sameStringList(value.unitIds, b1Catalog.getUnitIds(value.caseIds)))) ||
+    !validB1SessionPayload(value, value.unitIds, b1Catalog) ||
+    new Date(value.deadlineAt).getTime() <= new Date(value.startedAt).getTime()
+  )
+    return undefined;
+  if (
+    value.status !== 'in_progress' &&
+    (!isIsoDate(value.submittedAt) || !isSubmissionReason(value.submissionReason))
+  )
+    return undefined;
+  if (value.status === 'completed' && !isIsoDate(value.completedAt)) return undefined;
+  const submittedAt = isIsoDate(value.submittedAt) ? value.submittedAt : undefined;
+  const submissionReason = isSubmissionReason(value.submissionReason)
+    ? value.submissionReason
+    : undefined;
+  const completedAt = isIsoDate(value.completedAt) ? value.completedAt : undefined;
+  return {
+    id: value.id,
+    subjectId: 'b1',
+    version: 1,
+    status: value.status,
+    year: value.year,
+    caseIds: [...value.caseIds],
+    unitIds: [...value.unitIds],
+    answers: copyB1Answers(value.answers),
+    selfGrades: copyB1SelfGrades(value.selfGrades),
+    reviewQuestionIds: [...value.reviewQuestionIds],
+    currentIndex: value.currentIndex,
+    startedAt: value.startedAt,
+    deadlineAt: value.deadlineAt,
+    updatedAt: value.updatedAt,
+    ...(submittedAt === undefined || submissionReason === undefined
+      ? {}
+      : { submittedAt, submissionReason }),
+    ...(completedAt === undefined ? {} : { completedAt }),
+  };
+}
+
+function parseB1PdfRegistration(value: unknown): B1PdfRegistrationMetadata | undefined {
+  if (
+    !isRecord(value) ||
+    !isPositiveInteger(value.year) ||
+    !isNonEmptyString(value.fileName) ||
+    !isNonEmptyString(value.mimeType) ||
+    !isNonNegativeInteger(value.size) ||
+    !isIsoDate(value.updatedAt)
+  )
+    return undefined;
+  return {
+    subjectId: 'b1',
+    year: value.year,
+    fileName: value.fileName,
+    mimeType: value.mimeType,
+    size: value.size,
+    updatedAt: value.updatedAt,
+  };
+}
+
+function validB1SessionPayload(
+  value: Record<string, unknown>,
+  unitIds: unknown[],
+  b1Catalog?: B1ValidationCatalog,
+): boolean {
+  if (
+    !unitIds.every(isNonEmptyString) ||
+    new Set(unitIds).size !== unitIds.length ||
+    !Array.isArray(value.reviewQuestionIds) ||
+    !value.reviewQuestionIds.every(isNonEmptyString) ||
+    value.reviewQuestionIds.some((id) => !unitIds.includes(id)) ||
+    !isRecord(value.answers) ||
+    !isRecord(value.selfGrades)
+  )
+    return false;
+  return (
+    Object.entries(value.answers).every(
+      ([questionId, answers]) =>
+        unitIds.includes(questionId) &&
+        isRecord(answers) &&
+        Object.entries(answers).every(
+          ([fieldId, answer]) =>
+            (b1Catalog === undefined || b1Catalog.hasAnswerField(questionId, fieldId)) &&
+            isString(answer),
+        ),
+    ) &&
+    Object.entries(value.selfGrades).every(
+      ([questionId, grade]) =>
+        unitIds.includes(questionId) &&
+        (grade === 'correct' || grade === 'partial' || grade === 'review'),
+    )
+  );
+}
+
+function copyB1Answers(value: Record<string, unknown>): B1PracticeSessionRow['answers'] {
+  return Object.fromEntries(
+    Object.entries(value).map(([questionId, answers]) => [
+      questionId,
+      { ...(answers as Record<string, string>) },
+    ]),
+  );
+}
+
+function copyB1SelfGrades(value: Record<string, unknown>): B1PracticeSessionRow['selfGrades'] {
+  return Object.fromEntries(
+    Object.entries(value).map(([questionId, grade]) => [
+      questionId,
+      grade as 'correct' | 'partial' | 'review',
+    ]),
+  );
+}
+
+function sameStringList(value: unknown[], expected: readonly string[]): value is string[] {
+  return value.length === expected.length && value.every((item, index) => item === expected[index]);
+}
+
+function isB1PracticeStatus(value: unknown): value is B1PracticeSessionRow['status'] {
+  return value === 'in_progress' || value === 'completed';
+}
+function isB1MockStatus(value: unknown): value is B1MockSessionRow['status'] {
+  return value === 'in_progress' || value === 'submitted' || value === 'completed';
+}
+function uniqueBy<T>(items: readonly T[], getKey: (item: T) => string): T[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = getKey(item);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function parsePracticeSessions(

@@ -77,7 +77,7 @@ export function selectExamQuestionCodes(
 ): string[] {
   const usesSubjectId = subjectOrExamType === 'a1' || subjectOrExamType === 'a2';
   const subjectId: SubjectId = usesSubjectId ? subjectOrExamType : 'a1';
-  const examType = usesSubjectId ? (examTypeOrSource as ExamType) : subjectOrExamType;
+  const examType = (usesSubjectId ? examTypeOrSource : subjectOrExamType) as ExamType;
   const source = (usesSubjectId ? sourceOrRandom : examTypeOrSource) as readonly Question[];
   const randomizer = (usesSubjectId ? random : sourceOrRandom) as (() => number) | undefined;
   if (examType === 'fixed_1' || examType === 'fixed_2') {
@@ -119,7 +119,7 @@ export function createExamSession(
 ): ExamSessionRow {
   const usesSubjectId = subjectOrExamType === 'a1' || subjectOrExamType === 'a2';
   const subjectId: SubjectId = usesSubjectId ? subjectOrExamType : 'a1';
-  const examType = usesSubjectId ? (examTypeOrCodes as ExamType) : subjectOrExamType;
+  const examType = (usesSubjectId ? examTypeOrCodes : subjectOrExamType) as ExamType;
   const questionCodes = (
     usesSubjectId ? questionCodesOrOptions : examTypeOrCodes
   ) as readonly string[];

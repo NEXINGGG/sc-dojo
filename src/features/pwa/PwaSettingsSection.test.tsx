@@ -1,9 +1,11 @@
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import packageMetadata from '../../../package.json';
 import { App } from '../../App';
+import { database } from '../../database/database';
 import { pwaRegisterMock } from '../../test/pwaRegisterMock';
+import { waitForRouteLoadingToFinish } from '../../test/routeLoading';
 
 function enableServiceWorkerSupport() {
   Object.defineProperty(navigator, 'serviceWorker', {
@@ -35,20 +37,34 @@ function renderSettings() {
   render(<App />);
 }
 
-afterEach(() => {
+async function renderSettingsAndWaitForPage() {
+  renderSettings();
+  await waitForRouteLoadingToFinish();
+  return screen.findByRole('heading', { name: '設定' }, { timeout: 5_000 });
+}
+
+beforeEach(async () => {
+  await database.open();
+  await database.settings.clear();
+  database.close();
+});
+
+afterEach(async () => {
   cleanup();
   vi.restoreAllMocks();
   Reflect.deleteProperty(navigator, 'serviceWorker');
   Reflect.deleteProperty(navigator, 'onLine');
   window.location.hash = '#/';
   window.localStorage.clear();
+  await database.open();
+  await database.settings.clear();
+  database.close();
 });
 
 describe('PWA更新確認', () => {
   it('Service Worker未対応のブラウザでは理由を表示する', async () => {
     const user = userEvent.setup();
-    renderSettings();
-    await screen.findByRole('heading', { name: '設定' });
+    await renderSettingsAndWaitForPage();
 
     expect(screen.getByText('このブラウザでは利用できません')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '更新を確認する' }));
@@ -63,8 +79,7 @@ describe('PWA更新確認', () => {
     enableServiceWorkerSupport();
     const user = userEvent.setup();
     const update = vi.fn(() => Promise.resolve(undefined));
-    renderSettings();
-    await screen.findByRole('heading', { name: '設定' });
+    await renderSettingsAndWaitForPage();
     registerServiceWorker(createRegistration(update));
 
     await user.click(screen.getByRole('button', { name: '更新を確認する' }));
@@ -79,8 +94,7 @@ describe('PWA更新確認', () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const user = userEvent.setup();
     const update = vi.fn(() => Promise.reject(new TypeError('Failed to fetch /sw.js')));
-    renderSettings();
-    await screen.findByRole('heading', { name: '設定' });
+    await renderSettingsAndWaitForPage();
     registerServiceWorker(createRegistration(update));
 
     await user.click(screen.getByRole('button', { name: '更新を確認する' }));
@@ -102,8 +116,7 @@ describe('PWA更新確認', () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const user = userEvent.setup();
     const update = vi.fn(() => Promise.reject(new Error('registration update rejected')));
-    renderSettings();
-    await screen.findByRole('heading', { name: '設定' });
+    await renderSettingsAndWaitForPage();
     registerServiceWorker(createRegistration(update));
 
     await user.click(screen.getByRole('button', { name: '更新を確認する' }));
@@ -120,8 +133,7 @@ describe('PWA更新確認', () => {
   it('Service Workerが未登録の場合は理由を表示して更新確認を行わない', async () => {
     enableServiceWorkerSupport();
     const user = userEvent.setup();
-    renderSettings();
-    await screen.findByRole('heading', { name: '設定' });
+    await renderSettingsAndWaitForPage();
     registerServiceWorker(undefined);
 
     expect(screen.getByText('Service Workerが未登録です')).toBeInTheDocument();
@@ -138,8 +150,7 @@ describe('PWA更新確認', () => {
     setOnline(false);
     const user = userEvent.setup();
     const update = vi.fn(() => Promise.resolve(undefined));
-    renderSettings();
-    await screen.findByRole('heading', { name: '設定' });
+    await renderSettingsAndWaitForPage();
     registerServiceWorker(createRegistration(update));
 
     await user.click(screen.getByRole('button', { name: '更新を確認する' }));
@@ -154,8 +165,7 @@ describe('PWA更新確認', () => {
 
   it('package.jsonのバージョンを設定画面へ一元表示する', async () => {
     enableServiceWorkerSupport();
-    renderSettings();
-    await screen.findByRole('heading', { name: '設定' });
+    await renderSettingsAndWaitForPage();
 
     expect(screen.getAllByText(packageMetadata.version, { exact: true })).toHaveLength(2);
   });

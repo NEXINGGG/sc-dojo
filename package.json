@@ -1,13 +1,14 @@
 {
   "name": "nw-a1-dojo",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "packageManager": "pnpm@11.9.0",
   "scripts": {
     "dev": "vite",
     "validate:data": "node scripts/validate-data.mjs",
     "validate:a2": "node scripts/validate-a2-data.mjs",
+    "validate:b1": "node scripts/validate-b1-ready.mjs",
     "prebuild": "node scripts/validate-data.mjs",
     "build": "tsc -b && vite build",
     "postbuild": "node scripts/validate-deployment.mjs",

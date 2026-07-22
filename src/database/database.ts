@@ -1,6 +1,9 @@
 import Dexie, { type EntityTable, type Table } from 'dexie';
 import type {
   AnswerAttemptRow,
+  B1MockSessionRow,
+  B1PdfFileRow,
+  B1PracticeSessionRow,
   ExamResultRow,
   ExamSessionRow,
   FontSizePreference,
@@ -16,7 +19,7 @@ import type {
 import type { SubjectId } from '../domain/subject';
 
 export const DATABASE_NAME = 'a1-dojo';
-export const DATABASE_VERSION = 5;
+export const DATABASE_VERSION = 7;
 
 export class A1DojoDatabase extends Dexie {
   questionProgress!: EntityTable<QuestionProgressRow, 'code'>;
@@ -29,6 +32,9 @@ export class A1DojoDatabase extends Dexie {
   learningDaysBySubject!: Table<LearningDayRow, [SubjectId, string]>;
   settings!: EntityTable<SettingRow, 'key'>;
   metadata!: EntityTable<MetadataRow, 'key'>;
+  b1PdfFiles!: Table<B1PdfFileRow, number>;
+  b1PracticeSessions!: EntityTable<B1PracticeSessionRow, 'id'>;
+  b1MockSessions!: EntityTable<B1MockSessionRow, 'id'>;
 
   constructor(name = DATABASE_NAME) {
     super(name);
@@ -140,6 +146,61 @@ export class A1DojoDatabase extends Dexie {
         for (const day of legacyLearningDays) {
           await scopedLearningDays.put({ ...day, subjectId: day.subjectId ?? subjectId });
         }
+      });
+
+    this.version(6).stores({
+      questionProgress:
+        '&code, &[subjectId+code], subjectId, favorite, lastAnsweredAt, lastIsCorrect',
+      answerAttempts:
+        '++id, &[sessionId+code], &[subjectId+sessionId+code], [subjectId+code], subjectId, code, sessionId, answeredAt, mode',
+      practiceSessions: '&id, &[subjectId+id], [subjectId+status], subjectId, status, updatedAt',
+      practiceResults:
+        '&id, &sessionId, &[subjectId+id], &[subjectId+sessionId], subjectId, completedAt, mode',
+      examSessions:
+        '&id, &[subjectId+id], [subjectId+status], subjectId, status, updatedAt, deadlineAt, examType',
+      examResults:
+        '&id, &examSessionId, &[subjectId+id], &[subjectId+examSessionId], subjectId, examType, submittedAt',
+      learningDays: '&date, subjectId, updatedAt',
+      learningDaysBySubject: '&[subjectId+date], subjectId, date, updatedAt',
+      settings: '&key, updatedAt',
+      metadata: '&key, updatedAt',
+      b1PdfFiles: '&year, updatedAt',
+      b1PracticeSessions: '&id, status, caseId, updatedAt',
+      b1MockSessions: '&id, status, year, updatedAt, deadlineAt',
+    });
+
+    this.version(7)
+      .stores({
+        questionProgress:
+          '&code, &[subjectId+code], subjectId, favorite, lastAnsweredAt, lastIsCorrect',
+        answerAttempts:
+          '++id, &[sessionId+code], &[subjectId+sessionId+code], [subjectId+code], subjectId, code, sessionId, answeredAt, mode',
+        practiceSessions: '&id, &[subjectId+id], [subjectId+status], subjectId, status, updatedAt',
+        practiceResults:
+          '&id, &sessionId, &[subjectId+id], &[subjectId+sessionId], subjectId, completedAt, mode',
+        examSessions:
+          '&id, &[subjectId+id], [subjectId+status], subjectId, status, updatedAt, deadlineAt, examType',
+        examResults:
+          '&id, &examSessionId, &[subjectId+id], &[subjectId+examSessionId], subjectId, examType, submittedAt',
+        learningDays: '&date, subjectId, updatedAt',
+        learningDaysBySubject: '&[subjectId+date], subjectId, date, updatedAt',
+        settings: '&key, updatedAt',
+        metadata: '&key, updatedAt',
+        b1PdfFiles: '&year, subjectId, updatedAt',
+        b1PracticeSessions:
+          '&id, &[subjectId+id], [subjectId+status], subjectId, status, caseId, updatedAt',
+        b1MockSessions:
+          '&id, &[subjectId+id], [subjectId+status], subjectId, status, year, updatedAt, deadlineAt',
+      })
+      .upgrade(async (transaction) => {
+        const addB1Subject = <T extends { subjectId?: 'b1' }>(row: T) => {
+          row.subjectId ??= 'b1';
+        };
+        await Promise.all([
+          transaction.table('b1PdfFiles').toCollection().modify(addB1Subject),
+          transaction.table('b1PracticeSessions').toCollection().modify(addB1Subject),
+          transaction.table('b1MockSessions').toCollection().modify(addB1Subject),
+        ]);
       });
   }
 }

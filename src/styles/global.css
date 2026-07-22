@@ -1935,6 +1935,193 @@ h2 {
   margin: 28px 0 8px;
 }
 
+.b1-home-hero,
+.b1-official-notice,
+.b1-case-list,
+.b1-session-header,
+.b1-finalize-card {
+  margin-bottom: 16px;
+}
+
+.b1-case-list {
+  display: grid;
+  gap: 12px;
+}
+
+.b1-case-list > h2 {
+  margin: 8px 0 0;
+  font-size: 20px;
+}
+
+.b1-case-card {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.b1-case-card h3,
+.b1-case-card p {
+  margin: 0;
+}
+
+.b1-session-header,
+.b1-reference-heading {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.b1-session-header h1,
+.b1-session-header p,
+.b1-reference-heading h2,
+.b1-reference-heading p {
+  margin: 0;
+}
+
+.b1-grading-notice {
+  margin: 0 0 12px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.b1-mobile-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.b1-mobile-tabs button {
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 800;
+}
+
+.b1-mobile-tabs button[aria-selected='true'] {
+  border-color: var(--color-primary);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+}
+
+.b1-workspace-pdf,
+.b1-workspace-answer {
+  min-width: 0;
+}
+
+.b1-tab-pdf .b1-workspace-answer,
+.b1-tab-answer .b1-workspace-pdf {
+  display: none;
+}
+
+.b1-pdf-reference {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.b1-pdf-reference > p,
+.b1-pdf-register > p {
+  margin: 0;
+}
+
+.b1-pdf-frame {
+  width: 100%;
+  min-height: 58vh;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface-muted);
+}
+
+.b1-pdf-register {
+  display: grid;
+  gap: 8px;
+}
+
+.b1-answer-form {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+}
+
+.b1-answer-form h2,
+.b1-answer-form p {
+  margin: 0;
+}
+
+.b1-prompt-summary {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.b1-answer-fieldset {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+.b1-answer-fieldset legend {
+  margin-bottom: 8px;
+  font-weight: 800;
+}
+
+.b1-answer-field {
+  display: grid;
+  gap: 7px;
+  font-weight: 700;
+}
+
+.b1-answer-field input,
+.b1-answer-field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.b1-answer-field small {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.b1-reference-grade {
+  margin: 0;
+}
+
+.b1-reference-grade h3,
+.b1-reference-grade p {
+  margin-top: 0;
+}
+
+.b1-session-tools {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.b1-number-grid {
+  margin-bottom: 16px;
+}
+
 @media (min-width: 768px) {
   .app-shell {
     display: grid;
@@ -1993,6 +2180,31 @@ h2 {
 
   .exam-number-grid {
     grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+
+  .b1-mobile-tabs {
+    display: none;
+  }
+
+  .b1-workspace {
+    display: grid;
+    grid-template-columns: minmax(380px, 1.15fr) minmax(340px, 0.85fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .b1-tab-pdf .b1-workspace-answer,
+  .b1-tab-answer .b1-workspace-pdf {
+    display: block;
+  }
+
+  .b1-workspace-pdf {
+    position: sticky;
+    top: 74px;
+  }
+
+  .b1-pdf-frame {
+    min-height: 70vh;
   }
 }
 

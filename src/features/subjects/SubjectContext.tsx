@@ -90,7 +90,7 @@ export function SubjectSwitcher() {
     <section aria-label="学習する科目" className="subject-switcher surface-card">
       <p className="eyebrow">学習する科目</p>
       <div aria-label="科目を選択" className="subject-switcher-options" role="radiogroup">
-        {(['a1', 'a2'] as const).map((id) => {
+        {(['a1', 'a2', 'b1'] as const).map((id) => {
           const config = getSubjectConfig(id);
           return (
             <button
