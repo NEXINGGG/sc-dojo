@@ -1,0 +1,502 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "caseId": "B1-2016-Q1",
+      "caseRelevance": {
+        "label": "modern_successor",
+        "displayLabel": "現在は発展形が主流",
+        "reason": "SMTPの基本は有効だが、認証・暗号化は現行の運用へ読み替える。",
+        "currentTopics": [
+          "SMTP submission",
+          "メール認証",
+          "TLS"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc5321.html"
+        ]
+      },
+      "questionUnitOverrides": {
+        "B1-2016-Q1-U01": {
+          "label": "historical_context",
+          "displayLabel": "歴史的理解用",
+          "reason": "旧来のメール配送構成は、現在の送信ドメイン認証と併せて学ぶ。",
+          "currentTopics": [
+            "SMTP submission",
+            "メール認証",
+            "TLS"
+          ],
+          "reviewedAt": "2026-07",
+          "sourceRefs": [
+            "https://www.rfc-editor.org/rfc/rfc7208.html"
+          ]
+        }
+      }
+    },
+    {
+      "caseId": "B1-2016-Q2",
+      "caseRelevance": {
+        "label": "modern_successor",
+        "displayLabel": "現在は発展形が主流",
+        "reason": "モバイル接続とVPNの基本を、現行のID・端末管理に接続して学ぶ。",
+        "currentTopics": [
+          "VPN",
+          "モバイルアクセス",
+          "ゼロトラスト"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://csrc.nist.gov/pubs/sp/800/207/final"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2016-Q3",
+      "caseRelevance": {
+        "label": "historical_context",
+        "displayLabel": "歴史的理解用",
+        "reason": "DNSとメール基盤の仕組みは有効だが、構成例は当時の製品・運用を含む。",
+        "currentTopics": [
+          "DNS",
+          "メール配送"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc1034.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2017-Q1",
+      "caseRelevance": {
+        "label": "modern_successor",
+        "displayLabel": "現在は発展形が主流",
+        "reason": "TLSとクラウド分離の考え方は有効だが、SHA-1やTLS 1.2の扱いは現行仕様へ更新して読む。",
+        "currentTopics": [
+          "TLS 1.3",
+          "クラウドネットワーク"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc8446.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2017-Q2",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "VDIの通信量・遅延・印刷制御の考え方は現在も重要。",
+        "currentTopics": [
+          "リモートアクセス",
+          "トラフィック設計"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc9000.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2017-Q3",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "NAT、OSPF、BGPの障害設計は現在も基礎となる。",
+        "currentTopics": [
+          "OSPF",
+          "BGP",
+          "NAT"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc2328.html",
+          "https://www.rfc-editor.org/rfc/rfc4271.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2018-Q1",
+      "caseRelevance": {
+        "label": "modern_successor",
+        "displayLabel": "現在は発展形が主流",
+        "reason": "プロキシとSD-WANの意図は有効で、SASE/SWGを含む現行構成へ読み替える。",
+        "currentTopics": [
+          "SWG",
+          "SASE",
+          "SD-WAN"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://csrc.nist.gov/pubs/sp/800/207/final"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2018-Q2",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "VRRP、STP、SNMPの監視と障害復旧は現在も重要。",
+        "currentTopics": [
+          "VRRP",
+          "SNMP",
+          "可観測性"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc5798.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2018-Q3",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "IP-VPN、IPsec、OSPF/BGPの経路設計は現在も基礎。",
+        "currentTopics": [
+          "IPsec",
+          "VPN",
+          "経路制御"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc4301.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2019-Q1",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "LACPの帯域偏りと監視設計は現在も重要。",
+        "currentTopics": [
+          "LACP",
+          "可用性",
+          "監視"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc4271.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2019-Q2",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "Webの負荷分散と転送ヘッダの扱いは現在も重要。",
+        "currentTopics": [
+          "HTTP",
+          "WAF",
+          "ロードバランサ"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc9110.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2019-Q3",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "DHCPスヌーピングと隔離設計は現在も重要。",
+        "currentTopics": [
+          "DHCP",
+          "LANセキュリティ"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc2131.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2021-Q1",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "DHCP、API、LLDPを用いるネットワーク自動化は現在も重要。",
+        "currentTopics": [
+          "ネットワーク自動化",
+          "LLDP",
+          "SNMP"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc2131.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2021-Q2",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "OSPF、IPsec、経路集約は現在も基礎。",
+        "currentTopics": [
+          "OSPF",
+          "IPsec",
+          "経路集約"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc2328.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2021-Q3",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "音声品質と優先制御は現在も重要。",
+        "currentTopics": [
+          "QoS",
+          "VoIP",
+          "VLAN"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc2474.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2022-Q1",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "認証・認可、Syslog、トラフィック制御は現在も重要。",
+        "currentTopics": [
+          "認証",
+          "認可",
+          "Syslog"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://csrc.nist.gov/pubs/sp/800/207/final"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2022-Q2",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "VRF、IPsec、動的経路設計は現在も重要。",
+        "currentTopics": [
+          "VRF",
+          "IPsec",
+          "ルーティング"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc4301.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2022-Q3",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "DNS、Kerberos、時刻同期は現在も基礎。",
+        "currentTopics": [
+          "DNS",
+          "Kerberos",
+          "時刻同期"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc1034.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2023-Q1",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "HTTP/2、TLS、クラウド経路の設計は現在も重要。",
+        "currentTopics": [
+          "HTTP/2",
+          "TLS",
+          "クラウド"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc8446.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2023-Q2",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "マルチキャスト配信設計は現在も重要。",
+        "currentTopics": [
+          "PIM-SM",
+          "IGMP"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc4601.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2023-Q3",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "無線LANと給電・スイッチ設計は現在も重要。",
+        "currentTopics": [
+          "無線LAN",
+          "PoE",
+          "LAG"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.ieee802.org/11/"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2024-Q1",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "BGPの経路保護とDDoS対策は現在も重要。",
+        "currentTopics": [
+          "BGP",
+          "DDoS",
+          "RTBH"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc4271.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2024-Q2",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "SD-WANとBFDを含む経路設計は現在も重要。",
+        "currentTopics": [
+          "SD-WAN",
+          "BFD",
+          "IPsec"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc5880.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2024-Q3",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "ローカルブレイクアウトとPAC/WPADの設計は現在も重要。",
+        "currentTopics": [
+          "プロキシ",
+          "IPsec",
+          "DNS"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc4301.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2025-Q1",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "OSPFとVRRPの無停止保守は現在も重要。",
+        "currentTopics": [
+          "OSPF",
+          "VRRP",
+          "切戻し"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc2328.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2025-Q2",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "HTTP/2、QUIC、NAPTの障害調査は現在も重要。",
+        "currentTopics": [
+          "HTTP/2",
+          "QUIC",
+          "NAPT"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://www.rfc-editor.org/rfc/rfc9000.html"
+        ]
+      },
+      "questionUnitOverrides": {}
+    },
+    {
+      "caseId": "B1-2025-Q3",
+      "caseRelevance": {
+        "label": "current_core",
+        "displayLabel": "現在も重要",
+        "reason": "SWG移行とTLS検査は現在も重要。",
+        "currentTopics": [
+          "SWG",
+          "TLS検査",
+          "ログ"
+        ],
+        "reviewedAt": "2026-07",
+        "sourceRefs": [
+          "https://csrc.nist.gov/pubs/sp/800/207/final"
+        ]
+      },
+      "questionUnitOverrides": {}
+    }
+  ]
+}

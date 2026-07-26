@@ -273,9 +273,7 @@ export async function validateBackupDocumentWithB1(
   return validateBackupDocumentInternal(source, questions, currentQuestionData, {
     getCase: b1.getB1Case,
     getUnitIds: b1.getB1UnitIds,
-    hasAnswerField: (questionId, fieldId) =>
-      b1.getB1QuestionUnit(questionId)?.answerFields.some((field) => field.fieldId === fieldId) ??
-      false,
+    hasAnswerField: b1.hasB1AnswerField,
   });
 }
 

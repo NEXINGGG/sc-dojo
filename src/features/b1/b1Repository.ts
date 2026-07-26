@@ -1,5 +1,11 @@
 import type { B1Case } from '../../data/b1';
-import { getB1Case, getB1UnitIds, getB1QuestionUnit } from '../../data/b1';
+import {
+  getB1Case,
+  getB1LegacyAnswerFieldTarget,
+  getB1LegacyQuestionUnitTargets,
+  getB1QuestionUnit,
+  getB1UnitIds,
+} from '../../data/b1';
 import type { A1DojoDatabase } from '../../database/database';
 import type {
   B1MockSessionRow,
@@ -68,12 +74,17 @@ export class B1Repository {
 
   async getPractice(id: string): Promise<B1PracticeSessionRow | undefined> {
     await this.database.open();
-    return this.database.b1PracticeSessions.get(id);
+    const session = await this.database.b1PracticeSessions.get(id);
+    return session === undefined ? undefined : this.migratePracticeCatalog(session);
   }
 
   async getInProgressPractice(): Promise<B1PracticeSessionRow | undefined> {
     await this.database.open();
-    return this.database.b1PracticeSessions.where('status').equals('in_progress').first();
+    const session = await this.database.b1PracticeSessions
+      .where('status')
+      .equals('in_progress')
+      .first();
+    return session === undefined ? undefined : this.migratePracticeCatalog(session);
   }
 
   async createPractice(
@@ -126,17 +137,23 @@ export class B1Repository {
 
   async getMock(id: string): Promise<B1MockSessionRow | undefined> {
     await this.database.open();
-    return this.database.b1MockSessions.get(id);
+    const session = await this.database.b1MockSessions.get(id);
+    return session === undefined ? undefined : this.migrateMockCatalog(session);
   }
 
   async getInProgressMock(): Promise<B1MockSessionRow | undefined> {
     await this.database.open();
-    return this.database.b1MockSessions.where('status').equals('in_progress').first();
+    const session = await this.database.b1MockSessions
+      .where('status')
+      .equals('in_progress')
+      .first();
+    return session === undefined ? undefined : this.migrateMockCatalog(session);
   }
 
   async listMocks(): Promise<B1MockSessionRow[]> {
     await this.database.open();
-    return this.database.b1MockSessions.orderBy('updatedAt').reverse().toArray();
+    const sessions = await this.database.b1MockSessions.orderBy('updatedAt').reverse().toArray();
+    return Promise.all(sessions.map((session) => this.migrateMockCatalog(session)));
   }
 
   async createMock(
@@ -230,10 +247,11 @@ export class B1Repository {
 
   async getProgressSummary(): Promise<B1ProgressSummary> {
     await this.database.open();
-    const [practice, mocks] = await Promise.all([
+    const [practice, rawMocks] = await Promise.all([
       this.database.b1PracticeSessions.where('status').equals('completed').count(),
-      this.database.b1MockSessions.toArray(),
+      this.database.b1MockSessions.orderBy('updatedAt').reverse().toArray(),
     ]);
+    const mocks = await Promise.all(rawMocks.map((session) => this.migrateMockCatalog(session)));
     const grades = mocks.flatMap((session) => Object.values(session.selfGrades));
     return {
       completedPracticeCount: practice,
@@ -243,6 +261,25 @@ export class B1Repository {
       partialSelfGrades: grades.filter((grade) => grade === 'partial').length,
       reviewSelfGrades: grades.filter((grade) => grade === 'review').length,
     };
+  }
+
+  private async migratePracticeCatalog(
+    session: B1PracticeSessionRow,
+  ): Promise<B1PracticeSessionRow> {
+    const currentCase = getB1Case(session.caseId);
+    if (currentCase === undefined) return session;
+    const migrated = migrateB1SessionCatalog(
+      session,
+      currentCase.questionUnits.map((unit) => unit.questionId),
+    );
+    if (migrated !== session) await this.database.b1PracticeSessions.put(migrated);
+    return migrated;
+  }
+
+  private async migrateMockCatalog(session: B1MockSessionRow): Promise<B1MockSessionRow> {
+    const migrated = migrateB1SessionCatalog(session, getB1UnitIds(session.caseIds));
+    if (migrated !== session) await this.database.b1MockSessions.put(migrated);
+    return migrated;
   }
 }
 
@@ -261,6 +298,78 @@ export function applyB1Answer(
 export function getB1ReferenceGrade(questionId: string, answers: B1AnswerValues) {
   const unit = getB1QuestionUnit(questionId);
   return unit === undefined ? undefined : gradeB1Unit(unit, answers);
+}
+
+type B1CatalogSession = Pick<
+  B1PracticeSessionRow,
+  'unitIds' | 'answers' | 'selfGrades' | 'reviewQuestionIds' | 'currentIndex'
+>;
+
+function migrateB1SessionCatalog<T extends B1CatalogSession>(
+  session: T,
+  currentUnitIds: readonly string[],
+): T {
+  if (sameStringArray(session.unitIds, currentUnitIds)) return session;
+
+  const answers: Record<string, B1AnswerValues> = {};
+  for (const [legacyQuestionId, fieldAnswers] of Object.entries(session.answers)) {
+    for (const [legacyFieldId, value] of Object.entries(fieldAnswers)) {
+      const target = getB1LegacyAnswerFieldTarget(legacyQuestionId, legacyFieldId);
+      const preservedCurrentField =
+        currentUnitIds.includes(legacyQuestionId) &&
+        getB1QuestionUnit(legacyQuestionId)?.answerFields.some(
+          (field) => field.fieldId === legacyFieldId,
+        ) === true;
+      const targetQuestionId =
+        target?.questionId ?? (preservedCurrentField ? legacyQuestionId : undefined);
+      const targetFieldId = target?.fieldId ?? (preservedCurrentField ? legacyFieldId : undefined);
+      if (targetQuestionId !== undefined && targetFieldId !== undefined) {
+        answers[targetQuestionId] = {
+          ...answers[targetQuestionId],
+          [targetFieldId]: value,
+        };
+      }
+    }
+  }
+
+  const targetIdsForLegacyUnit = (legacyQuestionId: string) => {
+    const migrated = getB1LegacyQuestionUnitTargets(legacyQuestionId).filter((questionId) =>
+      currentUnitIds.includes(questionId),
+    );
+    return migrated.length > 0
+      ? migrated
+      : currentUnitIds.includes(legacyQuestionId)
+        ? [legacyQuestionId]
+        : [];
+  };
+  const selfGrades = Object.fromEntries(
+    Object.entries(session.selfGrades).flatMap(([legacyQuestionId, grade]) => {
+      const targets = targetIdsForLegacyUnit(legacyQuestionId);
+      const answeredTargets = targets.filter((questionId) => answers[questionId] !== undefined);
+      return (answeredTargets.length > 0 ? answeredTargets : targets.slice(0, 1)).map(
+        (questionId) => [questionId, grade],
+      );
+    }),
+  );
+  const reviewQuestionIds = [...new Set(session.reviewQuestionIds.flatMap(targetIdsForLegacyUnit))];
+  const legacyCurrentId =
+    session.unitIds[Math.min(session.currentIndex, session.unitIds.length - 1)];
+  const currentId =
+    legacyCurrentId === undefined ? undefined : targetIdsForLegacyUnit(legacyCurrentId)[0];
+  const currentIndex = Math.max(0, currentId === undefined ? 0 : currentUnitIds.indexOf(currentId));
+
+  return {
+    ...session,
+    unitIds: [...currentUnitIds],
+    answers,
+    selfGrades,
+    reviewQuestionIds,
+    currentIndex,
+  };
+}
+
+function sameStringArray(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
 function validatePractice(session: B1PracticeSessionRow): void {

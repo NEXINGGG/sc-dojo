@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
-import { getB1CasesForYear } from '../data/b1';
+import { b1AvailableYears, getB1CasesForYear } from '../data/b1';
 import { database } from '../database/database';
 import { B1DataError, B1Repository } from '../features/b1/b1Repository';
 
@@ -9,7 +9,7 @@ const repository = new B1Repository(database);
 
 export function B1MockSelectionPage() {
   const navigate = useNavigate();
-  const [year, setYear] = useState(2025);
+  const [year, setYear] = useState(b1AvailableYears[0] ?? 2025);
   const [caseIds, setCaseIds] = useState<string[]>([]);
   const [inProgressId, setInProgressId] = useState<string>();
   const [historyCount, setHistoryCount] = useState(0);
@@ -79,7 +79,7 @@ export function B1MockSelectionPage() {
       <fieldset className="settings-fieldset" disabled={isStarting || inProgressId !== undefined}>
         <legend>年度</legend>
         <div className="settings-option-list">
-          {[2025, 2024, 2023].map((item) => (
+          {b1AvailableYears.map((item) => (
             <label className="setting-option" htmlFor={`b1-year-${item}`} key={item}>
               <input
                 checked={year === item}

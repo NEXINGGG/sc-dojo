@@ -9,3 +9,6 @@ coverage/
 .env.*
 !.env.example
 .wrangler/
+
+# Local IPA official PDFs for B1 analysis
+reference/b1-official/

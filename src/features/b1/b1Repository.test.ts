@@ -54,4 +54,75 @@ describe('B1Repository', () => {
     );
     database.close();
   });
+
+  it('creates a mock from two added 2016 cases', async () => {
+    const database = createTestDatabase();
+    await initializeDatabase(database);
+    const repository = new B1Repository(database);
+    const caseIds = b1Cases
+      .filter((caseItem) => caseItem.year === 2016)
+      .slice(0, 2)
+      .map((caseItem) => caseItem.caseId);
+
+    await expect(repository.createMock(2016, caseIds, now)).resolves.toMatchObject({
+      year: 2016,
+      caseIds,
+    });
+    database.close();
+  });
+
+  it('migrates a saved grouped Phase 1 answer into its split official question units', async () => {
+    const database = createTestDatabase();
+    await initializeDatabase(database);
+    const repository = new B1Repository(database);
+    const caseItem = b1Cases.find((item) => item.caseId === 'B1-2018-Q1');
+    if (caseItem === undefined) throw new Error('B1-2018-Q1 is required for this test');
+    const legacyQuestionId = 'B1-2018-Q1-U01';
+
+    await database.b1PracticeSessions.put({
+      id: 'b1-practice-legacy-phase1',
+      subjectId: 'b1',
+      version: 1,
+      status: 'in_progress',
+      caseId: caseItem.caseId,
+      unitIds: [legacyQuestionId],
+      answers: {
+        [legacyQuestionId]: {
+          forward: 'フォワード',
+          id: '利用者ID',
+          connect: 'CONNECTメソッド',
+        },
+      },
+      selfGrades: { [legacyQuestionId]: 'correct' },
+      reviewQuestionIds: [legacyQuestionId],
+      currentIndex: 0,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    await expect(repository.getPractice('b1-practice-legacy-phase1')).resolves.toMatchObject({
+      unitIds: caseItem.questionUnits.map((unit) => unit.questionId),
+      answers: {
+        'B1-2018-Q1-U01': { forward: 'フォワード' },
+        'B1-2018-Q1-U02': { id: '利用者ID' },
+        'B1-2018-Q1-U03': { connect: 'CONNECTメソッド' },
+      },
+      reviewQuestionIds: caseItem.questionUnits.map((unit) => unit.questionId),
+    });
+    database.close();
+  });
+
+  it('keeps PDF registrations separate for every added past-paper year', async () => {
+    const database = createTestDatabase();
+    await initializeDatabase(database);
+    const repository = new B1Repository(database);
+
+    for (const year of [2016, 2017, 2018, 2019, 2021, 2022]) {
+      const file = new File(['%PDF-1.7'], `ipa-${year}.pdf`, { type: 'application/pdf' });
+      await repository.savePdf(year, file, now);
+      await expect(repository.getPdf(year)).resolves.toMatchObject({ fileName: `ipa-${year}.pdf` });
+    }
+    await expect(repository.getPdf(2020)).resolves.toBeUndefined();
+    database.close();
+  });
 });

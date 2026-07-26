@@ -70,6 +70,26 @@
       "categoryId": "network_security",
       "name": "ネットワークセキュリティ",
       "order": 14
+    },
+    {
+      "categoryId": "email_dns",
+      "name": "メール・DNS",
+      "order": 15
+    },
+    {
+      "categoryId": "network_automation",
+      "name": "ネットワーク自動化",
+      "order": 16
+    },
+    {
+      "categoryId": "qos_voice",
+      "name": "QoS・音声",
+      "order": 17
+    },
+    {
+      "categoryId": "identity_access",
+      "name": "認証・アクセス制御",
+      "order": 18
     }
   ]
 }

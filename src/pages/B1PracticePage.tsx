@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
-import { b1Cases, getB1CasesForYear, getB1CategoryName } from '../data/b1';
+import { b1AvailableYears, b1Cases, getB1CasesForYear, getB1CategoryName } from '../data/b1';
 import { database } from '../database/database';
 import { B1DataError, B1Repository } from '../features/b1/b1Repository';
 
@@ -52,7 +52,7 @@ export function B1PracticePage() {
           <p>{message}</p>
         </section>
       ) : null}
-      {[2025, 2024, 2023].map((year) => (
+      {b1AvailableYears.map((year) => (
         <section aria-label={`${year}年度のB-1演習`} className="b1-case-list" key={year}>
           <h2>{year}年度</h2>
           {getB1CasesForYear(year).map((caseItem) => (

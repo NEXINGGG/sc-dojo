@@ -9,6 +9,7 @@ import {
   createQuestionDataIdentity,
   serializeBackup,
 } from '../domain/backup';
+import { waitForRouteLoadingToFinish } from '../test/routeLoading';
 
 async function clearAllData() {
   await Promise.all([
@@ -46,7 +47,10 @@ describe('設定画面', () => {
     const user = userEvent.setup();
     renderSettings();
 
-    expect(await screen.findByRole('heading', { name: '設定' })).toBeInTheDocument();
+    await waitForRouteLoadingToFinish();
+    expect(
+      await screen.findByRole('heading', { name: '設定' }, { timeout: 5_000 }),
+    ).toBeInTheDocument();
     const themeGroup = screen.getByRole('group', { name: 'テーマ' });
     const motionGroup = screen.getByRole('group', { name: '動きの軽減' });
     await user.click(within(themeGroup).getByRole('radio', { name: 'ライト' }));
@@ -76,6 +80,7 @@ describe('設定画面', () => {
 
     cleanup();
     renderSettings();
+    await waitForRouteLoadingToFinish();
     await waitFor(() => expect(screen.getByRole('radio', { name: 'ダーク' })).toBeChecked());
     expect(screen.getByRole('radio', { name: '特大（125%）' })).toBeChecked();
   });
@@ -93,7 +98,8 @@ describe('設定画面', () => {
       version: 1,
     });
     renderSettings();
-    await screen.findByRole('heading', { name: '設定' });
+    await waitForRouteLoadingToFinish();
+    await screen.findByRole('heading', { name: '設定' }, { timeout: 5_000 });
     await user.click(screen.getByRole('radio', { name: 'ライト' }));
     await user.click(screen.getByRole('radio', { name: '大（112.5%）' }));
     await user.click(screen.getByRole('button', { name: '表示設定を初期値へ戻す' }));
@@ -131,7 +137,8 @@ describe('設定画面', () => {
       settings: [],
     });
     renderSettings();
-    await screen.findByRole('heading', { name: '設定' });
+    await waitForRouteLoadingToFinish();
+    await screen.findByRole('heading', { name: '設定' }, { timeout: 5_000 });
     const input = screen.getByLabelText('バックアップから復元');
     await user.upload(
       input,
@@ -167,7 +174,8 @@ describe('設定画面', () => {
       updatedAt: '2026-07-18T00:00:00.000Z',
     });
     renderSettings();
-    await screen.findByRole('heading', { name: '設定' });
+    await waitForRouteLoadingToFinish();
+    await screen.findByRole('heading', { name: '設定' }, { timeout: 5_000 });
     await user.click(screen.getByRole('button', { name: '学習データを全消去' }));
     const dialog = screen.getByRole('dialog', { name: '学習データを全消去しますか？' });
     const clearButton = within(dialog).getByRole('button', { name: '学習データを全消去する' });

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "provider": "IPA",
+  "subject": "ネットワークスペシャリスト",
+  "section": "午後I",
+  "sources": [
+    {"year":2016,"yearPageUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/2016h28.html","questionPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_pm1_qs.pdf","answerPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_pm1_ans.pdf","commentaryPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_pm1_cmnt.pdf"},
+    {"year":2017,"yearPageUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/2017h29.html","questionPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fqpm-att/2017h29a_nw_pm1_qs.pdf","answerPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fqpm-att/2017h29a_nw_pm1_ans.pdf","commentaryPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fqpm-att/2017h29a_nw_pm1_cmnt.pdf"},
+    {"year":2018,"yearPageUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/2018h30.html","questionPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_nw_pm1_qs.pdf","answerPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_nw_pm1_ans.pdf","commentaryPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_nw_pm1_cmnt.pdf"},
+    {"year":2019,"yearPageUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/2019h31.html","questionPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_pm1_qs.pdf","answerPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_pm1_ans.pdf","commentaryPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_pm1_cmnt.pdf"},
+    {"year":2021,"yearPageUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/2021r03.html","questionPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_nw_pm1_qs.pdf","answerPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_nw_pm1_ans.pdf","commentaryPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_nw_pm1_cmnt.pdf"},
+    {"year":2022,"yearPageUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/2022r04.html","questionPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_pm1_qs.pdf","answerPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_pm1_ans.pdf","commentaryPdfUrl":"https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_pm1_cmnt.pdf"}
+  ]
+}
