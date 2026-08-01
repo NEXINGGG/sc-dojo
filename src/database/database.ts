@@ -2,8 +2,11 @@ import Dexie, { type EntityTable, type Table } from 'dexie';
 import type {
   AnswerAttemptRow,
   B1MockSessionRow,
+  B1LearnerEvidenceRow,
+  B1LearningReflectionRow,
   B1PdfFileRow,
   B1PracticeSessionRow,
+  B1RemediationProgressRow,
   ExamResultRow,
   ExamSessionRow,
   FontSizePreference,
@@ -19,7 +22,7 @@ import type {
 import type { SubjectId } from '../domain/subject';
 
 export const DATABASE_NAME = 'a1-dojo';
-export const DATABASE_VERSION = 7;
+export const DATABASE_VERSION = 8;
 
 export class A1DojoDatabase extends Dexie {
   questionProgress!: EntityTable<QuestionProgressRow, 'code'>;
@@ -35,6 +38,9 @@ export class A1DojoDatabase extends Dexie {
   b1PdfFiles!: Table<B1PdfFileRow, number>;
   b1PracticeSessions!: EntityTable<B1PracticeSessionRow, 'id'>;
   b1MockSessions!: EntityTable<B1MockSessionRow, 'id'>;
+  b1LearnerEvidence!: EntityTable<B1LearnerEvidenceRow, 'id'>;
+  b1LearningReflections!: EntityTable<B1LearningReflectionRow, 'id'>;
+  b1RemediationProgress!: EntityTable<B1RemediationProgressRow, 'id'>;
 
   constructor(name = DATABASE_NAME) {
     super(name);
@@ -202,6 +208,33 @@ export class A1DojoDatabase extends Dexie {
           transaction.table('b1MockSessions').toCollection().modify(addB1Subject),
         ]);
       });
+
+    this.version(8).stores({
+      questionProgress:
+        '&code, &[subjectId+code], subjectId, favorite, lastAnsweredAt, lastIsCorrect',
+      answerAttempts:
+        '++id, &[sessionId+code], &[subjectId+sessionId+code], [subjectId+code], subjectId, code, sessionId, answeredAt, mode',
+      practiceSessions: '&id, &[subjectId+id], [subjectId+status], subjectId, status, updatedAt',
+      practiceResults:
+        '&id, &sessionId, &[subjectId+id], &[subjectId+sessionId], subjectId, completedAt, mode',
+      examSessions:
+        '&id, &[subjectId+id], [subjectId+status], subjectId, status, updatedAt, deadlineAt, examType',
+      examResults:
+        '&id, &examSessionId, &[subjectId+id], &[subjectId+examSessionId], subjectId, examType, submittedAt',
+      learningDays: '&date, subjectId, updatedAt',
+      learningDaysBySubject: '&[subjectId+date], subjectId, date, updatedAt',
+      settings: '&key, updatedAt',
+      metadata: '&key, updatedAt',
+      b1PdfFiles: '&year, subjectId, updatedAt',
+      b1PracticeSessions:
+        '&id, &[subjectId+id], [subjectId+status], subjectId, status, caseId, updatedAt',
+      b1MockSessions:
+        '&id, &[subjectId+id], [subjectId+status], subjectId, status, year, updatedAt, deadlineAt',
+      b1LearnerEvidence: '&id, &[sessionId+questionId], sessionId, questionId, updatedAt',
+      b1LearningReflections: '&id, &[sessionId+questionId], sessionId, questionId, updatedAt',
+      b1RemediationProgress:
+        '&id, [originQuestionId+status], originQuestionId, originSessionId, status, updatedAt',
+    });
   }
 }
 

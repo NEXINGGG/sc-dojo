@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "failureCauses": [
+    { "id": "knowledge_gap", "displayName": "知識不足", "description": "必要なプロトコル・機能・用語を理解していなかった" },
+    { "id": "missed_condition", "displayName": "設問条件の読み落とし", "description": "字数、回答数、対象条件などを見落とした" },
+    { "id": "wrong_scope", "displayName": "対象環境の取り違え", "description": "社内、隔離環境、移行前後などを取り違えた" },
+    { "id": "traffic_direction", "displayName": "通信方向の逆転", "description": "送信元・宛先又は経路の向きを逆に考えた" },
+    { "id": "diagram_misread", "displayName": "構成図・表の読み違い", "description": "図、表、設定、シーケンスを誤読した" },
+    { "id": "evidence_missed", "displayName": "根拠箇所の読み落とし", "description": "本文中の根拠を見つけられなかった" },
+    { "id": "missing_element", "displayName": "必要要素の記述漏れ", "description": "条件、動作、理由、目的などの一部を書かなかった" },
+    { "id": "causality_weak", "displayName": "因果関係が不十分", "description": "設定・動作と効果のつながりを説明できなかった" },
+    { "id": "wording_length", "displayName": "表現・字数調整", "description": "字数超過、主語不足、曖昧な表現などがあった" },
+    { "id": "calculation_error", "displayName": "計算ミス", "description": "式、単位、桁、範囲などを誤った" },
+    { "id": "time_management", "displayName": "時間不足", "description": "時間配分が原因で十分に回答できなかった" }
+  ]
+}

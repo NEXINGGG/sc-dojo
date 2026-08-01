@@ -16,5 +16,7 @@ export default defineConfig({
     exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
     setupFiles: './src/test/setup.ts',
     css: true,
+    // IndexedDB and lazy route tests share browser-like globals; run files serially for repeatability.
+    fileParallelism: false,
   },
 });

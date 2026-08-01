@@ -345,6 +345,37 @@ describe('DataManagementRepository', () => {
       updatedAt: exportedAt,
       blob: new Blob(['%PDF-1.7'], { type: 'application/pdf' }),
     });
+    await source.b1LearnerEvidence.put({
+      id: 'b1-evidence-backup',
+      version: 1,
+      sessionId: 'b1-practice-backup',
+      questionId: caseItem.questionUnits[0].questionId,
+      note: '設問条件を確認した。',
+      createdAt: exportedAt,
+      updatedAt: exportedAt,
+    });
+    await source.b1LearningReflections.put({
+      id: 'b1-reflection-backup',
+      version: 1,
+      sessionId: 'b1-practice-backup',
+      questionId: caseItem.questionUnits[0].questionId,
+      failureCauseIds: ['knowledge_gap'],
+      selfAssessment: 'review_needed',
+      createdAt: exportedAt,
+      updatedAt: exportedAt,
+    });
+    await source.b1RemediationProgress.put({
+      id: 'b1-remediation-backup',
+      version: 1,
+      originQuestionId: caseItem.questionUnits[0].questionId,
+      originSessionId: 'b1-practice-backup',
+      failureCauseIds: ['knowledge_gap'],
+      a2QuestionIds: ['A2-061'],
+      completedA2QuestionIds: [],
+      status: 'in_progress',
+      createdAt: exportedAt,
+      updatedAt: exportedAt,
+    });
 
     const backup = await new DataManagementRepository(source).createBackup(exportedAt);
     expect(backup.data.b1.pdfRegistrations).toEqual([
@@ -358,6 +389,11 @@ describe('DataManagementRepository', () => {
       },
     ]);
     expect(JSON.stringify(backup.data.b1)).not.toContain('blob');
+    expect(backup.data.b1).toMatchObject({
+      learnerEvidence: [{ id: 'b1-evidence-backup' }],
+      learningReflections: [{ id: 'b1-reflection-backup' }],
+      remediationProgress: [{ id: 'b1-remediation-backup' }],
+    });
 
     const validation = validateBackupDocument(backup, allQuestions, allIdentity);
     if (!validation.ok) throw new Error('B-1 backup validation failed');
@@ -378,6 +414,15 @@ describe('DataManagementRepository', () => {
     });
     await expect(target.b1PdfFiles.get(2024)).resolves.toMatchObject({
       fileName: 'local-only.pdf',
+    });
+    await expect(target.b1LearnerEvidence.get('b1-evidence-backup')).resolves.toMatchObject({
+      questionId: caseItem.questionUnits[0].questionId,
+    });
+    await expect(target.b1LearningReflections.get('b1-reflection-backup')).resolves.toMatchObject({
+      failureCauseIds: ['knowledge_gap'],
+    });
+    await expect(target.b1RemediationProgress.get('b1-remediation-backup')).resolves.toMatchObject({
+      a2QuestionIds: ['A2-061'],
     });
   });
 });

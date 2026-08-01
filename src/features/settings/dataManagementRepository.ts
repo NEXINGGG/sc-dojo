@@ -31,6 +31,9 @@ export interface StoredDataSummary {
   b1RegisteredPdfCount: number;
   b1InProgressPractice: boolean;
   b1InProgressMock: boolean;
+  b1LearnerEvidenceCount: number;
+  b1LearningReflectionCount: number;
+  b1RemediationProgressCount: number;
 }
 
 export class DataManagementError extends Error {
@@ -56,6 +59,9 @@ export class DataManagementRepository {
       b1PdfFiles,
       b1PracticeSession,
       b1MockSession,
+      b1LearnerEvidence,
+      b1LearningReflections,
+      b1RemediationProgress,
     ] = await Promise.all([
       this.database.answerAttempts.toArray(),
       this.database.questionProgress.toArray(),
@@ -67,6 +73,9 @@ export class DataManagementRepository {
       this.database.b1PdfFiles.count(),
       this.database.b1PracticeSessions.where('status').equals('in_progress').first(),
       this.database.b1MockSessions.where('status').equals('in_progress').first(),
+      this.database.b1LearnerEvidence.count(),
+      this.database.b1LearningReflections.count(),
+      this.database.b1RemediationProgress.count(),
     ]);
 
     return {
@@ -82,6 +91,9 @@ export class DataManagementRepository {
       b1RegisteredPdfCount: b1PdfFiles,
       b1InProgressPractice: b1PracticeSession !== undefined,
       b1InProgressMock: b1MockSession !== undefined,
+      b1LearnerEvidenceCount: b1LearnerEvidence,
+      b1LearningReflectionCount: b1LearningReflections,
+      b1RemediationProgressCount: b1RemediationProgress,
     };
   }
 
@@ -99,6 +111,9 @@ export class DataManagementRepository {
       b1PracticeSessions,
       b1MockSessions,
       b1PdfFiles,
+      b1LearnerEvidence,
+      b1LearningReflections,
+      b1RemediationProgress,
     ] = await Promise.all([
       this.database.answerAttempts.toArray(),
       this.database.questionProgress.toArray(),
@@ -111,6 +126,9 @@ export class DataManagementRepository {
       this.database.b1PracticeSessions.toArray(),
       this.database.b1MockSessions.toArray(),
       this.database.b1PdfFiles.toArray(),
+      this.database.b1LearnerEvidence.toArray(),
+      this.database.b1LearningReflections.toArray(),
+      this.database.b1RemediationProgress.toArray(),
     ]);
     const document = createBackupDocument({
       exportedAt,
@@ -144,6 +162,9 @@ export class DataManagementRepository {
           size: row.size,
           updatedAt: row.updatedAt,
         })),
+        learnerEvidence: b1LearnerEvidence,
+        learningReflections: b1LearningReflections,
+        remediationProgress: b1RemediationProgress,
       },
     });
     const validation = await validateBackupDocumentWithB1(
@@ -178,6 +199,9 @@ export class DataManagementRepository {
           this.database.settings,
           this.database.b1PracticeSessions,
           this.database.b1MockSessions,
+          this.database.b1LearnerEvidence,
+          this.database.b1LearningReflections,
+          this.database.b1RemediationProgress,
         ],
         async () => {
           await Promise.all([
@@ -192,6 +216,9 @@ export class DataManagementRepository {
             this.database.settings.clear(),
             this.database.b1PracticeSessions.clear(),
             this.database.b1MockSessions.clear(),
+            this.database.b1LearnerEvidence.clear(),
+            this.database.b1LearningReflections.clear(),
+            this.database.b1RemediationProgress.clear(),
           ]);
 
           if (data.answerHistory.length > 0) {
@@ -227,6 +254,15 @@ export class DataManagementRepository {
           if (data.b1.mockSessions.length > 0) {
             await this.database.b1MockSessions.bulkPut(data.b1.mockSessions);
           }
+          if (data.b1.learnerEvidence.length > 0) {
+            await this.database.b1LearnerEvidence.bulkPut(data.b1.learnerEvidence);
+          }
+          if (data.b1.learningReflections.length > 0) {
+            await this.database.b1LearningReflections.bulkPut(data.b1.learningReflections);
+          }
+          if (data.b1.remediationProgress.length > 0) {
+            await this.database.b1RemediationProgress.bulkPut(data.b1.remediationProgress);
+          }
         },
       );
     } catch {
@@ -253,6 +289,9 @@ export class DataManagementRepository {
           this.database.b1PdfFiles,
           this.database.b1PracticeSessions,
           this.database.b1MockSessions,
+          this.database.b1LearnerEvidence,
+          this.database.b1LearningReflections,
+          this.database.b1RemediationProgress,
         ],
         async () => {
           await Promise.all([
@@ -267,6 +306,9 @@ export class DataManagementRepository {
             this.database.b1PdfFiles.clear(),
             this.database.b1PracticeSessions.clear(),
             this.database.b1MockSessions.clear(),
+            this.database.b1LearnerEvidence.clear(),
+            this.database.b1LearningReflections.clear(),
+            this.database.b1RemediationProgress.clear(),
           ]);
         },
       );

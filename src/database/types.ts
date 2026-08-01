@@ -2,6 +2,11 @@ import type { PracticeFilters } from '../domain/practice';
 import type { SubjectId } from '../domain/subject';
 import type { ChoiceId } from '../types/question';
 import type { B1AnswerValues, B1SelfGrade } from '../domain/b1';
+import type {
+  B1LearnerEvidence,
+  B1LearningReflection,
+  B1RemediationProgress,
+} from '../domain/b1LearningSupport';
 
 export type PracticeAnswerSource =
   'normal_practice' | 'review_unanswered' | 'review_incorrect' | 'review_favorite';
@@ -222,3 +227,7 @@ export interface B1MockSessionRow {
   submissionReason?: ExamSubmissionReason;
   completedAt?: string;
 }
+
+export type B1LearnerEvidenceRow = B1LearnerEvidence;
+export type B1LearningReflectionRow = B1LearningReflection;
+export type B1RemediationProgressRow = B1RemediationProgress;

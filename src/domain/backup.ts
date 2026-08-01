@@ -12,9 +12,14 @@ import {
   type PracticeSessionRow,
   type SettingRow,
   type B1MockSessionRow,
+  type B1LearnerEvidenceRow,
+  type B1LearningReflectionRow,
   type B1PdfRegistrationMetadata,
   type B1PracticeSessionRow,
+  type B1RemediationProgressRow,
 } from '../database/types';
+import { isB1FailureCauseId, type B1FailureCauseId } from './b1LearningSupport';
+import { getSubjectCatalog } from '../data/catalog';
 import { gradeExam } from './exam';
 import {
   isFontSizePreference,
@@ -29,7 +34,7 @@ import type { ChoiceId, Difficulty, Question } from '../types/question';
 import { getSubjectConfig, isSubjectId, type SubjectId } from './subject';
 
 export const BACKUP_FORMAT = 'nw-a1-dojo-backup';
-export const BACKUP_FORMAT_VERSION = 3;
+export const BACKUP_FORMAT_VERSION = 4;
 export const MAX_BACKUP_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 export interface FavoriteBackupEntry {
@@ -60,11 +65,15 @@ export interface B1BackupData {
   practiceSessions: readonly B1PracticeSessionRow[];
   mockSessions: readonly B1MockSessionRow[];
   pdfRegistrations: readonly B1PdfRegistrationMetadata[];
+  learnerEvidence: readonly B1LearnerEvidenceRow[];
+  learningReflections: readonly B1LearningReflectionRow[];
+  remediationProgress: readonly B1RemediationProgressRow[];
 }
 
 interface B1ValidationCatalog {
   getCase: (caseId: string) => { caseId: string; year: number } | undefined;
   getUnitIds: (caseIds: readonly string[]) => readonly string[];
+  hasQuestion: (questionId: string) => boolean;
   hasAnswerField: (questionId: string, fieldId: string) => boolean;
 }
 
@@ -111,6 +120,9 @@ export interface BackupPreview {
   b1PracticeSessionCount: number;
   b1MockSessionCount: number;
   b1PdfRegistrationCount: number;
+  b1LearnerEvidenceCount: number;
+  b1LearningReflectionCount: number;
+  b1RemediationProgressCount: number;
   learningDayCount: number;
   settings: DisplaySettings;
   unknownQuestionIdCount: number;
@@ -133,6 +145,7 @@ interface ValidationCollector {
   readonly unknownCodes: Set<string>;
   excludedRecordCount: number;
   readonly warnings: string[];
+  readonly fatalErrors: string[];
 }
 
 const choiceIds = new Set<ChoiceId>(['A', 'B', 'C', 'D']);
@@ -273,6 +286,7 @@ export async function validateBackupDocumentWithB1(
   return validateBackupDocumentInternal(source, questions, currentQuestionData, {
     getCase: b1.getB1Case,
     getUnitIds: b1.getB1UnitIds,
+    hasQuestion: (questionId) => b1.getB1QuestionUnit(questionId) !== undefined,
     hasAnswerField: b1.hasB1AnswerField,
   });
 }
@@ -298,9 +312,11 @@ function validateBackupDocumentInternal(
   if (
     (source.formatVersion !== 1 &&
       source.formatVersion !== 2 &&
+      source.formatVersion !== 3 &&
       source.formatVersion !== BACKUP_FORMAT_VERSION) ||
     (source.backupVersion !== 1 &&
       source.backupVersion !== 2 &&
+      source.backupVersion !== 3 &&
       source.backupVersion !== BACKUP_FORMAT_VERSION)
   ) {
     return failure('unsupported_version', 'このバックアップ形式のバージョンには対応していません。');
@@ -354,6 +370,7 @@ function validateBackupDocumentInternal(
     unknownCodes: new Set(),
     excludedRecordCount: 0,
     warnings: [],
+    fatalErrors: [],
   };
 
   const answerHistory = parseAnswerHistory(answerHistoryInput, collector);
@@ -365,6 +382,10 @@ function validateBackupDocumentInternal(
   const learningDays = parseLearningDays(learningDaysInput, collector);
   const settings = parseSettings(settingsInput, collector, source.exportedAt);
   const b1 = parseB1BackupData(data.b1, collector, b1Catalog);
+
+  if (collector.fatalErrors.length > 0) {
+    return failure('invalid_data', collector.fatalErrors[0]);
+  }
 
   if (collector.unknownCodes.size > 0) {
     collector.warnings.push(
@@ -412,6 +433,9 @@ function validateBackupDocumentInternal(
     b1PracticeSessionCount: b1.practiceSessions.length,
     b1MockSessionCount: b1.mockSessions.length,
     b1PdfRegistrationCount: b1.pdfRegistrations.length,
+    b1LearnerEvidenceCount: b1.learnerEvidence.length,
+    b1LearningReflectionCount: b1.learningReflections.length,
+    b1RemediationProgressCount: b1.remediationProgress.length,
     learningDayCount: learningDays.length,
     settings: normalizeDisplaySettings(settings[0]),
     unknownQuestionIdCount: collector.unknownCodes.size,
@@ -499,7 +523,14 @@ function parseFavorites(value: unknown[], collector: ValidationCollector): Favor
 }
 
 function emptyB1BackupData(): B1BackupData {
-  return { practiceSessions: [], mockSessions: [], pdfRegistrations: [] };
+  return {
+    practiceSessions: [],
+    mockSessions: [],
+    pdfRegistrations: [],
+    learnerEvidence: [],
+    learningReflections: [],
+    remediationProgress: [],
+  };
 }
 
 function parseB1BackupData(
@@ -544,11 +575,224 @@ function parseB1BackupData(
     }
     return [parsed];
   });
+  const learnerEvidence = parseB1LearnerEvidence(value.learnerEvidence, collector, b1Catalog);
+  const learningReflections = parseB1LearningReflections(
+    value.learningReflections,
+    collector,
+    b1Catalog,
+  );
+  const remediationProgress = parseB1RemediationProgress(
+    value.remediationProgress,
+    collector,
+    b1Catalog,
+  );
   return {
     practiceSessions: uniqueBy(practiceSessions, (session) => session.id),
     mockSessions: uniqueBy(mockSessions, (session) => session.id),
     pdfRegistrations: uniqueBy(pdfRegistrations, (registration) => String(registration.year)),
+    learnerEvidence: uniqueBy(learnerEvidence, (entry) => entry.id),
+    learningReflections: uniqueBy(learningReflections, (entry) => entry.id),
+    remediationProgress: uniqueBy(remediationProgress, (entry) => entry.id),
   };
+}
+
+function parseB1LearnerEvidence(
+  value: unknown,
+  collector: ValidationCollector,
+  b1Catalog?: B1ValidationCatalog,
+): B1LearnerEvidenceRow[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    invalidB1SupportData(collector, 'B-1根拠記録の形式が正しくありません。');
+    return [];
+  }
+  const ids = new Set<string>();
+  const sessionQuestionKeys = new Set<string>();
+  const entries: B1LearnerEvidenceRow[] = [];
+  for (const item of value) {
+    if (
+      !isRecord(item) ||
+      !isNonEmptyString(item.id) ||
+      item.version !== 1 ||
+      !isNonEmptyString(item.sessionId) ||
+      !isNonEmptyString(item.questionId) ||
+      !isNonEmptyString(item.note) ||
+      !isIsoDate(item.createdAt) ||
+      !isIsoDate(item.updatedAt) ||
+      (item.evidenceId !== undefined && !isNonEmptyString(item.evidenceId))
+    ) {
+      invalidB1SupportData(collector, 'B-1根拠記録に不正なID又は日時があります。');
+      continue;
+    }
+    if (b1Catalog !== undefined && !b1Catalog.hasQuestion(item.questionId)) {
+      invalidB1SupportData(collector, '存在しないB-1設問を含む根拠記録は復元できません。');
+      continue;
+    }
+    const key = `${item.sessionId}\u0000${item.questionId}`;
+    if (ids.has(item.id) || sessionQuestionKeys.has(key)) {
+      invalidB1SupportData(collector, 'B-1根拠記録に重複があります。');
+      continue;
+    }
+    ids.add(item.id);
+    sessionQuestionKeys.add(key);
+    entries.push({
+      id: item.id,
+      version: 1,
+      sessionId: item.sessionId,
+      questionId: item.questionId,
+      ...(isNonEmptyString(item.evidenceId) ? { evidenceId: item.evidenceId } : {}),
+      note: item.note,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    });
+  }
+  return entries;
+}
+
+function parseB1LearningReflections(
+  value: unknown,
+  collector: ValidationCollector,
+  b1Catalog?: B1ValidationCatalog,
+): B1LearningReflectionRow[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    invalidB1SupportData(collector, 'B-1振返りの形式が正しくありません。');
+    return [];
+  }
+  const ids = new Set<string>();
+  const sessionQuestionKeys = new Set<string>();
+  const entries: B1LearningReflectionRow[] = [];
+  for (const item of value) {
+    if (
+      !isRecord(item) ||
+      !isNonEmptyString(item.id) ||
+      item.version !== 1 ||
+      !isNonEmptyString(item.sessionId) ||
+      !isNonEmptyString(item.questionId) ||
+      !Array.isArray(item.failureCauseIds) ||
+      item.failureCauseIds.length === 0 ||
+      !item.failureCauseIds.every(isB1FailureCauseId) ||
+      !['understood', 'partial', 'review_needed'].includes(String(item.selfAssessment)) ||
+      (item.note !== undefined && !isString(item.note)) ||
+      !isIsoDate(item.createdAt) ||
+      !isIsoDate(item.updatedAt) ||
+      (b1Catalog !== undefined && !b1Catalog.hasQuestion(item.questionId))
+    ) {
+      invalidB1SupportData(collector, 'B-1振返りに不正な失点原因、設問ID又は日時があります。');
+      continue;
+    }
+    const key = `${item.sessionId}\u0000${item.questionId}`;
+    if (ids.has(item.id) || sessionQuestionKeys.has(key)) {
+      invalidB1SupportData(collector, 'B-1振返りに重複があります。');
+      continue;
+    }
+    ids.add(item.id);
+    sessionQuestionKeys.add(key);
+    entries.push({
+      id: item.id,
+      version: 1,
+      sessionId: item.sessionId,
+      questionId: item.questionId,
+      failureCauseIds: [...new Set(item.failureCauseIds)] as B1FailureCauseId[],
+      selfAssessment: item.selfAssessment as B1LearningReflectionRow['selfAssessment'],
+      ...(isString(item.note) && item.note.trim() ? { note: item.note.trim() } : {}),
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    });
+  }
+  return entries;
+}
+
+function parseB1RemediationProgress(
+  value: unknown,
+  collector: ValidationCollector,
+  b1Catalog?: B1ValidationCatalog,
+): B1RemediationProgressRow[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    invalidB1SupportData(collector, 'B-1からA2への復習進捗の形式が正しくありません。');
+    return [];
+  }
+  const a2QuestionIds = new Set(getSubjectCatalog('a2').questions.map((question) => question.code));
+  const ids = new Set<string>();
+  const entries: B1RemediationProgressRow[] = [];
+  for (const item of value) {
+    if (
+      !isRecord(item) ||
+      !isNonEmptyString(item.id) ||
+      item.version !== 1 ||
+      !isNonEmptyString(item.originQuestionId) ||
+      !isNonEmptyString(item.originSessionId) ||
+      !Array.isArray(item.failureCauseIds) ||
+      item.failureCauseIds.length === 0 ||
+      !item.failureCauseIds.every(isB1FailureCauseId) ||
+      !isStringArray(item.a2QuestionIds) ||
+      item.a2QuestionIds.length === 0 ||
+      new Set(item.a2QuestionIds).size !== item.a2QuestionIds.length ||
+      !item.a2QuestionIds.every((id) => a2QuestionIds.has(id)) ||
+      !isStringArray(item.completedA2QuestionIds) ||
+      !isStringArraySubset(item.completedA2QuestionIds, item.a2QuestionIds) ||
+      new Set(item.completedA2QuestionIds).size !== item.completedA2QuestionIds.length ||
+      !['in_progress', 'completed', 'cancelled'].includes(String(item.status)) ||
+      !isIsoDate(item.createdAt) ||
+      !isIsoDate(item.updatedAt) ||
+      (item.completedAt !== undefined && !isIsoDate(item.completedAt)) ||
+      (item.cancelledAt !== undefined && !isIsoDate(item.cancelledAt)) ||
+      (b1Catalog !== undefined && !b1Catalog.hasQuestion(item.originQuestionId))
+    ) {
+      invalidB1SupportData(
+        collector,
+        'B-1からA2への復習進捗に不正な参照、失点原因又は日時があります。',
+      );
+      continue;
+    }
+    const remediationQuestionIds = item.a2QuestionIds as string[];
+    const completedQuestionIds = item.completedA2QuestionIds as string[];
+    if (
+      (item.status === 'completed' &&
+        (!isIsoDate(item.completedAt) ||
+          completedQuestionIds.length !== remediationQuestionIds.length)) ||
+      (item.status === 'cancelled' && !isIsoDate(item.cancelledAt)) ||
+      (item.status === 'in_progress' &&
+        (item.completedAt !== undefined || item.cancelledAt !== undefined)) ||
+      ids.has(item.id)
+    ) {
+      invalidB1SupportData(collector, 'B-1からA2への復習進捗の状態が正しくありません。');
+      continue;
+    }
+    ids.add(item.id);
+    entries.push({
+      id: item.id,
+      version: 1,
+      originQuestionId: item.originQuestionId,
+      originSessionId: item.originSessionId,
+      failureCauseIds: [...new Set(item.failureCauseIds)] as B1FailureCauseId[],
+      a2QuestionIds: remediationQuestionIds,
+      completedA2QuestionIds: completedQuestionIds,
+      status: item.status as B1RemediationProgressRow['status'],
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      ...(isIsoDate(item.completedAt) ? { completedAt: item.completedAt } : {}),
+      ...(isIsoDate(item.cancelledAt) ? { cancelledAt: item.cancelledAt } : {}),
+    });
+  }
+  return entries;
+}
+
+function invalidB1SupportData(collector: ValidationCollector, message: string): void {
+  collector.fatalErrors.push(message);
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(isNonEmptyString);
+}
+
+function isStringArraySubset(values: unknown, candidates: unknown): boolean {
+  return (
+    isStringArray(values) &&
+    isStringArray(candidates) &&
+    values.every((value) => candidates.includes(value))
+  );
 }
 
 function parseB1PracticeSession(

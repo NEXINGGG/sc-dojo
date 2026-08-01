@@ -12,6 +12,7 @@ import {
   parseBackupJson,
   serializeBackup,
   validateBackupDocument,
+  validateBackupDocumentWithB1,
   validateBackupFileSize,
   type BackupCreateInput,
 } from './backup';
@@ -105,7 +106,7 @@ describe('バックアップ形式', () => {
     });
     expect(
       validateBackupDocument(
-        { ...createBackupDocument(createInput()), formatVersion: 4 },
+        { ...createBackupDocument(createInput()), formatVersion: 5 },
         questions,
         identity,
       ),
@@ -268,6 +269,9 @@ describe('バックアップ形式', () => {
           updatedAt: exportedAt,
         },
       ],
+      learnerEvidence: [],
+      learningReflections: [],
+      remediationProgress: [],
     };
     const document = createBackupDocument(createInput({ b1 }));
     const result = validateBackupDocument(document, questions, identity);
@@ -293,8 +297,86 @@ describe('バックアップ形式', () => {
         practiceSessions: [],
         mockSessions: [],
         pdfRegistrations: [],
+        learnerEvidence: [],
+        learningReflections: [],
+        remediationProgress: [],
       });
     }
+  });
+
+  it('B-1の根拠・振返り・A2復習進捗を往復し、不正な参照は復元前に拒否する', async () => {
+    const questionId = b1Cases[0].questionUnits[0].questionId;
+    const b1 = {
+      practiceSessions: [],
+      mockSessions: [],
+      pdfRegistrations: [],
+      learnerEvidence: [
+        {
+          id: 'b1-evidence-1',
+          version: 1 as const,
+          sessionId: 'b1-session-1',
+          questionId,
+          note: '設問条件を確認した。',
+          createdAt: exportedAt,
+          updatedAt: exportedAt,
+        },
+      ],
+      learningReflections: [
+        {
+          id: 'b1-reflection-1',
+          version: 1 as const,
+          sessionId: 'b1-session-1',
+          questionId,
+          failureCauseIds: ['knowledge_gap' as const],
+          selfAssessment: 'review_needed' as const,
+          createdAt: exportedAt,
+          updatedAt: exportedAt,
+        },
+      ],
+      remediationProgress: [
+        {
+          id: 'b1-remediation-1',
+          version: 1 as const,
+          originQuestionId: questionId,
+          originSessionId: 'b1-session-1',
+          failureCauseIds: ['knowledge_gap' as const],
+          a2QuestionIds: ['A2-061'],
+          completedA2QuestionIds: ['A2-061'],
+          status: 'completed' as const,
+          createdAt: exportedAt,
+          updatedAt: exportedAt,
+          completedAt: exportedAt,
+        },
+      ],
+    };
+    const document = createBackupDocument(createInput({ b1 }));
+    const valid = await validateBackupDocumentWithB1(document, questions, identity);
+    const invalid = await validateBackupDocumentWithB1(
+      {
+        ...document,
+        data: {
+          ...document.data,
+          b1: {
+            ...document.data.b1,
+            learningReflections: [
+              { ...b1.learningReflections[0], failureCauseIds: ['not-a-cause'] },
+            ],
+          },
+        },
+      },
+      questions,
+      identity,
+    );
+
+    expect(valid).toMatchObject({ ok: true });
+    if (valid.ok) {
+      expect(valid.value.document.data.b1).toMatchObject({
+        learnerEvidence: [{ questionId }],
+        learningReflections: [{ failureCauseIds: ['knowledge_gap'] }],
+        remediationProgress: [{ a2QuestionIds: ['A2-061'] }],
+      });
+    }
+    expect(invalid).toMatchObject({ ok: false });
   });
 
   it('ファイルサイズとファイル名を安全に扱う', () => {

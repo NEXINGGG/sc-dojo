@@ -31,6 +31,9 @@ describe('A1DojoDatabase', () => {
       'b1PdfFiles',
       'b1PracticeSessions',
       'b1MockSessions',
+      'b1LearnerEvidence',
+      'b1LearningReflections',
+      'b1RemediationProgress',
     ]);
 
     database.close();
@@ -77,7 +80,7 @@ describe('A1DojoDatabase', () => {
     const upgraded = createDatabase(name);
     await initializeDatabase(upgraded);
 
-    expect(upgraded.verno).toBe(7);
+    expect(upgraded.verno).toBe(8);
     await expect(upgraded.questionProgress.get('A1-001')).resolves.toMatchObject({
       favorite: true,
       attemptCount: 2,
@@ -99,6 +102,47 @@ describe('A1DojoDatabase', () => {
     await expect(upgraded.b1PdfFiles.count()).resolves.toBe(0);
     await expect(upgraded.b1PracticeSessions.count()).resolves.toBe(0);
     await expect(upgraded.b1MockSessions.count()).resolves.toBe(0);
+    await expect(upgraded.b1LearnerEvidence.count()).resolves.toBe(0);
+    await expect(upgraded.b1LearningReflections.count()).resolves.toBe(0);
+    await expect(upgraded.b1RemediationProgress.count()).resolves.toBe(0);
+    upgraded.close();
+  });
+
+  it('v7のB-1保存データを保持したままPhase 2テーブルを追加できる', async () => {
+    const name = `a1-dojo-v7-migration-${crypto.randomUUID()}`;
+    databaseNames.push(name);
+    const legacy = new Dexie(name);
+    legacy.version(7).stores({
+      b1PdfFiles: '&year, subjectId, updatedAt',
+      b1PracticeSessions:
+        '&id, &[subjectId+id], [subjectId+status], subjectId, status, caseId, updatedAt',
+      b1MockSessions:
+        '&id, &[subjectId+id], [subjectId+status], subjectId, status, year, updatedAt, deadlineAt',
+    });
+    await legacy.open();
+    await legacy.table('b1PracticeSessions').put({
+      id: 'b1-v7-practice',
+      subjectId: 'b1',
+      version: 1,
+      status: 'in_progress',
+      caseId: 'B1-2025-Q1',
+      unitIds: ['B1-2025-Q1-U01'],
+      answers: {},
+      selfGrades: {},
+      reviewQuestionIds: [],
+      currentIndex: 0,
+      createdAt: '2026-07-26T00:00:00.000Z',
+      updatedAt: '2026-07-26T00:00:00.000Z',
+    });
+    legacy.close();
+
+    const upgraded = createDatabase(name);
+    await initializeDatabase(upgraded);
+
+    await expect(upgraded.b1PracticeSessions.get('b1-v7-practice')).resolves.toMatchObject({
+      caseId: 'B1-2025-Q1',
+    });
+    await expect(upgraded.b1LearnerEvidence.count()).resolves.toBe(0);
     upgraded.close();
   });
 });
