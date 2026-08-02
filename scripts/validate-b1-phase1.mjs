@@ -1,15 +1,11 @@
-import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { hashJsonFile } from './json-semantic-hash.mjs';
 
 const root = process.cwd();
 const readJson = (relativePath) => JSON.parse(readFileSync(join(root, relativePath), 'utf8'));
-const hash = (relativePath) =>
-  createHash('sha256')
-    .update(readFileSync(join(root, relativePath)))
-    .digest('hex')
-    .toUpperCase();
+const hashJson = (relativePath) => hashJsonFile(join(root, relativePath));
 const errors = [];
 const expectedYears = [2016, 2017, 2018, 2019, 2021, 2022, 2023, 2024, 2025];
 const expectedPhase1UnitLabels = {
@@ -213,19 +209,20 @@ const relevance = readJson('data/b1-relevance.json');
 const manifest = readJson('data/b1-source-manifest-2016-2022.json');
 
 if (
-  hash('data/b1-cases-2023-2025-ready.json') !==
-  'DB8B0E7CD80BA4BDAB9227924C6DD90D14D47540CA1D642DC0A3E5EE6C981B21'
+  hashJson('data/b1-cases-2023-2025-ready.json') !==
+  '383988AC2CF545B2FBD02855BE1A8BF962D76E57FBCE0815382250F1DC169DDB'
 ) {
   errors.push('既存B-1 2023～2025データが変更されています');
 }
 if (
-  hash('data/questions.json') !== '7042D700F5764A631CFD5B47EDFC8E2D1424D20FBBE4B2FEA7AC87E1A0A954AE'
+  hashJson('data/questions.json') !==
+  '9004F83084D78E43D70B647A4E27DE6E2B2A53BC7FAE0CA2D43A1BF2F4484307'
 ) {
   errors.push('科目A-1問題データが変更されています');
 }
 if (
-  hash('data/a2-questions.json') !==
-  '0BC5A27FA6F6AB78A7AB9A750588DFDBEE16C092B4B73434F9003E1757313072'
+  hashJson('data/a2-questions.json') !==
+  'E86783804502799A16A6139CABB630F5B805E46934C8055E3F0D0AAE1CFEEA4E'
 ) {
   errors.push('科目A-2問題データが変更されています');
 }

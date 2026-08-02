@@ -1,5 +1,0 @@
-# These immutable-data guards hash the checked-out bytes. Keep the protected
-# JSON fixtures CRLF on every platform so local and Cloudflare builds verify
-# the same canonical content.
-data/a2-questions.json text eol=crlf
-data/b1-cases-2023-2025-ready.json text eol=crlf
