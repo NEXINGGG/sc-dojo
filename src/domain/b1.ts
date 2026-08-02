@@ -4,7 +4,11 @@ export const B1_OFFICIAL_GRADING_NOTICE =
   'アプリの判定は学習用の参考判定であり、IPAの正式採点ではありません。';
 
 export type B1AnswerValues = Record<string, string>;
-export type B1SelfGrade = 'correct' | 'partial' | 'review';
+/**
+ * `review` is retained only for sessions created before Phase 3.  New screens
+ * write `incorrect`, which is the wording shown to learners.
+ */
+export type B1SelfGrade = 'correct' | 'partial' | 'incorrect' | 'review';
 
 export interface B1AutomaticFieldGrade {
   fieldId: string;

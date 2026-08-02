@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import {
   getCategoryById,
@@ -21,9 +21,13 @@ import { LearningRepository } from '../features/learning/learningRepository';
 import { usePwa } from '../features/pwa/PwaContext';
 import type { ChoiceId } from '../types/question';
 import { useSubject } from '../features/subjects/SubjectContext';
+import { B1LearningSupportRepository } from '../features/b1/b1LearningSupportRepository';
+import { B1Repository } from '../features/b1/b1Repository';
+import type { B1RemediationProgress } from '../domain/b1LearningSupport';
 
 export function PracticeQuestionPage() {
-  const { subjectId } = useSubject();
+  const { subjectId, selectSubject } = useSubject();
+  const location = useLocation();
   const catalogCodes = useMemo(
     () => new Set(getSubjectCatalog(subjectId).questions.map((question) => question.code)),
     [subjectId],
@@ -44,7 +48,12 @@ export function PracticeQuestionPage() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFavoriteSaving, setIsFavoriteSaving] = useState(false);
   const [actionMessage, setActionMessage] = useState<string>();
+  const [b1Remediation, setB1Remediation] = useState<B1RemediationProgress>();
   const feedbackRef = useRef<HTMLElement>(null);
+  const remediationId = useMemo(
+    () => new URLSearchParams(location.search).get('b1Remediation') ?? undefined,
+    [location.search],
+  );
 
   useEffect(() => {
     let isCurrent = true;
@@ -140,6 +149,25 @@ export function PracticeQuestionPage() {
     };
   }, [currentQuestionCode, learning]);
 
+  useEffect(() => {
+    if (subjectId !== 'a2' || remediationId === undefined) return;
+    let active = true;
+    void database.b1RemediationProgress
+      .get(remediationId)
+      .then((progress) => {
+        if (!active) return;
+        if (progress === undefined)
+          setActionMessage('B-1復習の進捗が見つかりません。A2演習は続けられます。');
+        else setB1Remediation(progress);
+      })
+      .catch(() => {
+        if (active) setActionMessage('B-1復習の進捗を読み込めませんでした。');
+      });
+    return () => {
+      active = false;
+    };
+  }, [remediationId, subjectId]);
+
   async function saveSession(nextSession: PracticeSessionRow): Promise<boolean> {
     setIsSaving(true);
     setLoadError(undefined);
@@ -181,6 +209,15 @@ export function PracticeQuestionPage() {
     try {
       const saved = await learning.recordConfirmedPracticeAnswer(result.session, currentQuestion);
       setSession(saved.session);
+      if (remediationId !== undefined && subjectId === 'a2') {
+        const support = new B1LearningSupportRepository(database);
+        const updated = await support.markA2QuestionCompleted(remediationId, currentQuestion.code);
+        const completed =
+          updated.completedA2QuestionIds.length === updated.a2QuestionIds.length
+            ? await support.completeRemediation(updated.id)
+            : updated;
+        setB1Remediation(completed);
+      }
       confirmPersistenceSaved();
     } catch {
       reportPersistenceFailure('通常演習の回答履歴を保存できませんでした。');
@@ -283,6 +320,25 @@ export function PracticeQuestionPage() {
     }
   }
 
+  async function returnToB1() {
+    if (b1Remediation === undefined) return;
+    try {
+      const b1 = new B1Repository(database);
+      const [practice, mock] = await Promise.all([
+        b1.getPractice(b1Remediation.originSessionId),
+        b1.getMock(b1Remediation.originSessionId),
+      ]);
+      if (practice === undefined && mock === undefined) {
+        setActionMessage('元のB-1設問が見つかりません。B-1の履歴から開いてください。');
+        return;
+      }
+      await selectSubject('b1');
+      navigate(practice !== undefined ? `/b1/practice/${practice.id}` : `/b1/mock/${mock?.id}`);
+    } catch {
+      setActionMessage('B-1演習へ戻れませんでした。再試行するか、B-1の履歴から開いてください。');
+    }
+  }
+
   if (loadError !== undefined) {
     return <PracticeRecovery error={loadError} onRetry={() => window.location.reload()} />;
   }
@@ -329,6 +385,12 @@ export function PracticeQuestionPage() {
           </h1>
         </div>
         <div className="practice-header-actions">
+          {b1Remediation !== undefined ? (
+            <span className="b1-remediation-status" role="status">
+              B-1復習中 {b1Remediation.completedA2QuestionIds.length} /{' '}
+              {b1Remediation.a2QuestionIds.length}
+            </span>
+          ) : null}
           <button
             aria-pressed={isFavorite}
             className="secondary-button favorite-button"
@@ -474,6 +536,16 @@ export function PracticeQuestionPage() {
           </button>
         )}
       </div>
+
+      {b1Remediation?.status === 'completed' ? (
+        <section className="surface-card b1-finalize-card" aria-live="polite">
+          <h2>B-1復習用のA2問題を完了しました</h2>
+          <p>元のB-1設問へ戻り、答案を書き直して再自己採点できます。</p>
+          <button className="primary-button" onClick={() => void returnToB1()} type="button">
+            元のB-1設問へ戻る
+          </button>
+        </section>
+      ) : null}
 
       {showInterruptDialog ? (
         <ConfirmDialog

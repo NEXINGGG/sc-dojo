@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import { App } from '../App';
 import { database } from '../database/database';
+import { b1Cases } from '../data/b1';
+import { B1Repository } from '../features/b1/b1Repository';
 
 afterEach(async () => {
   cleanup();
@@ -10,6 +12,11 @@ afterEach(async () => {
   await database.b1PdfFiles.clear();
   await database.b1PracticeSessions.clear();
   await database.b1MockSessions.clear();
+  await database.b1LearnerEvidence.clear();
+  await database.b1LearningReflections.clear();
+  await database.b1RemediationProgress.clear();
+  await database.b1AnswerAttempts.clear();
+  await database.b1Preferences.clear();
   await database.settings.clear();
 });
 
@@ -35,5 +42,22 @@ describe('B-1 answer flow', () => {
       const session = await database.b1PracticeSessions.toCollection().first();
       expect(session?.answers[session.unitIds[0]]).toEqual({ a: 'バックボーン' });
     });
+  });
+
+  it('keeps mock90 support and answer-revealing content out of the pre-submit DOM', async () => {
+    const repository = new B1Repository(database);
+    const session = await repository.createMock(
+      2025,
+      [b1Cases[0].caseId, b1Cases[1].caseId],
+      'official_year',
+    );
+    window.location.hash = `#/b1/mock/${session.id}`;
+    render(<App />);
+
+    await screen.findAllByRole('heading', { name: '設問1(1)' });
+    expect(screen.queryByText('何を確認して答えるか')).not.toBeInTheDocument();
+    expect(screen.queryByText('公式根拠')).not.toBeInTheDocument();
+    expect(screen.queryByText('A2連動復習')).not.toBeInTheDocument();
+    expect(screen.queryByText('失点原因（複数選択）')).not.toBeInTheDocument();
   });
 });

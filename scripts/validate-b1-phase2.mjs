@@ -146,8 +146,8 @@ validateA2Links();
 validateAnswerLeakageCandidates();
 
 const packageJson = readJson('package.json');
-if (packageJson.version !== '0.5.0')
-  errors.push('package.jsonのversionは0.5.0である必要があります');
+if (packageJson.version !== '0.6.0')
+  errors.push('package.jsonのversionは0.6.0である必要があります');
 if (packageJson.scripts?.['validate:b1-phase2'] !== 'node scripts/validate-b1-phase2.mjs') {
   errors.push('validate:b1-phase2スクリプトが正しくありません');
 }

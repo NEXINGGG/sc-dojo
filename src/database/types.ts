@@ -5,6 +5,9 @@ import type { B1AnswerValues, B1SelfGrade } from '../domain/b1';
 import type {
   B1LearnerEvidence,
   B1LearningReflection,
+  B1LearningMode,
+  B1MockType,
+  B1RelevanceFilter,
   B1RemediationProgress,
 } from '../domain/b1LearningSupport';
 
@@ -195,13 +198,16 @@ export interface B1PdfRegistrationMetadata {
 export interface B1PracticeSessionRow {
   id: string;
   subjectId: 'b1';
-  version: 1;
+  version: 1 | 2;
   status: 'in_progress' | 'completed';
+  mode?: Exclude<B1LearningMode, 'mock90'>;
   caseId: string;
   unitIds: string[];
   answers: Record<string, B1AnswerValues>;
   selfGrades: Record<string, B1SelfGrade>;
   reviewQuestionIds: string[];
+  requirementDisclosureQuestionIds?: string[];
+  attemptIdsByQuestion?: Record<string, string[]>;
   currentIndex: number;
   createdAt: string;
   updatedAt: string;
@@ -211,14 +217,18 @@ export interface B1PracticeSessionRow {
 export interface B1MockSessionRow {
   id: string;
   subjectId: 'b1';
-  version: 1;
+  version: 1 | 2;
   status: 'in_progress' | 'submitted' | 'completed';
   year: number;
+  mode?: 'mock90';
+  mockType?: B1MockType;
   caseIds: string[];
   unitIds: string[];
   answers: Record<string, B1AnswerValues>;
   selfGrades: Record<string, B1SelfGrade>;
   reviewQuestionIds: string[];
+  requirementDisclosureQuestionIds?: string[];
+  attemptIdsByQuestion?: Record<string, string[]>;
   currentIndex: number;
   startedAt: string;
   deadlineAt: string;
@@ -226,6 +236,28 @@ export interface B1MockSessionRow {
   submittedAt?: string;
   submissionReason?: ExamSubmissionReason;
   completedAt?: string;
+}
+
+export interface B1AnswerAttemptRow {
+  id: string;
+  version: 1;
+  sessionId: string;
+  questionId: string;
+  attemptNumber: number;
+  answers: B1AnswerValues;
+  characterCount: number;
+  selfGrade?: B1SelfGrade;
+  failureCauseIds: readonly import('../domain/b1LearningSupport').B1FailureCauseId[];
+  createdAt: string;
+  updatedAt: string;
+  remediationCompletedBefore?: boolean;
+}
+
+export interface B1PreferenceRow {
+  key: 'b1-learning-preferences';
+  version: 1;
+  relevanceFilter: B1RelevanceFilter;
+  updatedAt: string;
 }
 
 export type B1LearnerEvidenceRow = B1LearnerEvidence;

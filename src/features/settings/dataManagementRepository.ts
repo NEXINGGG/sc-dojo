@@ -34,6 +34,7 @@ export interface StoredDataSummary {
   b1LearnerEvidenceCount: number;
   b1LearningReflectionCount: number;
   b1RemediationProgressCount: number;
+  b1AnswerAttemptCount: number;
 }
 
 export class DataManagementError extends Error {
@@ -62,6 +63,7 @@ export class DataManagementRepository {
       b1LearnerEvidence,
       b1LearningReflections,
       b1RemediationProgress,
+      b1AnswerAttempts,
     ] = await Promise.all([
       this.database.answerAttempts.toArray(),
       this.database.questionProgress.toArray(),
@@ -76,6 +78,7 @@ export class DataManagementRepository {
       this.database.b1LearnerEvidence.count(),
       this.database.b1LearningReflections.count(),
       this.database.b1RemediationProgress.count(),
+      this.database.b1AnswerAttempts.count(),
     ]);
 
     return {
@@ -94,6 +97,7 @@ export class DataManagementRepository {
       b1LearnerEvidenceCount: b1LearnerEvidence,
       b1LearningReflectionCount: b1LearningReflections,
       b1RemediationProgressCount: b1RemediationProgress,
+      b1AnswerAttemptCount: b1AnswerAttempts,
     };
   }
 
@@ -114,6 +118,8 @@ export class DataManagementRepository {
       b1LearnerEvidence,
       b1LearningReflections,
       b1RemediationProgress,
+      b1AnswerAttempts,
+      b1Preferences,
     ] = await Promise.all([
       this.database.answerAttempts.toArray(),
       this.database.questionProgress.toArray(),
@@ -129,6 +135,8 @@ export class DataManagementRepository {
       this.database.b1LearnerEvidence.toArray(),
       this.database.b1LearningReflections.toArray(),
       this.database.b1RemediationProgress.toArray(),
+      this.database.b1AnswerAttempts.toArray(),
+      this.database.b1Preferences.toArray(),
     ]);
     const document = createBackupDocument({
       exportedAt,
@@ -165,6 +173,8 @@ export class DataManagementRepository {
         learnerEvidence: b1LearnerEvidence,
         learningReflections: b1LearningReflections,
         remediationProgress: b1RemediationProgress,
+        answerAttempts: b1AnswerAttempts,
+        preferences: b1Preferences,
       },
     });
     const validation = await validateBackupDocumentWithB1(
@@ -202,6 +212,8 @@ export class DataManagementRepository {
           this.database.b1LearnerEvidence,
           this.database.b1LearningReflections,
           this.database.b1RemediationProgress,
+          this.database.b1AnswerAttempts,
+          this.database.b1Preferences,
         ],
         async () => {
           await Promise.all([
@@ -219,6 +231,8 @@ export class DataManagementRepository {
             this.database.b1LearnerEvidence.clear(),
             this.database.b1LearningReflections.clear(),
             this.database.b1RemediationProgress.clear(),
+            this.database.b1AnswerAttempts.clear(),
+            this.database.b1Preferences.clear(),
           ]);
 
           if (data.answerHistory.length > 0) {
@@ -263,6 +277,12 @@ export class DataManagementRepository {
           if (data.b1.remediationProgress.length > 0) {
             await this.database.b1RemediationProgress.bulkPut(data.b1.remediationProgress);
           }
+          if ((data.b1.answerAttempts?.length ?? 0) > 0) {
+            await this.database.b1AnswerAttempts.bulkPut(data.b1.answerAttempts ?? []);
+          }
+          if ((data.b1.preferences?.length ?? 0) > 0) {
+            await this.database.b1Preferences.bulkPut(data.b1.preferences ?? []);
+          }
         },
       );
     } catch {
@@ -292,6 +312,7 @@ export class DataManagementRepository {
           this.database.b1LearnerEvidence,
           this.database.b1LearningReflections,
           this.database.b1RemediationProgress,
+          this.database.b1AnswerAttempts,
         ],
         async () => {
           await Promise.all([
@@ -309,6 +330,7 @@ export class DataManagementRepository {
             this.database.b1LearnerEvidence.clear(),
             this.database.b1LearningReflections.clear(),
             this.database.b1RemediationProgress.clear(),
+            this.database.b1AnswerAttempts.clear(),
           ]);
         },
       );

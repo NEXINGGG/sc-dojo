@@ -2,14 +2,33 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { b1Cases, getB1QuestionUnit } from '../data/b1';
+import { getB1LearningSupportCatalog } from '../data/b1LearningSupport';
 import { database } from '../database/database';
 import type { B1MockSessionRow, B1PracticeSessionRow } from '../database/types';
 import { B1AnswerForm } from '../features/b1/B1AnswerForm';
+import { toB1AnswerInputUnit } from '../features/b1/b1AnswerInput';
+import {
+  B1LearnerEvidencePanel,
+  B1PostSubmissionPanel,
+  B1RequirementBreakdownPanel,
+} from '../features/b1/B1LearningPanels';
+import { B1LearningSupportRepository } from '../features/b1/b1LearningSupportRepository';
 import { B1PdfReference } from '../features/b1/B1PdfReference';
 import { applyB1Answer, B1Repository } from '../features/b1/b1Repository';
+import { PracticeSessionRepository } from '../features/practice/practiceSessionRepository';
+import {
+  createPracticeSession,
+  defaultPracticeFilters,
+  createPracticeSessionId,
+} from '../domain/practice';
+import type { B1FailureCauseId } from '../domain/b1LearningSupport';
+import { recommendB1A2Questions } from '../domain/b1A2Recommendation';
+import { useSubject } from '../features/subjects/SubjectContext';
 import { usePwa } from '../features/pwa/PwaContext';
 
 const repository = new B1Repository(database);
+const learningSupportRepository = new B1LearningSupportRepository(database);
+const a2PracticeSessions = new PracticeSessionRepository(database, 'a2');
 
 export function B1PracticeSessionPage() {
   return <B1SessionPage kind="practice" />;
@@ -22,6 +41,7 @@ export function B1MockSessionPage() {
 function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  const { selectSubject } = useSubject();
   const { confirmPersistenceSaved, reportPersistenceFailure } = usePwa();
   const [session, setSession] = useState<B1PracticeSessionRow | B1MockSessionRow>();
   const [error, setError] = useState<string>();
@@ -29,6 +49,11 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
   const [tab, setTab] = useState<'pdf' | 'answer'>('answer');
   const [isSubmitConfirming, setIsSubmitConfirming] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState<number>();
+  const [attempts, setAttempts] = useState<
+    Awaited<ReturnType<typeof repository.listAnswerAttempts>>
+  >([]);
+  const [isRewriting, setIsRewriting] = useState(false);
+  const [requestedPdfPage, setRequestedPdfPage] = useState<number>();
   const sessionRef = useRef<B1PracticeSessionRow | B1MockSessionRow | undefined>(undefined);
   const saveQueue = useRef<Promise<void>>(Promise.resolve());
   const saveRevision = useRef(0);
@@ -68,6 +93,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       try {
         await saveQueue.current;
         const submitted = await repository.submitMock(sessionId, reason);
+        await createInitialAttempts(submitted);
         sessionRef.current = submitted;
         setSession(submitted);
         confirmPersistenceSaved();
@@ -122,6 +148,23 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
     [currentUnit],
   );
 
+  useEffect(() => {
+    if (sessionId === undefined || currentUnit === undefined) return;
+    let active = true;
+    void repository
+      .listAnswerAttempts(sessionId, currentUnit.questionId)
+      .then((next) => {
+        if (active) setAttempts(next);
+      })
+      .catch(() => {
+        if (active) setError('答案の書き直し履歴を読み込めませんでした。');
+      });
+    setIsRewriting(false);
+    return () => {
+      active = false;
+    };
+  }, [currentUnit, sessionId]);
+
   function save(next: B1PracticeSessionRow | B1MockSessionRow) {
     const previous = sessionRef.current;
     sessionRef.current = next;
@@ -151,7 +194,11 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
 
   function changeAnswer(fieldId: string, value: string) {
     const active = sessionRef.current;
-    if (active === undefined || currentUnit === undefined || active.status !== 'in_progress')
+    if (
+      active === undefined ||
+      currentUnit === undefined ||
+      (active.status !== 'in_progress' && !isRewriting)
+    )
       return;
     const next = {
       ...active,
@@ -161,7 +208,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
     save(next);
   }
 
-  function changeSelfGrade(grade: 'correct' | 'partial' | 'review') {
+  function changeSelfGrade(grade: 'correct' | 'partial' | 'incorrect' | 'review') {
     const active = sessionRef.current;
     if (active === undefined || currentUnit === undefined || active.status === 'in_progress')
       return;
@@ -170,6 +217,168 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       selfGrades: { ...active.selfGrades, [currentUnit.questionId]: grade },
       updatedAt: new Date().toISOString(),
     });
+    void repository
+      .updateLatestAnswerAttempt(active.id, currentUnit.questionId, {
+        selfGrade: grade,
+        failureCauseIds: [],
+      })
+      .then((updated) => {
+        if (updated !== undefined) {
+          setAttempts((current) =>
+            current.map((attempt) => (attempt.id === updated.id ? updated : attempt)),
+          );
+        }
+      });
+  }
+
+  function setSelfGrade(grade: 'correct' | 'partial' | 'incorrect' | 'review') {
+    const active = sessionRef.current;
+    if (active === undefined || currentUnit === undefined || active.status === 'in_progress')
+      return;
+    save({
+      ...active,
+      selfGrades: { ...active.selfGrades, [currentUnit.questionId]: grade },
+      updatedAt: new Date().toISOString(),
+    });
+    void repository
+      .updateLatestAnswerAttempt(active.id, currentUnit.questionId, {
+        selfGrade: grade,
+        failureCauseIds: [],
+      })
+      .then((updated) => {
+        if (updated !== undefined) {
+          setAttempts((current) =>
+            current.map((attempt) => (attempt.id === updated.id ? updated : attempt)),
+          );
+        }
+      });
+    if (grade === 'correct') {
+      void learningSupportRepository
+        .saveLearningReflection({
+          sessionId: active.id,
+          questionId: currentUnit.questionId,
+          selfAssessment: 'correct',
+          failureCauseIds: [],
+        })
+        .catch(() => setError('自己採点を保存できませんでした。もう一度お試しください。'));
+    }
+  }
+
+  function toggleRequirement() {
+    const active = sessionRef.current;
+    if (active === undefined || currentUnit === undefined || active.status !== 'in_progress')
+      return;
+    const disclosed = active.requirementDisclosureQuestionIds ?? [];
+    const alreadyOpen = disclosed.includes(currentUnit.questionId);
+    save({
+      ...active,
+      requirementDisclosureQuestionIds: alreadyOpen
+        ? disclosed.filter((id) => id !== currentUnit.questionId)
+        : [...disclosed, currentUnit.questionId],
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  async function startRewrite() {
+    const active = sessionRef.current;
+    if (active === undefined || currentUnit === undefined) return;
+    try {
+      await repository.createAnswerAttempt({
+        sessionId: active.id,
+        questionId: currentUnit.questionId,
+        answers: active.answers[currentUnit.questionId] ?? {},
+        selfGrade: active.selfGrades[currentUnit.questionId],
+      });
+      const next = {
+        ...active,
+        answers: { ...active.answers, [currentUnit.questionId]: {} },
+        updatedAt: new Date().toISOString(),
+      };
+      save(next);
+      setAttempts(await repository.listAnswerAttempts(active.id, currentUnit.questionId));
+      setIsRewriting(true);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : '答案の書き直しを開始できませんでした。');
+    }
+  }
+
+  async function finishRewrite() {
+    const active = sessionRef.current;
+    if (active === undefined || currentUnit === undefined) return;
+    try {
+      const remediations = await learningSupportRepository.listRemediationsByOriginQuestion(
+        currentUnit.questionId,
+      );
+      await repository.createAnswerAttempt({
+        sessionId: active.id,
+        questionId: currentUnit.questionId,
+        answers: active.answers[currentUnit.questionId] ?? {},
+        selfGrade: active.selfGrades[currentUnit.questionId],
+        remediationCompletedBefore: remediations.some(
+          (progress) => progress.status === 'completed',
+        ),
+      });
+      setAttempts(await repository.listAnswerAttempts(active.id, currentUnit.questionId));
+      setIsRewriting(false);
+    } catch {
+      setError('書き直した答案を保存できませんでした。再試行してください。');
+    }
+  }
+
+  async function startA2Review(failureCauseIds: readonly B1FailureCauseId[]) {
+    const active = sessionRef.current;
+    if (active === undefined || currentUnit === undefined || caseItem === undefined) return;
+    const remediation = getB1LearningSupportCatalog().a2RemediationByQuestionId.get(
+      currentUnit.questionId,
+    );
+    if (remediation === undefined) {
+      setError('A2推薦情報を読み込めませんでした。元のB-1設問を見直してください。');
+      return;
+    }
+    const recommendation = recommendB1A2Questions({ remediation, failureCauseIds });
+    if (recommendation.status !== 'recommended') {
+      setError(recommendation.notApplicableReason ?? 'この設問にA2推薦はありません。');
+      return;
+    }
+    try {
+      const progress = await learningSupportRepository.startRemediation({
+        originQuestionId: currentUnit.questionId,
+        originSessionId: active.id,
+        originCaseId: caseItem.caseId,
+        failureCauseIds,
+        a2QuestionIds: recommendation.a2QuestionIds,
+      });
+      const now = new Date().toISOString();
+      const a2Session = createPracticeSession(
+        recommendation.a2QuestionIds,
+        { ...defaultPracticeFilters, questionCount: 'all', order: 'registered' },
+        { id: createPracticeSessionId(), now, subjectId: 'a2' },
+      );
+      await a2PracticeSessions.createInProgress(a2Session);
+      await selectSubject('a2');
+      navigate(`/practice/${a2Session.id}?b1Remediation=${progress.id}`);
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : 'A2復習を開始できませんでした。途中のA2演習を確認してから再試行してください。',
+      );
+    }
+  }
+
+  async function createInitialAttempts(active: B1PracticeSessionRow | B1MockSessionRow) {
+    await Promise.all(
+      active.unitIds.map(async (questionId) => {
+        const existing = await repository.listAnswerAttempts(active.id, questionId);
+        if (existing.length > 0) return;
+        await repository.createAnswerAttempt({
+          sessionId: active.id,
+          questionId,
+          answers: active.answers[questionId] ?? {},
+          selfGrade: active.selfGrades[questionId],
+        });
+      }),
+    );
   }
 
   function move(delta: number) {
@@ -199,6 +408,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
     try {
       await saveQueue.current;
       const completed = await repository.completePractice(sessionId);
+      await createInitialAttempts(completed);
       sessionRef.current = completed;
       setSession(completed);
       confirmPersistenceSaved();
@@ -248,11 +458,13 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
 
   const isInProgress = session.status === 'in_progress';
   const isMock = kind === 'mock';
+  const learningMode = isMock ? 'mock90' : (session.mode ?? 'training');
   const revealReference = !isInProgress;
   const unanswered = session.unitIds.filter((unitId) =>
     Object.values(session.answers[unitId] ?? {}).every((value) => value.trim() === ''),
   ).length;
   const reviewed = session.reviewQuestionIds.includes(currentUnit.questionId);
+  const answerInputUnit = toB1AnswerInputUnit(currentUnit);
 
   return (
     <>
@@ -296,20 +508,79 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       </div>
       <div className={`b1-workspace b1-tab-${tab}`}>
         <div className="b1-workspace-pdf">
-          <B1PdfReference caseItem={caseItem} unit={currentUnit} />
+          <B1PdfReference
+            caseItem={caseItem}
+            requestedPrintedPage={requestedPdfPage}
+            unit={currentUnit}
+          />
         </div>
         <div className="b1-workspace-answer">
+          {learningMode !== 'mock90' ? (
+            <B1RequirementBreakdownPanel
+              expanded={(session.requirementDisclosureQuestionIds ?? []).includes(
+                currentUnit.questionId,
+              )}
+              mode={learningMode}
+              onToggle={toggleRequirement}
+              unit={currentUnit}
+            />
+          ) : null}
           <B1AnswerForm
-            disabled={!isInProgress}
+            disabled={!isInProgress && !isRewriting}
             onChange={changeAnswer}
             onSelfGrade={changeSelfGrade}
             revealReference={revealReference}
             selfGrade={session.selfGrades[currentUnit.questionId]}
-            unit={currentUnit}
+            referenceUnit={revealReference ? currentUnit : undefined}
+            unit={answerInputUnit}
             values={session.answers[currentUnit.questionId] ?? {}}
           />
+          {isInProgress && learningMode !== 'mock90' ? (
+            <B1LearnerEvidencePanel
+              defaultPrintedPage={
+                Array.isArray(currentUnit.sourcePromptLocator.printedPage)
+                  ? currentUnit.sourcePromptLocator.printedPage[0]
+                  : currentUnit.sourcePromptLocator.printedPage
+              }
+              sessionId={session.id}
+              unit={currentUnit}
+            />
+          ) : null}
         </div>
       </div>
+      {!isInProgress ? (
+        <B1PostSubmissionPanel
+          attempts={attempts}
+          caseItem={caseItem}
+          isRewriting={isRewriting}
+          onFinishRewrite={() => void finishRewrite()}
+          onFailureCauses={(failureCauseIds) => {
+            if (sessionId === undefined) return;
+            void repository
+              .updateLatestAnswerAttempt(sessionId, currentUnit.questionId, {
+                selfGrade: session.selfGrades[currentUnit.questionId],
+                failureCauseIds,
+              })
+              .then((updated) => {
+                if (updated !== undefined) {
+                  setAttempts((current) =>
+                    current.map((attempt) => (attempt.id === updated.id ? updated : attempt)),
+                  );
+                }
+              });
+          }}
+          onOpenPdfPage={(page) => {
+            setRequestedPdfPage(page);
+            setTab('pdf');
+          }}
+          onSelfGrade={setSelfGrade}
+          onStartA2={(failureCauseIds) => void startA2Review(failureCauseIds)}
+          onStartRewrite={() => void startRewrite()}
+          selfGrade={session.selfGrades[currentUnit.questionId]}
+          sessionId={session.id}
+          unit={currentUnit}
+        />
+      ) : null}
       <div className="b1-session-tools">
         <button
           className={`secondary-button review-button${reviewed ? ' is-active' : ''}`}

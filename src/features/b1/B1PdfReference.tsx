@@ -6,7 +6,15 @@ import { B1Repository } from './b1Repository';
 
 const repository = new B1Repository(database);
 
-export function B1PdfReference({ caseItem, unit }: { caseItem: B1Case; unit: B1QuestionUnit }) {
+export function B1PdfReference({
+  caseItem,
+  unit,
+  requestedPrintedPage,
+}: {
+  caseItem: B1Case;
+  unit: B1QuestionUnit;
+  requestedPrintedPage?: number;
+}) {
   const { isOnline } = usePwa();
   const [localUrl, setLocalUrl] = useState<string>();
   const [fileName, setFileName] = useState<string>();
@@ -20,7 +28,10 @@ export function B1PdfReference({ caseItem, unit }: { caseItem: B1Case; unit: B1Q
         : [unit.sourcePromptLocator.printedPage],
     [unit.sourcePromptLocator.printedPage],
   );
-  const pageFragment = useMemo(() => `#page=${printedPages[0]}`, [printedPages]);
+  const pageFragment = useMemo(
+    () => `#page=${requestedPrintedPage ?? printedPages[0]}`,
+    [printedPages, requestedPrintedPage],
+  );
 
   useEffect(() => {
     let active = true;

@@ -48,6 +48,33 @@ describe('B1LearningSupportRepository', () => {
     database.close();
   });
 
+  it('Phase 3では構造化した根拠を複数件、個別に保持できる', async () => {
+    const database = createTestDatabase();
+    const repository = new B1LearningSupportRepository(database);
+    const first = await repository.saveLearnerEvidence({
+      sessionId,
+      questionId,
+      sourceType: 'figure',
+      printedPage: 2,
+      location: '図1の矢印',
+      note: '通信方向を確認した。',
+    });
+    const second = await repository.saveLearnerEvidence({
+      sessionId,
+      questionId,
+      sourceType: 'paragraph',
+      printedPage: 3,
+      note: '設問の条件を確認した。',
+    });
+
+    expect(first.id).not.toBe(second.id);
+    await expect(repository.listLearnerEvidenceBySession(sessionId)).resolves.toMatchObject([
+      { sourceType: 'figure', printedPage: 2, location: '図1の矢印' },
+      { sourceType: 'paragraph', printedPage: 3 },
+    ]);
+    database.close();
+  });
+
   it('振返りを保存し、A2復習を二重開始せずに完了又はキャンセルできる', async () => {
     const database = createTestDatabase();
     const repository = new B1LearningSupportRepository(database);

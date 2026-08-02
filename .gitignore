@@ -12,3 +12,4 @@ coverage/
 
 # Local IPA official PDFs for B1 analysis
 reference/b1-official/
+debug.log

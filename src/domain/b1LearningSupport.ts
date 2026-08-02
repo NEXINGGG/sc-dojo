@@ -35,6 +35,23 @@ export type B1EvidenceSourceType =
   | 'sequence'
   | 'general_knowledge';
 
+export type B1LearningMode = 'training' | 'practical' | 'mock90';
+export type B1MockType = 'official_year' | 'current_focus' | 'all_years' | 'legacy_reading';
+
+export interface B1RelevanceFilter {
+  current_core: boolean;
+  modern_successor: boolean;
+  historical_context: boolean;
+  low_current_priority: boolean;
+}
+
+export const defaultB1RelevanceFilter: B1RelevanceFilter = {
+  current_core: true,
+  modern_successor: true,
+  historical_context: false,
+  low_current_priority: false,
+};
+
 export interface B1FailureCauseDefinition {
   id: B1FailureCauseId;
   displayName: string;
@@ -123,9 +140,12 @@ export interface B1A2Remediation {
 
 export interface B1LearnerEvidence {
   id: string;
-  version: 1;
+  version: 1 | 2;
   sessionId: string;
   questionId: string;
+  sourceType?: B1EvidenceSourceType;
+  printedPage?: number;
+  location?: string;
   evidenceId?: string;
   note: string;
   createdAt: string;
@@ -134,11 +154,11 @@ export interface B1LearnerEvidence {
 
 export interface B1LearningReflection {
   id: string;
-  version: 1;
+  version: 1 | 2;
   sessionId: string;
   questionId: string;
   failureCauseIds: readonly B1FailureCauseId[];
-  selfAssessment: 'understood' | 'partial' | 'review_needed';
+  selfAssessment: 'understood' | 'partial' | 'review_needed' | 'correct' | 'incorrect';
   note?: string;
   createdAt: string;
   updatedAt: string;
@@ -148,9 +168,10 @@ export type B1RemediationProgressStatus = 'in_progress' | 'completed' | 'cancell
 
 export interface B1RemediationProgress {
   id: string;
-  version: 1;
+  version: 1 | 2;
   originQuestionId: string;
   originSessionId: string;
+  originCaseId?: string;
   failureCauseIds: readonly B1FailureCauseId[];
   a2QuestionIds: readonly string[];
   completedA2QuestionIds: readonly string[];

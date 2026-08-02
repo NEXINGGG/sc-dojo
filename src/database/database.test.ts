@@ -34,6 +34,8 @@ describe('A1DojoDatabase', () => {
       'b1LearnerEvidence',
       'b1LearningReflections',
       'b1RemediationProgress',
+      'b1AnswerAttempts',
+      'b1Preferences',
     ]);
 
     database.close();
@@ -80,7 +82,7 @@ describe('A1DojoDatabase', () => {
     const upgraded = createDatabase(name);
     await initializeDatabase(upgraded);
 
-    expect(upgraded.verno).toBe(8);
+    expect(upgraded.verno).toBe(9);
     await expect(upgraded.questionProgress.get('A1-001')).resolves.toMatchObject({
       favorite: true,
       attemptCount: 2,
@@ -143,6 +145,48 @@ describe('A1DojoDatabase', () => {
       caseId: 'B1-2025-Q1',
     });
     await expect(upgraded.b1LearnerEvidence.count()).resolves.toBe(0);
+    upgraded.close();
+  });
+
+  it('v8の根拠記録を保持したまま、Phase 3で複数根拠を登録できる', async () => {
+    const name = `a1-dojo-v8-migration-${crypto.randomUUID()}`;
+    databaseNames.push(name);
+    const legacy = new Dexie(name);
+    legacy.version(8).stores({
+      b1LearnerEvidence: '&id, &[sessionId+questionId], sessionId, questionId, updatedAt',
+    });
+    await legacy.open();
+    await legacy.table('b1LearnerEvidence').put({
+      id: 'legacy-evidence',
+      version: 1,
+      sessionId: 'b1-session',
+      questionId: 'B1-2025-Q1-U01',
+      note: '既存根拠',
+      createdAt: '2026-07-18T00:00:00.000Z',
+      updatedAt: '2026-07-18T00:00:00.000Z',
+    });
+    legacy.close();
+
+    const upgraded = createDatabase(name);
+    await initializeDatabase(upgraded);
+    await upgraded.b1LearnerEvidence.put({
+      id: 'new-evidence',
+      version: 2,
+      sessionId: 'b1-session',
+      questionId: 'B1-2025-Q1-U01',
+      sourceType: 'figure',
+      printedPage: 2,
+      note: '新しい根拠',
+      createdAt: '2026-07-18T00:01:00.000Z',
+      updatedAt: '2026-07-18T00:01:00.000Z',
+    });
+
+    await expect(
+      upgraded.b1LearnerEvidence
+        .where('[sessionId+questionId]')
+        .equals(['b1-session', 'B1-2025-Q1-U01'])
+        .count(),
+    ).resolves.toBe(2);
     upgraded.close();
   });
 });

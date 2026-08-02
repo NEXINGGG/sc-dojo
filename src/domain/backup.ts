@@ -12,11 +12,13 @@ import {
   type PracticeSessionRow,
   type SettingRow,
   type B1MockSessionRow,
+  type B1AnswerAttemptRow,
   type B1LearnerEvidenceRow,
   type B1LearningReflectionRow,
   type B1PdfRegistrationMetadata,
   type B1PracticeSessionRow,
   type B1RemediationProgressRow,
+  type B1PreferenceRow,
 } from '../database/types';
 import { isB1FailureCauseId, type B1FailureCauseId } from './b1LearningSupport';
 import { getSubjectCatalog } from '../data/catalog';
@@ -34,7 +36,7 @@ import type { ChoiceId, Difficulty, Question } from '../types/question';
 import { getSubjectConfig, isSubjectId, type SubjectId } from './subject';
 
 export const BACKUP_FORMAT = 'nw-a1-dojo-backup';
-export const BACKUP_FORMAT_VERSION = 4;
+export const BACKUP_FORMAT_VERSION = 5;
 export const MAX_BACKUP_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 export interface FavoriteBackupEntry {
@@ -68,6 +70,8 @@ export interface B1BackupData {
   learnerEvidence: readonly B1LearnerEvidenceRow[];
   learningReflections: readonly B1LearningReflectionRow[];
   remediationProgress: readonly B1RemediationProgressRow[];
+  answerAttempts?: readonly B1AnswerAttemptRow[];
+  preferences?: readonly B1PreferenceRow[];
 }
 
 interface B1ValidationCatalog {
@@ -123,6 +127,7 @@ export interface BackupPreview {
   b1LearnerEvidenceCount: number;
   b1LearningReflectionCount: number;
   b1RemediationProgressCount: number;
+  b1AnswerAttemptCount: number;
   learningDayCount: number;
   settings: DisplaySettings;
   unknownQuestionIdCount: number;
@@ -313,10 +318,12 @@ function validateBackupDocumentInternal(
     (source.formatVersion !== 1 &&
       source.formatVersion !== 2 &&
       source.formatVersion !== 3 &&
+      source.formatVersion !== 4 &&
       source.formatVersion !== BACKUP_FORMAT_VERSION) ||
     (source.backupVersion !== 1 &&
       source.backupVersion !== 2 &&
       source.backupVersion !== 3 &&
+      source.backupVersion !== 4 &&
       source.backupVersion !== BACKUP_FORMAT_VERSION)
   ) {
     return failure('unsupported_version', 'このバックアップ形式のバージョンには対応していません。');
@@ -436,6 +443,7 @@ function validateBackupDocumentInternal(
     b1LearnerEvidenceCount: b1.learnerEvidence.length,
     b1LearningReflectionCount: b1.learningReflections.length,
     b1RemediationProgressCount: b1.remediationProgress.length,
+    b1AnswerAttemptCount: b1.answerAttempts?.length ?? 0,
     learningDayCount: learningDays.length,
     settings: normalizeDisplaySettings(settings[0]),
     unknownQuestionIdCount: collector.unknownCodes.size,
@@ -530,6 +538,8 @@ function emptyB1BackupData(): B1BackupData {
     learnerEvidence: [],
     learningReflections: [],
     remediationProgress: [],
+    answerAttempts: [],
+    preferences: [],
   };
 }
 
@@ -586,6 +596,8 @@ function parseB1BackupData(
     collector,
     b1Catalog,
   );
+  const answerAttempts = parseB1AnswerAttempts(value.answerAttempts, collector, b1Catalog);
+  const preferences = parseB1Preferences(value.preferences, collector);
   return {
     practiceSessions: uniqueBy(practiceSessions, (session) => session.id),
     mockSessions: uniqueBy(mockSessions, (session) => session.id),
@@ -593,6 +605,8 @@ function parseB1BackupData(
     learnerEvidence: uniqueBy(learnerEvidence, (entry) => entry.id),
     learningReflections: uniqueBy(learningReflections, (entry) => entry.id),
     remediationProgress: uniqueBy(remediationProgress, (entry) => entry.id),
+    answerAttempts: uniqueBy(answerAttempts, (entry) => entry.id),
+    preferences: uniqueBy(preferences, (entry) => entry.key),
   };
 }
 
@@ -607,13 +621,12 @@ function parseB1LearnerEvidence(
     return [];
   }
   const ids = new Set<string>();
-  const sessionQuestionKeys = new Set<string>();
   const entries: B1LearnerEvidenceRow[] = [];
   for (const item of value) {
     if (
       !isRecord(item) ||
       !isNonEmptyString(item.id) ||
-      item.version !== 1 ||
+      (item.version !== 1 && item.version !== 2) ||
       !isNonEmptyString(item.sessionId) ||
       !isNonEmptyString(item.questionId) ||
       !isNonEmptyString(item.note) ||
@@ -628,18 +641,19 @@ function parseB1LearnerEvidence(
       invalidB1SupportData(collector, '存在しないB-1設問を含む根拠記録は復元できません。');
       continue;
     }
-    const key = `${item.sessionId}\u0000${item.questionId}`;
-    if (ids.has(item.id) || sessionQuestionKeys.has(key)) {
+    if (ids.has(item.id)) {
       invalidB1SupportData(collector, 'B-1根拠記録に重複があります。');
       continue;
     }
     ids.add(item.id);
-    sessionQuestionKeys.add(key);
     entries.push({
       id: item.id,
-      version: 1,
+      version: item.version,
       sessionId: item.sessionId,
       questionId: item.questionId,
+      ...(isB1EvidenceSourceType(item.sourceType) ? { sourceType: item.sourceType } : {}),
+      ...(isPositiveInteger(item.printedPage) ? { printedPage: item.printedPage } : {}),
+      ...(isNonEmptyString(item.location) ? { location: item.location } : {}),
       ...(isNonEmptyString(item.evidenceId) ? { evidenceId: item.evidenceId } : {}),
       note: item.note,
       createdAt: item.createdAt,
@@ -666,13 +680,16 @@ function parseB1LearningReflections(
     if (
       !isRecord(item) ||
       !isNonEmptyString(item.id) ||
-      item.version !== 1 ||
+      (item.version !== 1 && item.version !== 2) ||
       !isNonEmptyString(item.sessionId) ||
       !isNonEmptyString(item.questionId) ||
       !Array.isArray(item.failureCauseIds) ||
-      item.failureCauseIds.length === 0 ||
+      (item.failureCauseIds.length === 0 &&
+        !['understood', 'correct'].includes(String(item.selfAssessment))) ||
       !item.failureCauseIds.every(isB1FailureCauseId) ||
-      !['understood', 'partial', 'review_needed'].includes(String(item.selfAssessment)) ||
+      !['understood', 'partial', 'review_needed', 'correct', 'incorrect'].includes(
+        String(item.selfAssessment),
+      ) ||
       (item.note !== undefined && !isString(item.note)) ||
       !isIsoDate(item.createdAt) ||
       !isIsoDate(item.updatedAt) ||
@@ -690,7 +707,7 @@ function parseB1LearningReflections(
     sessionQuestionKeys.add(key);
     entries.push({
       id: item.id,
-      version: 1,
+      version: item.version,
       sessionId: item.sessionId,
       questionId: item.questionId,
       failureCauseIds: [...new Set(item.failureCauseIds)] as B1FailureCauseId[],
@@ -720,7 +737,7 @@ function parseB1RemediationProgress(
     if (
       !isRecord(item) ||
       !isNonEmptyString(item.id) ||
-      item.version !== 1 ||
+      (item.version !== 1 && item.version !== 2) ||
       !isNonEmptyString(item.originQuestionId) ||
       !isNonEmptyString(item.originSessionId) ||
       !Array.isArray(item.failureCauseIds) ||
@@ -763,9 +780,10 @@ function parseB1RemediationProgress(
     ids.add(item.id);
     entries.push({
       id: item.id,
-      version: 1,
+      version: item.version,
       originQuestionId: item.originQuestionId,
       originSessionId: item.originSessionId,
+      ...(isNonEmptyString(item.originCaseId) ? { originCaseId: item.originCaseId } : {}),
       failureCauseIds: [...new Set(item.failureCauseIds)] as B1FailureCauseId[],
       a2QuestionIds: remediationQuestionIds,
       completedA2QuestionIds: completedQuestionIds,
@@ -781,6 +799,130 @@ function parseB1RemediationProgress(
 
 function invalidB1SupportData(collector: ValidationCollector, message: string): void {
   collector.fatalErrors.push(message);
+}
+
+function parseB1AnswerAttempts(
+  value: unknown,
+  collector: ValidationCollector,
+  b1Catalog?: B1ValidationCatalog,
+): B1AnswerAttemptRow[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    invalidB1SupportData(collector, 'B-1答案履歴の形式が正しくありません。');
+    return [];
+  }
+  const entries: B1AnswerAttemptRow[] = [];
+  const ids = new Set<string>();
+  for (const item of value) {
+    if (
+      !isRecord(item) ||
+      !isNonEmptyString(item.id) ||
+      item.version !== 1 ||
+      !isNonEmptyString(item.sessionId) ||
+      !isNonEmptyString(item.questionId) ||
+      !isPositiveInteger(item.attemptNumber) ||
+      !isRecord(item.answers) ||
+      !isNonNegativeInteger(item.characterCount) ||
+      !Array.isArray(item.failureCauseIds) ||
+      !item.failureCauseIds.every(isB1FailureCauseId) ||
+      (item.selfGrade !== undefined &&
+        !['correct', 'partial', 'incorrect', 'review'].includes(String(item.selfGrade))) ||
+      (item.remediationCompletedBefore !== undefined &&
+        !isBoolean(item.remediationCompletedBefore)) ||
+      !isIsoDate(item.createdAt) ||
+      !isIsoDate(item.updatedAt) ||
+      (b1Catalog !== undefined && !b1Catalog.hasQuestion(item.questionId)) ||
+      ids.has(item.id)
+    ) {
+      invalidB1SupportData(collector, 'B-1答案履歴に不正な内容があります。');
+      continue;
+    }
+    if (
+      !Object.entries(item.answers).every(
+        ([fieldId, answer]) =>
+          isString(answer) &&
+          (b1Catalog === undefined || b1Catalog.hasAnswerField(item.questionId as string, fieldId)),
+      )
+    ) {
+      invalidB1SupportData(collector, 'B-1答案履歴に存在しない答案欄があります。');
+      continue;
+    }
+    ids.add(item.id);
+    entries.push({
+      id: item.id,
+      version: 1,
+      sessionId: item.sessionId,
+      questionId: item.questionId,
+      attemptNumber: item.attemptNumber,
+      answers: { ...(item.answers as Record<string, string>) },
+      characterCount: item.characterCount,
+      failureCauseIds: [...new Set(item.failureCauseIds)] as B1FailureCauseId[],
+      ...(item.selfGrade === undefined
+        ? {}
+        : { selfGrade: item.selfGrade as B1AnswerAttemptRow['selfGrade'] }),
+      ...(item.remediationCompletedBefore === undefined
+        ? {}
+        : { remediationCompletedBefore: item.remediationCompletedBefore }),
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    });
+  }
+  return entries;
+}
+
+function parseB1Preferences(value: unknown, collector: ValidationCollector): B1PreferenceRow[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    invalidB1SupportData(collector, 'B-1現在性フィルターの形式が正しくありません。');
+    return [];
+  }
+  const row = value.find(isB1PreferenceRecord);
+  if (row === undefined) return [];
+  return [
+    {
+      key: 'b1-learning-preferences',
+      version: 1,
+      relevanceFilter: {
+        current_core: row.relevanceFilter.current_core,
+        modern_successor: row.relevanceFilter.modern_successor,
+        historical_context: row.relevanceFilter.historical_context,
+        low_current_priority: row.relevanceFilter.low_current_priority,
+      },
+      updatedAt: row.updatedAt,
+    },
+  ];
+}
+
+function isB1PreferenceRecord(value: unknown): value is {
+  key: 'b1-learning-preferences';
+  version: 1;
+  relevanceFilter: B1PreferenceRow['relevanceFilter'];
+  updatedAt: string;
+} {
+  if (
+    !isRecord(value) ||
+    value.key !== 'b1-learning-preferences' ||
+    value.version !== 1 ||
+    !isIsoDate(value.updatedAt) ||
+    !isRecord(value.relevanceFilter)
+  )
+    return false;
+  const relevanceFilter = value.relevanceFilter;
+  return ['current_core', 'modern_successor', 'historical_context', 'low_current_priority'].every(
+    (key) => isBoolean(relevanceFilter[key]),
+  );
+}
+
+function isB1EvidenceSourceType(value: unknown): value is B1LearnerEvidenceRow['sourceType'] {
+  return [
+    'paragraph',
+    'figure',
+    'table',
+    'calculation',
+    'configuration',
+    'sequence',
+    'general_knowledge',
+  ].includes(String(value));
 }
 
 function isStringArray(value: unknown): value is string[] {
@@ -802,7 +944,7 @@ function parseB1PracticeSession(
   if (
     !isRecord(value) ||
     !isNonEmptyString(value.id) ||
-    value.version !== 1 ||
+    (value.version !== 1 && value.version !== 2) ||
     !isB1PracticeStatus(value.status) ||
     !isNonEmptyString(value.caseId) ||
     !Array.isArray(value.unitIds) ||
@@ -827,13 +969,20 @@ function parseB1PracticeSession(
   return {
     id: value.id,
     subjectId: 'b1',
-    version: 1,
+    version: value.version,
     status: value.status,
+    ...(value.mode === 'training' || value.mode === 'practical' ? { mode: value.mode } : {}),
     caseId: value.caseId,
     unitIds: [...value.unitIds],
     answers: copyB1Answers(value.answers),
     selfGrades: copyB1SelfGrades(value.selfGrades),
     reviewQuestionIds: [...value.reviewQuestionIds],
+    ...(isStringArray(value.requirementDisclosureQuestionIds)
+      ? { requirementDisclosureQuestionIds: [...value.requirementDisclosureQuestionIds] }
+      : {}),
+    ...(isB1AttemptIdMap(value.attemptIdsByQuestion)
+      ? { attemptIdsByQuestion: value.attemptIdsByQuestion }
+      : {}),
     currentIndex: value.currentIndex,
     createdAt: value.createdAt,
     updatedAt: value.updatedAt,
@@ -848,7 +997,7 @@ function parseB1MockSession(
   if (
     !isRecord(value) ||
     !isNonEmptyString(value.id) ||
-    value.version !== 1 ||
+    (value.version !== 1 && value.version !== 2) ||
     !isB1MockStatus(value.status) ||
     !isPositiveInteger(value.year) ||
     !Array.isArray(value.caseIds) ||
@@ -869,7 +1018,12 @@ function parseB1MockSession(
     value.caseIds.length !== 2 ||
     new Set(value.caseIds).size !== 2 ||
     (b1Catalog !== undefined &&
-      (cases.some((item) => item === undefined || item.year !== value.year) ||
+      (cases.some(
+        (item) =>
+          item === undefined ||
+          ((value.mockType === undefined || value.mockType === 'official_year') &&
+            item.year !== value.year),
+      ) ||
         !sameStringList(value.unitIds, b1Catalog.getUnitIds(value.caseIds)))) ||
     !validB1SessionPayload(value, value.unitIds, b1Catalog) ||
     new Date(value.deadlineAt).getTime() <= new Date(value.startedAt).getTime()
@@ -889,14 +1043,22 @@ function parseB1MockSession(
   return {
     id: value.id,
     subjectId: 'b1',
-    version: 1,
+    version: value.version,
     status: value.status,
     year: value.year,
+    ...(value.mode === 'mock90' ? { mode: value.mode } : {}),
+    ...(isB1MockType(value.mockType) ? { mockType: value.mockType } : {}),
     caseIds: [...value.caseIds],
     unitIds: [...value.unitIds],
     answers: copyB1Answers(value.answers),
     selfGrades: copyB1SelfGrades(value.selfGrades),
     reviewQuestionIds: [...value.reviewQuestionIds],
+    ...(isStringArray(value.requirementDisclosureQuestionIds)
+      ? { requirementDisclosureQuestionIds: [...value.requirementDisclosureQuestionIds] }
+      : {}),
+    ...(isB1AttemptIdMap(value.attemptIdsByQuestion)
+      ? { attemptIdsByQuestion: value.attemptIdsByQuestion }
+      : {}),
     currentIndex: value.currentIndex,
     startedAt: value.startedAt,
     deadlineAt: value.deadlineAt,
@@ -957,7 +1119,7 @@ function validB1SessionPayload(
     Object.entries(value.selfGrades).every(
       ([questionId, grade]) =>
         unitIds.includes(questionId) &&
-        (grade === 'correct' || grade === 'partial' || grade === 'review'),
+        (grade === 'correct' || grade === 'partial' || grade === 'incorrect' || grade === 'review'),
     )
   );
 }
@@ -975,8 +1137,19 @@ function copyB1SelfGrades(value: Record<string, unknown>): B1PracticeSessionRow[
   return Object.fromEntries(
     Object.entries(value).map(([questionId, grade]) => [
       questionId,
-      grade as 'correct' | 'partial' | 'review',
+      grade as 'correct' | 'partial' | 'incorrect' | 'review',
     ]),
+  );
+}
+
+function isB1MockType(value: unknown): value is NonNullable<B1MockSessionRow['mockType']> {
+  return ['official_year', 'current_focus', 'all_years', 'legacy_reading'].includes(String(value));
+}
+
+function isB1AttemptIdMap(value: unknown): value is Record<string, string[]> {
+  return (
+    isRecord(value) &&
+    Object.values(value).every((ids) => Array.isArray(ids) && ids.every(isNonEmptyString))
   );
 }
 
