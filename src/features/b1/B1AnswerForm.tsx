@@ -6,9 +6,11 @@ import {
   type B1AnswerValues,
   type B1SelfGrade,
 } from '../../domain/b1';
+import type { B1AnswerInputUnit } from './b1AnswerInput';
 
 export function B1AnswerForm({
   unit,
+  referenceUnit,
   values,
   disabled = false,
   revealReference = false,
@@ -16,7 +18,8 @@ export function B1AnswerForm({
   onChange,
   onSelfGrade,
 }: {
-  unit: B1QuestionUnit;
+  unit: B1AnswerInputUnit;
+  referenceUnit?: B1QuestionUnit;
   values: B1AnswerValues;
   disabled?: boolean;
   revealReference?: boolean;
@@ -25,9 +28,10 @@ export function B1AnswerForm({
   onSelfGrade?: (grade: B1SelfGrade) => void;
 }) {
   const composing = useRef(new Set<string>());
-  const reference = revealReference ? gradeB1Unit(unit, values) : undefined;
+  const reference =
+    revealReference && referenceUnit !== undefined ? gradeB1Unit(referenceUnit, values) : undefined;
 
-  function updateField(field: B1AnswerField, value: string) {
+  function updateField(field: Pick<B1AnswerField, 'fieldId' | 'maxLength'>, value: string) {
     const limited =
       composing.current.has(field.fieldId) || field.maxLength === null
         ? value
@@ -35,7 +39,7 @@ export function B1AnswerForm({
     onChange(field.fieldId, limited);
   }
 
-  function endComposition(field: B1AnswerField, value: string) {
+  function endComposition(field: Pick<B1AnswerField, 'fieldId' | 'maxLength'>, value: string) {
     composing.current.delete(field.fieldId);
     onChange(field.fieldId, field.maxLength === null ? value : value.slice(0, field.maxLength));
   }
@@ -101,6 +105,12 @@ export function B1AnswerForm({
       {reference !== undefined ? (
         <section aria-live="polite" className="b1-reference-grade surface-card">
           <h3>提出後の参考判定・自己採点</h3>
+          <p>
+            公式解答:{' '}
+            {referenceUnit?.answerFields
+              .map((field) => `${field.label}: ${field.acceptedAnswers.join('／')}`)
+              .join('・')}
+          </p>
           {unit.grading.mode === 'automatic' ? (
             <p
               className={
@@ -112,7 +122,7 @@ export function B1AnswerForm({
           ) : null}
           {unit.grading.mode !== 'automatic' ? (
             <>
-              <p>公式解答の観点: {unit.grading.officialAnswerConcepts.join('／')}</p>
+              <p>公式解答の観点: {referenceUnit?.grading.officialAnswerConcepts.join('／')}</p>
               <div className="card-action-row">
                 <SelfGradeButton
                   active={selfGrade === 'correct'}
@@ -159,7 +169,7 @@ function SelfGradeButton({
   );
 }
 
-function isMultiline(field: B1AnswerField): boolean {
+function isMultiline(field: Pick<B1AnswerField, 'inputKind'>): boolean {
   return (
     field.inputKind === 'description' ||
     field.inputKind === 'multi_select' ||
@@ -167,7 +177,7 @@ function isMultiline(field: B1AnswerField): boolean {
   );
 }
 
-function inputModeFor(field: B1AnswerField): 'text' | 'numeric' | 'url' {
+function inputModeFor(field: Pick<B1AnswerField, 'inputKind'>): 'text' | 'numeric' | 'url' {
   if (field.inputKind === 'number') return 'numeric';
   if (field.inputKind === 'url_or_fqdn') return 'url';
   return 'text';

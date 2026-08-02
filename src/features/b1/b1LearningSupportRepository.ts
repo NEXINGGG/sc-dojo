@@ -12,6 +12,7 @@ import {
   type B1LearnerEvidence,
   type B1LearningReflection,
   type B1RemediationProgress,
+  type B1EvidenceSourceType,
 } from '../../domain/b1LearningSupport';
 
 export class B1LearningSupportDataError extends Error {
@@ -21,8 +22,12 @@ export class B1LearningSupportDataError extends Error {
 }
 
 export interface SaveLearnerEvidenceInput {
+  id?: string;
   sessionId: string;
   questionId: string;
+  sourceType?: B1EvidenceSourceType;
+  printedPage?: number;
+  location?: string;
   evidenceId?: string;
   note: string;
 }
@@ -38,6 +43,7 @@ export interface SaveLearningReflectionInput {
 export interface StartRemediationInput {
   originQuestionId: string;
   originSessionId: string;
+  originCaseId?: string;
   failureCauseIds: readonly B1FailureCauseId[];
   a2QuestionIds: readonly string[];
 }
@@ -54,15 +60,37 @@ export class B1LearningSupportRepository {
       throw new B1LearningSupportDataError('根拠のメモを入力してください。');
     }
     await this.database.open();
-    const existing = await this.database.b1LearnerEvidence
-      .where('[sessionId+questionId]')
-      .equals([input.sessionId, input.questionId])
-      .first();
+    if (
+      input.printedPage !== undefined &&
+      (!Number.isInteger(input.printedPage) || input.printedPage < 1)
+    ) {
+      throw new B1LearningSupportDataError('印刷ページは1以上の整数で入力してください。');
+    }
+    const existing =
+      input.id !== undefined
+        ? await this.database.b1LearnerEvidence.get(input.id)
+        : input.sourceType === undefined &&
+            input.printedPage === undefined &&
+            input.location === undefined
+          ? await this.database.b1LearnerEvidence
+              .where('[sessionId+questionId]')
+              .equals([input.sessionId, input.questionId])
+              .first()
+          : undefined;
+    if (
+      existing !== undefined &&
+      (existing.sessionId !== input.sessionId || existing.questionId !== input.questionId)
+    ) {
+      throw new B1LearningSupportDataError('別の設問の根拠記録は編集できません。');
+    }
     const row: B1LearnerEvidenceRow = {
       id: existing?.id ?? `b1-evidence-${crypto.randomUUID()}`,
-      version: 1,
+      version: 2,
       sessionId: input.sessionId,
       questionId: input.questionId,
+      ...(input.sourceType === undefined ? {} : { sourceType: input.sourceType }),
+      ...(input.printedPage === undefined ? {} : { printedPage: input.printedPage }),
+      ...(input.location?.trim() ? { location: input.location.trim() } : {}),
       ...(input.evidenceId === undefined ? {} : { evidenceId: input.evidenceId }),
       note: input.note.trim(),
       createdAt: existing?.createdAt ?? now,
@@ -105,8 +133,12 @@ export class B1LearningSupportRepository {
     now = new Date().toISOString(),
   ): Promise<B1LearningReflection> {
     validateQuestionAndSession(input.questionId, input.sessionId);
-    const failureCauseIds = normalizeFailureCauses(input.failureCauseIds);
-    if (!['understood', 'partial', 'review_needed'].includes(input.selfAssessment)) {
+    const failureCauseIds = normalizeFailureCauses(input.failureCauseIds, input.selfAssessment);
+    if (
+      !['understood', 'partial', 'review_needed', 'correct', 'incorrect'].includes(
+        input.selfAssessment,
+      )
+    ) {
       throw new B1LearningSupportDataError('自己評価の値が正しくありません。');
     }
     await this.database.open();
@@ -116,7 +148,7 @@ export class B1LearningSupportRepository {
       .first();
     const row: B1LearningReflectionRow = {
       id: existing?.id ?? `b1-reflection-${crypto.randomUUID()}`,
-      version: 1,
+      version: 2,
       sessionId: input.sessionId,
       questionId: input.questionId,
       failureCauseIds,
@@ -178,9 +210,10 @@ export class B1LearningSupportRepository {
     if (active !== undefined) return active;
     const row: B1RemediationProgressRow = {
       id: `b1-remediation-${crypto.randomUUID()}`,
-      version: 1,
+      version: 2,
       originQuestionId: input.originQuestionId,
       originSessionId: input.originSessionId,
+      ...(input.originCaseId === undefined ? {} : { originCaseId: input.originCaseId }),
       failureCauseIds,
       a2QuestionIds,
       completedA2QuestionIds: [],
@@ -316,9 +349,15 @@ function validateSession(sessionId: string): void {
   }
 }
 
-function normalizeFailureCauses(value: readonly B1FailureCauseId[]): B1FailureCauseId[] {
+function normalizeFailureCauses(
+  value: readonly B1FailureCauseId[],
+  selfAssessment?: B1LearningReflection['selfAssessment'],
+): B1FailureCauseId[] {
   const unique = [...new Set(value)];
-  if (unique.length === 0 || unique.some((id) => !isB1FailureCauseId(id))) {
+  if (
+    (unique.length === 0 && selfAssessment !== 'understood' && selfAssessment !== 'correct') ||
+    unique.some((id) => !isB1FailureCauseId(id))
+  ) {
     throw new B1LearningSupportDataError('失点原因を1件以上、正しく指定してください。');
   }
   return unique;

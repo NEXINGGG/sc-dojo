@@ -1,6 +1,8 @@
 import type { B1Case } from '../../data/b1';
 import {
+  b1Cases,
   getB1Case,
+  getEffectiveB1Relevance,
   getB1LegacyAnswerFieldTarget,
   getB1LegacyQuestionUnitTargets,
   getB1QuestionUnit,
@@ -8,6 +10,7 @@ import {
 } from '../../data/b1';
 import type { A1DojoDatabase } from '../../database/database';
 import type {
+  B1AnswerAttemptRow,
   B1MockSessionRow,
   B1PdfFileRow,
   B1PdfRegistrationMetadata,
@@ -15,6 +18,7 @@ import type {
   ExamSubmissionReason,
 } from '../../database/types';
 import { gradeB1Unit, type B1AnswerValues } from '../../domain/b1';
+import type { B1FailureCauseId, B1LearningMode, B1MockType } from '../../domain/b1LearningSupport';
 
 export class B1DataError extends Error {
   constructor(message: string) {
@@ -30,6 +34,16 @@ export interface B1ProgressSummary {
   correctSelfGrades: number;
   partialSelfGrades: number;
   reviewSelfGrades: number;
+  learnerEvidenceCount: number;
+  rewriteCount: number;
+}
+
+export interface B1LearningAnalytics {
+  failureCauseCounts: Readonly<Record<string, number>>;
+  evidenceMissingRate: number;
+  rewriteImprovementRate: number;
+  remediationImprovementRate: number;
+  relevancePracticeCounts: Readonly<Record<string, number>>;
 }
 
 export class B1Repository {
@@ -89,8 +103,11 @@ export class B1Repository {
 
   async createPractice(
     caseItem: B1Case,
-    now = new Date().toISOString(),
+    modeOrNow: Exclude<B1LearningMode, 'mock90'> | string = 'training',
+    suppliedNow = new Date().toISOString(),
   ): Promise<B1PracticeSessionRow> {
+    const mode = modeOrNow === 'training' || modeOrNow === 'practical' ? modeOrNow : 'training';
+    const now = mode === modeOrNow ? suppliedNow : modeOrNow;
     const existing = await this.getInProgressPractice();
     if (existing !== undefined) {
       throw new B1DataError('途中のB-1演習があります。再開するか、先に完了してください。');
@@ -98,13 +115,16 @@ export class B1Repository {
     const session: B1PracticeSessionRow = {
       id: createB1SessionId('practice'),
       subjectId: 'b1',
-      version: 1,
+      version: 2,
       status: 'in_progress',
+      mode,
       caseId: caseItem.caseId,
       unitIds: caseItem.questionUnits.map((unit) => unit.questionId),
       answers: {},
       selfGrades: {},
       reviewQuestionIds: [],
+      requirementDisclosureQuestionIds: [],
+      attemptIdsByQuestion: {},
       currentIndex: 0,
       createdAt: now,
       updatedAt: now,
@@ -159,8 +179,18 @@ export class B1Repository {
   async createMock(
     year: number,
     caseIds: readonly string[],
-    now = new Date().toISOString(),
+    mockTypeOrNow: B1MockType | string = 'official_year',
+    suppliedNow = new Date().toISOString(),
   ): Promise<B1MockSessionRow> {
+    const mockTypes: readonly B1MockType[] = [
+      'official_year',
+      'current_focus',
+      'all_years',
+      'legacy_reading',
+    ];
+    const usesLegacySignature = !mockTypes.includes(mockTypeOrNow as B1MockType);
+    const mockType = usesLegacySignature ? 'official_year' : (mockTypeOrNow as B1MockType);
+    const now = usesLegacySignature ? mockTypeOrNow : suppliedNow;
     const existing = await this.getInProgressMock();
     if (existing !== undefined) {
       throw new B1DataError('途中のB-1模試があります。再開するか、先に提出してください。');
@@ -169,22 +199,33 @@ export class B1Repository {
     if (
       caseIds.length !== 2 ||
       new Set(caseIds).size !== 2 ||
-      candidates.some((caseItem) => caseItem === undefined || caseItem.year !== year)
+      candidates.some(
+        (caseItem) =>
+          caseItem === undefined || (mockType === 'official_year' && caseItem.year !== year),
+      )
     ) {
-      throw new B1DataError('同一年度の3大問から、異なる2大問を選んでください。');
+      throw new B1DataError(
+        mockType === 'official_year'
+          ? '同一年度の3大問から、異なる2大問を選んでください。'
+          : '異なる2大問を選んでください。',
+      );
     }
     const unitIds = getB1UnitIds(caseIds);
     const session: B1MockSessionRow = {
       id: createB1SessionId('mock'),
       subjectId: 'b1',
-      version: 1,
+      version: 2,
       status: 'in_progress',
       year,
+      mode: 'mock90',
+      mockType,
       caseIds: [...caseIds],
       unitIds,
       answers: {},
       selfGrades: {},
       reviewQuestionIds: [],
+      requirementDisclosureQuestionIds: [],
+      attemptIdsByQuestion: {},
       currentIndex: 0,
       startedAt: now,
       deadlineAt: new Date(new Date(now).getTime() + 90 * 60 * 1000).toISOString(),
@@ -247,9 +288,11 @@ export class B1Repository {
 
   async getProgressSummary(): Promise<B1ProgressSummary> {
     await this.database.open();
-    const [practice, rawMocks] = await Promise.all([
+    const [practice, rawMocks, learnerEvidence, answerAttempts] = await Promise.all([
       this.database.b1PracticeSessions.where('status').equals('completed').count(),
       this.database.b1MockSessions.orderBy('updatedAt').reverse().toArray(),
+      this.database.b1LearnerEvidence.count(),
+      this.database.b1AnswerAttempts.toArray(),
     ]);
     const mocks = await Promise.all(rawMocks.map((session) => this.migrateMockCatalog(session)));
     const grades = mocks.flatMap((session) => Object.values(session.selfGrades));
@@ -259,8 +302,154 @@ export class B1Repository {
       submittedMockCount: mocks.filter((session) => session.status === 'submitted').length,
       correctSelfGrades: grades.filter((grade) => grade === 'correct').length,
       partialSelfGrades: grades.filter((grade) => grade === 'partial').length,
-      reviewSelfGrades: grades.filter((grade) => grade === 'review').length,
+      reviewSelfGrades: grades.filter((grade) => grade === 'incorrect' || grade === 'review')
+        .length,
+      learnerEvidenceCount: learnerEvidence,
+      rewriteCount: answerAttempts.filter((attempt) => attempt.attemptNumber > 1).length,
     };
+  }
+
+  async listPractices(): Promise<B1PracticeSessionRow[]> {
+    await this.database.open();
+    const sessions = await this.database.b1PracticeSessions
+      .orderBy('updatedAt')
+      .reverse()
+      .toArray();
+    return Promise.all(sessions.map((session) => this.migratePracticeCatalog(session)));
+  }
+
+  async getLearningAnalytics(): Promise<B1LearningAnalytics> {
+    await this.database.open();
+    const [evidence, reflections, attempts, practices, mocks] = await Promise.all([
+      this.database.b1LearnerEvidence.toArray(),
+      this.database.b1LearningReflections.toArray(),
+      this.database.b1AnswerAttempts.toArray(),
+      this.listPractices(),
+      this.listMocks(),
+    ]);
+    const failureCauseCounts: Record<string, number> = {};
+    for (const reflection of reflections) {
+      for (const id of reflection.failureCauseIds) {
+        failureCauseCounts[id] = (failureCauseCounts[id] ?? 0) + 1;
+      }
+    }
+    const sessions = [...practices, ...mocks];
+    const questionKeys = sessions.flatMap((session) =>
+      session.unitIds.map((questionId) => `${session.id}\u0000${questionId}`),
+    );
+    const evidenceKeys = new Set(
+      evidence.map((item) => `${item.sessionId}\u0000${item.questionId}`),
+    );
+    const rewrites = attempts.filter((attempt) => attempt.attemptNumber > 1);
+    const relevancePracticeCounts: Record<string, number> = {};
+    for (const session of sessions) {
+      for (const questionId of session.unitIds) {
+        const caseId =
+          'caseId' in session
+            ? session.caseId
+            : b1Cases.find((caseItem) =>
+                caseItem.questionUnits.some((unit) => unit.questionId === questionId),
+              )?.caseId;
+        if (caseId === undefined) continue;
+        const relevance = getEffectiveB1Relevance(caseId, questionId);
+        if (relevance !== undefined) {
+          relevancePracticeCounts[relevance.label] =
+            (relevancePracticeCounts[relevance.label] ?? 0) + 1;
+        }
+      }
+    }
+    return {
+      failureCauseCounts,
+      evidenceMissingRate:
+        questionKeys.length === 0
+          ? 0
+          : Math.round(
+              ((questionKeys.length - questionKeys.filter((key) => evidenceKeys.has(key)).length) /
+                questionKeys.length) *
+                100,
+            ),
+      rewriteImprovementRate:
+        rewrites.length === 0
+          ? 0
+          : Math.round(
+              (rewrites.filter((attempt) => attempt.selfGrade === 'correct').length /
+                rewrites.length) *
+                100,
+            ),
+      remediationImprovementRate:
+        rewrites.length === 0
+          ? 0
+          : Math.round(
+              (rewrites.filter((attempt) => attempt.remediationCompletedBefore).length /
+                rewrites.length) *
+                100,
+            ),
+      relevancePracticeCounts,
+    };
+  }
+
+  async createAnswerAttempt(input: {
+    sessionId: string;
+    questionId: string;
+    answers: B1AnswerValues;
+    selfGrade?: import('../../domain/b1').B1SelfGrade;
+    failureCauseIds?: readonly B1FailureCauseId[];
+    remediationCompletedBefore?: boolean;
+    now?: string;
+  }): Promise<B1AnswerAttemptRow> {
+    if (getB1QuestionUnit(input.questionId) === undefined) {
+      throw new B1DataError('答案を書き直す対象のB-1設問が見つかりません。');
+    }
+    if (!input.sessionId.trim()) throw new B1DataError('答案の学習セッションが見つかりません。');
+    const now = input.now ?? new Date().toISOString();
+    await this.database.open();
+    const existing = await this.database.b1AnswerAttempts
+      .where('[sessionId+questionId]')
+      .equals([input.sessionId, input.questionId])
+      .toArray();
+    const attempt: B1AnswerAttemptRow = {
+      id: `b1-attempt-${crypto.randomUUID()}`,
+      version: 1,
+      sessionId: input.sessionId,
+      questionId: input.questionId,
+      attemptNumber: existing.length + 1,
+      answers: { ...input.answers },
+      characterCount: Object.values(input.answers).reduce(
+        (total, value) => total + value.length,
+        0,
+      ),
+      ...(input.selfGrade === undefined ? {} : { selfGrade: input.selfGrade }),
+      failureCauseIds: [...new Set(input.failureCauseIds ?? [])],
+      ...(input.remediationCompletedBefore === undefined
+        ? {}
+        : { remediationCompletedBefore: input.remediationCompletedBefore }),
+      createdAt: now,
+      updatedAt: now,
+    };
+    await this.database.b1AnswerAttempts.put(attempt);
+    return attempt;
+  }
+
+  async listAnswerAttempts(sessionId: string, questionId: string): Promise<B1AnswerAttemptRow[]> {
+    await this.database.open();
+    return this.database.b1AnswerAttempts
+      .where('[sessionId+questionId]')
+      .equals([sessionId, questionId])
+      .sortBy('attemptNumber');
+  }
+
+  async updateLatestAnswerAttempt(
+    sessionId: string,
+    questionId: string,
+    changes: Pick<B1AnswerAttemptRow, 'selfGrade' | 'failureCauseIds'>,
+    updatedAt = new Date().toISOString(),
+  ): Promise<B1AnswerAttemptRow | undefined> {
+    const attempts = await this.listAnswerAttempts(sessionId, questionId);
+    const latest = attempts[attempts.length - 1];
+    if (latest === undefined) return undefined;
+    const updated: B1AnswerAttemptRow = { ...latest, ...changes, updatedAt };
+    await this.database.b1AnswerAttempts.put(updated);
+    return updated;
   }
 
   private async migratePracticeCatalog(
@@ -268,16 +457,31 @@ export class B1Repository {
   ): Promise<B1PracticeSessionRow> {
     const currentCase = getB1Case(session.caseId);
     if (currentCase === undefined) return session;
-    const migrated = migrateB1SessionCatalog(
+    const catalogMigrated = migrateB1SessionCatalog(
       session,
       currentCase.questionUnits.map((unit) => unit.questionId),
     );
+    const migrated: B1PracticeSessionRow = {
+      ...catalogMigrated,
+      version: 2,
+      mode: catalogMigrated.mode ?? 'training',
+      requirementDisclosureQuestionIds: catalogMigrated.requirementDisclosureQuestionIds ?? [],
+      attemptIdsByQuestion: catalogMigrated.attemptIdsByQuestion ?? {},
+    };
     if (migrated !== session) await this.database.b1PracticeSessions.put(migrated);
     return migrated;
   }
 
   private async migrateMockCatalog(session: B1MockSessionRow): Promise<B1MockSessionRow> {
-    const migrated = migrateB1SessionCatalog(session, getB1UnitIds(session.caseIds));
+    const catalogMigrated = migrateB1SessionCatalog(session, getB1UnitIds(session.caseIds));
+    const migrated: B1MockSessionRow = {
+      ...catalogMigrated,
+      version: 2,
+      mode: 'mock90',
+      mockType: catalogMigrated.mockType ?? 'official_year',
+      requirementDisclosureQuestionIds: catalogMigrated.requirementDisclosureQuestionIds ?? [],
+      attemptIdsByQuestion: catalogMigrated.attemptIdsByQuestion ?? {},
+    };
     if (migrated !== session) await this.database.b1MockSessions.put(migrated);
     return migrated;
   }
@@ -389,7 +593,9 @@ function validateMock(session: B1MockSessionRow): void {
   if (
     session.caseIds.length !== 2 ||
     session.unitIds.length === 0 ||
-    new Date(session.deadlineAt).getTime() <= new Date(session.startedAt).getTime()
+    new Date(session.deadlineAt).getTime() <= new Date(session.startedAt).getTime() ||
+    (session.mockType === 'official_year' &&
+      session.caseIds.some((caseId) => getB1Case(caseId)?.year !== session.year))
   ) {
     throw new B1DataError('B-1模試の保存データが正しくありません。');
   }

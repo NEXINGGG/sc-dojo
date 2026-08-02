@@ -1,32 +1,28 @@
-import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { hashJsonFile } from './json-semantic-hash.mjs';
 
 const root = process.cwd();
 const requireComplete = process.argv.includes('--require-complete');
 const readJson = (path) => JSON.parse(readFileSync(join(root, path), 'utf8'));
-const hash = (path) =>
-  createHash('sha256')
-    .update(readFileSync(join(root, path)))
-    .digest('hex')
-    .toUpperCase();
+const hashJson = (path) => hashJsonFile(join(root, path));
 const errors = [];
 const expectedYears = [2016, 2017, 2018, 2019, 2021, 2022, 2023, 2024, 2025];
 const protectedFiles = {
   'data/b1-cases-2023-2025-ready.json':
-    'DB8B0E7CD80BA4BDAB9227924C6DD90D14D47540CA1D642DC0A3E5EE6C981B21',
+    '383988AC2CF545B2FBD02855BE1A8BF962D76E57FBCE0815382250F1DC169DDB',
   'data/b1-cases-2016-2022-ready.json':
-    '05F2ACB75E39305F34AD3F420BC2804C0E23C6B152EF4911C8BBAB0940FD4591',
-  'data/questions.json': '7042D700F5764A631CFD5B47EDFC8E2D1424D20FBBE4B2FEA7AC87E1A0A954AE',
-  'data/a2-questions.json': '0BC5A27FA6F6AB78A7AB9A750588DFDBEE16C092B4B73434F9003E1757313072',
-  'data/categories.json': 'F9E05EF1F46DB50C7471CE37E0DBC0A1A07A08D72A49D1A92EE68F690E2BB609',
-  'data/a2-categories.json': '4CBC43A940FB78BF5FFD11B8F2B243B9FF831F4CE3CCAA01FCB9A3878C67E571',
-  'data/b1-categories.json': '719C9D15F5990BE658C4C1F1552F8E7AE88BD6DFE7F96A9CD2990EDB0AF5F24A',
-  'data/b1-relevance.json': 'D29D9B53F52870346BB21D12CA237D8A57A6A0505EE164D06A2B47646CB7BC61',
+    'E497F244BF97ADCED47FD43547B5581F0A44B3E35230AC0D0ACE88478054C66C',
+  'data/questions.json': '9004F83084D78E43D70B647A4E27DE6E2B2A53BC7FAE0CA2D43A1BF2F4484307',
+  'data/a2-questions.json': 'E86783804502799A16A6139CABB630F5B805E46934C8055E3F0D0AAE1CFEEA4E',
+  'data/categories.json': 'E439932BF6E547DF125A538B841ABB56D3AC552167D7CBDB9AA7FCCAC58EA401',
+  'data/a2-categories.json': 'ABB4FB7F6E4589CB1077CC40263CE9AD57897448B905405777AA8E7986AE4A2B',
+  'data/b1-categories.json': '8B0C073E5F19F74B05AFF9F38A4BCD3F7DFFE113048C8F10F1D06E34C00BDF91',
+  'data/b1-relevance.json': '8612D07E80D1354C0EA0A49F510606555B17D106C6242693840F0E60BAB46F43',
 };
 
 for (const [path, expectedHash] of Object.entries(protectedFiles)) {
-  if (hash(path) !== expectedHash) errors.push(`保護対象データが変更されています: ${path}`);
+  if (hashJson(path) !== expectedHash) errors.push(`保護対象データが変更されています: ${path}`);
 }
 
 const legacy = readJson('data/b1-cases-2023-2025-ready.json');
@@ -146,8 +142,8 @@ validateA2Links();
 validateAnswerLeakageCandidates();
 
 const packageJson = readJson('package.json');
-if (packageJson.version !== '0.5.0')
-  errors.push('package.jsonのversionは0.5.0である必要があります');
+if (packageJson.version !== '0.6.0')
+  errors.push('package.jsonのversionは0.6.0である必要があります');
 if (packageJson.scripts?.['validate:b1-phase2'] !== 'node scripts/validate-b1-phase2.mjs') {
   errors.push('validate:b1-phase2スクリプトが正しくありません');
 }

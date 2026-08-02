@@ -71,6 +71,38 @@ describe('B1Repository', () => {
     database.close();
   });
 
+  it('keeps mock90 and answer attempts separate from the original answer', async () => {
+    const database = createTestDatabase();
+    await initializeDatabase(database);
+    const repository = new B1Repository(database);
+    const session = await repository.createPractice(b1Cases[0], 'practical', now);
+    const questionId = session.unitIds[0];
+    const first = await repository.createAnswerAttempt({
+      sessionId: session.id,
+      questionId,
+      answers: { a: '初回答' },
+      selfGrade: 'partial',
+      failureCauseIds: ['knowledge_gap'],
+      now,
+    });
+    const second = await repository.createAnswerAttempt({
+      sessionId: session.id,
+      questionId,
+      answers: { a: '書き直し' },
+      selfGrade: 'correct',
+      remediationCompletedBefore: true,
+      now: '2026-07-21T00:01:00.000Z',
+    });
+
+    expect(session.mode).toBe('practical');
+    expect(second.attemptNumber).toBe(first.attemptNumber + 1);
+    await expect(repository.listAnswerAttempts(session.id, questionId)).resolves.toMatchObject([
+      { answers: { a: '初回答' }, selfGrade: 'partial' },
+      { answers: { a: '書き直し' }, remediationCompletedBefore: true },
+    ]);
+    database.close();
+  });
+
   it('migrates a saved grouped Phase 1 answer into its split official question units', async () => {
     const database = createTestDatabase();
     await initializeDatabase(database);

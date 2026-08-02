@@ -2,11 +2,13 @@ import Dexie, { type EntityTable, type Table } from 'dexie';
 import type {
   AnswerAttemptRow,
   B1MockSessionRow,
+  B1AnswerAttemptRow,
   B1LearnerEvidenceRow,
   B1LearningReflectionRow,
   B1PdfFileRow,
   B1PracticeSessionRow,
   B1RemediationProgressRow,
+  B1PreferenceRow,
   ExamResultRow,
   ExamSessionRow,
   FontSizePreference,
@@ -22,7 +24,7 @@ import type {
 import type { SubjectId } from '../domain/subject';
 
 export const DATABASE_NAME = 'a1-dojo';
-export const DATABASE_VERSION = 8;
+export const DATABASE_VERSION = 9;
 
 export class A1DojoDatabase extends Dexie {
   questionProgress!: EntityTable<QuestionProgressRow, 'code'>;
@@ -41,6 +43,8 @@ export class A1DojoDatabase extends Dexie {
   b1LearnerEvidence!: EntityTable<B1LearnerEvidenceRow, 'id'>;
   b1LearningReflections!: EntityTable<B1LearningReflectionRow, 'id'>;
   b1RemediationProgress!: EntityTable<B1RemediationProgressRow, 'id'>;
+  b1AnswerAttempts!: EntityTable<B1AnswerAttemptRow, 'id'>;
+  b1Preferences!: EntityTable<B1PreferenceRow, 'key'>;
 
   constructor(name = DATABASE_NAME) {
     super(name);
@@ -235,6 +239,59 @@ export class A1DojoDatabase extends Dexie {
       b1RemediationProgress:
         '&id, [originQuestionId+status], originQuestionId, originSessionId, status, updatedAt',
     });
+
+    this.version(9)
+      .stores({
+        questionProgress:
+          '&code, &[subjectId+code], subjectId, favorite, lastAnsweredAt, lastIsCorrect',
+        answerAttempts:
+          '++id, &[sessionId+code], &[subjectId+sessionId+code], [subjectId+code], subjectId, code, sessionId, answeredAt, mode',
+        practiceSessions: '&id, &[subjectId+id], [subjectId+status], subjectId, status, updatedAt',
+        practiceResults:
+          '&id, &sessionId, &[subjectId+id], &[subjectId+sessionId], subjectId, completedAt, mode',
+        examSessions:
+          '&id, &[subjectId+id], [subjectId+status], subjectId, status, updatedAt, deadlineAt, examType',
+        examResults:
+          '&id, &examSessionId, &[subjectId+id], &[subjectId+examSessionId], subjectId, examType, submittedAt',
+        learningDays: '&date, subjectId, updatedAt',
+        learningDaysBySubject: '&[subjectId+date], subjectId, date, updatedAt',
+        settings: '&key, updatedAt',
+        metadata: '&key, updatedAt',
+        b1PdfFiles: '&year, subjectId, updatedAt',
+        b1PracticeSessions:
+          '&id, &[subjectId+id], [subjectId+status], subjectId, status, caseId, updatedAt',
+        b1MockSessions:
+          '&id, &[subjectId+id], [subjectId+status], subjectId, status, year, updatedAt, deadlineAt',
+        // The Phase 2 compound unique index prevented more than one learner
+        // evidence item per question. Keep the lookup index but make it non-unique.
+        b1LearnerEvidence: '&id, [sessionId+questionId], sessionId, questionId, updatedAt',
+        b1LearningReflections: '&id, &[sessionId+questionId], sessionId, questionId, updatedAt',
+        b1RemediationProgress:
+          '&id, [originQuestionId+status], originQuestionId, originSessionId, status, updatedAt',
+        b1AnswerAttempts: '&id, [sessionId+questionId], sessionId, questionId, updatedAt',
+        b1Preferences: '&key, updatedAt',
+      })
+      .upgrade(async (transaction) => {
+        await transaction
+          .table('b1PracticeSessions')
+          .toCollection()
+          .modify((row: Record<string, unknown>) => {
+            row.version = 2;
+            row.mode ??= 'training';
+            row.requirementDisclosureQuestionIds ??= [];
+            row.attemptIdsByQuestion ??= {};
+          });
+        await transaction
+          .table('b1MockSessions')
+          .toCollection()
+          .modify((row: Record<string, unknown>) => {
+            row.version = 2;
+            row.mode ??= 'mock90';
+            row.mockType ??= 'official_year';
+            row.requirementDisclosureQuestionIds ??= [];
+            row.attemptIdsByQuestion ??= {};
+          });
+      });
   }
 }
 

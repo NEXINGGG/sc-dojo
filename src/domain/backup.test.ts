@@ -106,7 +106,7 @@ describe('バックアップ形式', () => {
     });
     expect(
       validateBackupDocument(
-        { ...createBackupDocument(createInput()), formatVersion: 5 },
+        { ...createBackupDocument(createInput()), formatVersion: 6 },
         questions,
         identity,
       ),
@@ -288,7 +288,7 @@ describe('バックアップ形式', () => {
 
     expect(result).toMatchObject({ ok: true });
     if (result.ok) {
-      expect(result.value.document.data.b1).toEqual(b1);
+      expect(result.value.document.data.b1).toMatchObject(b1);
       expect(JSON.stringify(result.value.document.data.b1)).not.toContain('blob');
     }
     expect(oldVersion).toMatchObject({ ok: true });
@@ -300,6 +300,8 @@ describe('バックアップ形式', () => {
         learnerEvidence: [],
         learningReflections: [],
         remediationProgress: [],
+        answerAttempts: [],
+        preferences: [],
       });
     }
   });
