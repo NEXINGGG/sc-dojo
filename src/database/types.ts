@@ -195,16 +195,28 @@ export interface B1PdfRegistrationMetadata {
   updatedAt: string;
 }
 
+/** A frozen copy of every answer field at the point a learner confirms a unit. */
+export interface B1UnitConfirmation {
+  answers: B1AnswerValues;
+  confirmedAt: string;
+}
+
 export interface B1PracticeSessionRow {
   id: string;
   subjectId: 'b1';
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   status: 'in_progress' | 'completed';
   mode?: Exclude<B1LearningMode, 'mock90'>;
   caseId: string;
   unitIds: string[];
   answers: Record<string, B1AnswerValues>;
+  /**
+   * Phase 4 confirmation snapshots.  The optional shape keeps records created
+   * by the earlier B-1 releases readable before they are migrated.
+   */
+  unitConfirmations?: Record<string, B1UnitConfirmation>;
   selfGrades: Record<string, B1SelfGrade>;
+  selfGradeUpdatedAt?: Record<string, string>;
   reviewQuestionIds: string[];
   requirementDisclosureQuestionIds?: string[];
   attemptIdsByQuestion?: Record<string, string[]>;
@@ -217,7 +229,7 @@ export interface B1PracticeSessionRow {
 export interface B1MockSessionRow {
   id: string;
   subjectId: 'b1';
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   status: 'in_progress' | 'submitted' | 'completed';
   year: number;
   mode?: 'mock90';
@@ -225,7 +237,9 @@ export interface B1MockSessionRow {
   caseIds: string[];
   unitIds: string[];
   answers: Record<string, B1AnswerValues>;
+  unitConfirmations?: Record<string, B1UnitConfirmation>;
   selfGrades: Record<string, B1SelfGrade>;
+  selfGradeUpdatedAt?: Record<string, string>;
   reviewQuestionIds: string[];
   requirementDisclosureQuestionIds?: string[];
   attemptIdsByQuestion?: Record<string, string[]>;

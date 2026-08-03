@@ -6,13 +6,14 @@
   "packageManager": "pnpm@11.9.0",
   "scripts": {
     "dev": "vite",
-    "validate:data": "node scripts/validate-data.mjs && node scripts/validate-a2-data.mjs && node scripts/validate-b1-phase2.mjs && node scripts/validate-b1-phase3.mjs",
+    "validate:data": "node scripts/validate-data.mjs && node scripts/validate-a2-data.mjs && node scripts/validate-b1-phase2.mjs && node scripts/validate-b1-phase3.mjs && node scripts/validate-b1-phase4.mjs",
     "validate:a2": "node scripts/validate-a2-data.mjs",
-    "validate:b1": "node scripts/validate-b1-ready.mjs && node scripts/validate-b1-phase1.mjs && node scripts/validate-b1-phase2.mjs && node scripts/validate-b1-phase3.mjs",
+    "validate:b1": "node scripts/validate-b1-ready.mjs && node scripts/validate-b1-phase1.mjs && node scripts/validate-b1-phase2.mjs && node scripts/validate-b1-phase3.mjs && node scripts/validate-b1-phase4.mjs",
     "validate:b1-phase1": "node scripts/validate-b1-phase1.mjs",
     "validate:b1-phase2": "node scripts/validate-b1-phase2.mjs",
     "validate:b1-phase3": "node scripts/validate-b1-phase3.mjs",
-    "prebuild": "node scripts/validate-data.mjs && node scripts/validate-b1-phase2.mjs && node scripts/validate-b1-phase3.mjs",
+    "validate:b1-phase4": "node scripts/validate-b1-phase4.mjs",
+    "prebuild": "node scripts/validate-data.mjs && node scripts/validate-b1-phase2.mjs && node scripts/validate-b1-phase3.mjs && node scripts/validate-b1-phase4.mjs",
     "build": "tsc -b && vite build",
     "postbuild": "node scripts/validate-deployment.mjs",
     "preview": "vite preview",
@@ -25,8 +26,8 @@
     "test:watch": "vitest",
     "test:e2e": "node scripts/run-e2e.mjs",
     "test:e2e:ui": "playwright test --ui",
-    "check": "node scripts/validate-b1-phase2.mjs --require-complete && node scripts/validate-b1-phase3.mjs && node scripts/check.mjs",
-    "check:release": "node scripts/validate-b1-phase2.mjs --require-complete && pnpm run validate:data && pnpm run validate:b1 && pnpm run validate:b1-phase2 && pnpm run validate:b1-phase3 && pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test && pnpm run build && pnpm run test:e2e"
+    "check": "node scripts/validate-b1-phase2.mjs --require-complete && node scripts/validate-b1-phase3.mjs && node scripts/validate-b1-phase4.mjs && node scripts/check.mjs",
+    "check:release": "node scripts/validate-b1-phase2.mjs --require-complete && pnpm run validate:data && pnpm run validate:b1 && pnpm run validate:b1-phase2 && pnpm run validate:b1-phase3 && pnpm run validate:b1-phase4 && pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test && pnpm run build && pnpm run test:e2e"
   },
   "dependencies": {
     "dexie": "^4.0.11",

@@ -29,7 +29,7 @@ test('B-1 starts a 90-minute two-case mock and keeps the official PDF route usab
   await expect(page.getByText(/問題本文を表示できません/)).toBeVisible();
 });
 
-test('B-1 training records evidence and reveals reflection only after completion', async ({
+test('B-1 training records evidence and reveals reflection after confirmed completion', async ({
   page,
 }) => {
   await page.goto('/#/');
@@ -42,6 +42,13 @@ test('B-1 training records evidence and reveals reflection only after completion
   await page.getByRole('button', { name: '根拠を追加' }).click();
   await expect(page.getByText(/根拠 1件/)).toBeVisible();
   await expect(page.getByText('公式根拠')).toHaveCount(0);
+
+  const answerFields = page.locator('.b1-answer-form input, .b1-answer-form textarea');
+  for (let index = 0; index < (await answerFields.count()); index += 1) {
+    await answerFields.nth(index).fill(`回答${index + 1}`);
+  }
+  await page.getByRole('button', { name: '回答を確定して模範解答を確認する' }).click();
+  await expect(page.getByText('模範解答・解答例').first()).toBeVisible();
 
   await page.getByRole('button', { name: '演習を完了して確認する' }).click();
   await page.getByRole('button', { name: '完了する' }).click();

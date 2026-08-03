@@ -36,7 +36,7 @@ import type { ChoiceId, Difficulty, Question } from '../types/question';
 import { getSubjectConfig, isSubjectId, type SubjectId } from './subject';
 
 export const BACKUP_FORMAT = 'nw-a1-dojo-backup';
-export const BACKUP_FORMAT_VERSION = 5;
+export const BACKUP_FORMAT_VERSION = 6;
 export const MAX_BACKUP_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 export interface FavoriteBackupEntry {
@@ -319,11 +319,13 @@ function validateBackupDocumentInternal(
       source.formatVersion !== 2 &&
       source.formatVersion !== 3 &&
       source.formatVersion !== 4 &&
+      source.formatVersion !== 5 &&
       source.formatVersion !== BACKUP_FORMAT_VERSION) ||
     (source.backupVersion !== 1 &&
       source.backupVersion !== 2 &&
       source.backupVersion !== 3 &&
       source.backupVersion !== 4 &&
+      source.backupVersion !== 5 &&
       source.backupVersion !== BACKUP_FORMAT_VERSION)
   ) {
     return failure('unsupported_version', 'このバックアップ形式のバージョンには対応していません。');
@@ -944,7 +946,7 @@ function parseB1PracticeSession(
   if (
     !isRecord(value) ||
     !isNonEmptyString(value.id) ||
-    (value.version !== 1 && value.version !== 2) ||
+    (value.version !== 1 && value.version !== 2 && value.version !== 3) ||
     !isB1PracticeStatus(value.status) ||
     !isNonEmptyString(value.caseId) ||
     !Array.isArray(value.unitIds) ||
@@ -975,7 +977,15 @@ function parseB1PracticeSession(
     caseId: value.caseId,
     unitIds: [...value.unitIds],
     answers: copyB1Answers(value.answers),
+    ...(value.unitConfirmations !== undefined &&
+    isB1UnitConfirmationMap(value.unitConfirmations, value.unitIds, b1Catalog)
+      ? { unitConfirmations: copyB1UnitConfirmations(value.unitConfirmations) }
+      : {}),
     selfGrades: copyB1SelfGrades(value.selfGrades),
+    ...(value.selfGradeUpdatedAt !== undefined &&
+    isB1SelfGradeUpdatedAtMap(value.selfGradeUpdatedAt, value.selfGrades, value.unitIds)
+      ? { selfGradeUpdatedAt: { ...value.selfGradeUpdatedAt } }
+      : {}),
     reviewQuestionIds: [...value.reviewQuestionIds],
     ...(isStringArray(value.requirementDisclosureQuestionIds)
       ? { requirementDisclosureQuestionIds: [...value.requirementDisclosureQuestionIds] }
@@ -997,7 +1007,7 @@ function parseB1MockSession(
   if (
     !isRecord(value) ||
     !isNonEmptyString(value.id) ||
-    (value.version !== 1 && value.version !== 2) ||
+    (value.version !== 1 && value.version !== 2 && value.version !== 3) ||
     !isB1MockStatus(value.status) ||
     !isPositiveInteger(value.year) ||
     !Array.isArray(value.caseIds) ||
@@ -1051,7 +1061,15 @@ function parseB1MockSession(
     caseIds: [...value.caseIds],
     unitIds: [...value.unitIds],
     answers: copyB1Answers(value.answers),
+    ...(value.unitConfirmations !== undefined &&
+    isB1UnitConfirmationMap(value.unitConfirmations, value.unitIds, b1Catalog)
+      ? { unitConfirmations: copyB1UnitConfirmations(value.unitConfirmations) }
+      : {}),
     selfGrades: copyB1SelfGrades(value.selfGrades),
+    ...(value.selfGradeUpdatedAt !== undefined &&
+    isB1SelfGradeUpdatedAtMap(value.selfGradeUpdatedAt, value.selfGrades, value.unitIds)
+      ? { selfGradeUpdatedAt: { ...value.selfGradeUpdatedAt } }
+      : {}),
     reviewQuestionIds: [...value.reviewQuestionIds],
     ...(isStringArray(value.requirementDisclosureQuestionIds)
       ? { requirementDisclosureQuestionIds: [...value.requirementDisclosureQuestionIds] }
@@ -1102,7 +1120,9 @@ function validB1SessionPayload(
     !value.reviewQuestionIds.every(isNonEmptyString) ||
     value.reviewQuestionIds.some((id) => !unitIds.includes(id)) ||
     !isRecord(value.answers) ||
-    !isRecord(value.selfGrades)
+    !isRecord(value.selfGrades) ||
+    !isB1UnitConfirmationMap(value.unitConfirmations, unitIds, b1Catalog) ||
+    !isB1SelfGradeUpdatedAtMap(value.selfGradeUpdatedAt, value.selfGrades, unitIds)
   )
     return false;
   return (
@@ -1130,6 +1150,51 @@ function copyB1Answers(value: Record<string, unknown>): B1PracticeSessionRow['an
       questionId,
       { ...(answers as Record<string, string>) },
     ]),
+  );
+}
+
+function isB1UnitConfirmationMap(
+  value: unknown,
+  unitIds: unknown[],
+  b1Catalog?: B1ValidationCatalog,
+): value is Record<string, { answers: Record<string, string>; confirmedAt: string }> | undefined {
+  if (value === undefined) return true;
+  if (!isRecord(value)) return false;
+  return Object.entries(value).every(
+    ([questionId, confirmation]) =>
+      unitIds.includes(questionId) &&
+      isRecord(confirmation) &&
+      isIsoDate(confirmation.confirmedAt) &&
+      isRecord(confirmation.answers) &&
+      Object.entries(confirmation.answers).every(
+        ([fieldId, answer]) =>
+          isString(answer) &&
+          (b1Catalog === undefined || b1Catalog.hasAnswerField(questionId, fieldId)),
+      ),
+  );
+}
+
+function copyB1UnitConfirmations(
+  value: Record<string, { answers: Record<string, string>; confirmedAt: string }>,
+): NonNullable<B1PracticeSessionRow['unitConfirmations']> {
+  return Object.fromEntries(
+    Object.entries(value).map(([questionId, confirmation]) => [
+      questionId,
+      { answers: { ...confirmation.answers }, confirmedAt: confirmation.confirmedAt },
+    ]),
+  );
+}
+
+function isB1SelfGradeUpdatedAtMap(
+  value: unknown,
+  selfGrades: unknown,
+  unitIds: unknown[],
+): value is Record<string, string> | undefined {
+  if (value === undefined) return true;
+  if (!isRecord(value) || !isRecord(selfGrades)) return false;
+  return Object.entries(value).every(
+    ([questionId, updatedAt]) =>
+      unitIds.includes(questionId) && selfGrades[questionId] !== undefined && isIsoDate(updatedAt),
   );
 }
 

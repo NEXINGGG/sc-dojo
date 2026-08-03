@@ -50,8 +50,14 @@ for (const type of ['current_focus', 'all_years', 'legacy_reading'])
     errors.push(`模試種別がありません: ${type}`);
 for (const name of ['b1AnswerAttempts', 'b1Preferences', 'this.version(9)'])
   if (!database.includes(name)) errors.push(`IndexedDB移行がありません: ${name}`);
-for (const name of ['answerAttempts', 'preferences', 'BACKUP_FORMAT_VERSION = 5'])
+for (const name of ['answerAttempts', 'preferences'])
   if (!backup.includes(name)) errors.push(`バックアップ拡張がありません: ${name}`);
+if (
+  !backup.includes('BACKUP_FORMAT_VERSION = 5') &&
+  !backup.includes('BACKUP_FORMAT_VERSION = 6')
+) {
+  errors.push('B-1答案履歴を含むバックアップ形式のバージョンがありません');
+}
 if (!sessionUi.includes("learningMode !== 'mock90'"))
   errors.push('mock90解答中の補助情報を分離していません');
 if (supportUi.includes('acceptedAnswers'))

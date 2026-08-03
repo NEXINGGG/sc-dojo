@@ -82,7 +82,7 @@ describe('A1DojoDatabase', () => {
     const upgraded = createDatabase(name);
     await initializeDatabase(upgraded);
 
-    expect(upgraded.verno).toBe(9);
+    expect(upgraded.verno).toBe(10);
     await expect(upgraded.questionProgress.get('A1-001')).resolves.toMatchObject({
       favorite: true,
       attemptCount: 2,
@@ -187,6 +187,47 @@ describe('A1DojoDatabase', () => {
         .equals(['b1-session', 'B1-2025-Q1-U01'])
         .count(),
     ).resolves.toBe(2);
+    upgraded.close();
+  });
+
+  it('v9のB-1回答を残したまま、Phase 4の確定・自己評価データを初期化する', async () => {
+    const name = `a1-dojo-v9-migration-${crypto.randomUUID()}`;
+    databaseNames.push(name);
+    const legacy = new Dexie(name);
+    legacy.version(9).stores({
+      b1PracticeSessions:
+        '&id, &[subjectId+id], [subjectId+status], subjectId, status, caseId, updatedAt',
+      b1MockSessions:
+        '&id, &[subjectId+id], [subjectId+status], subjectId, status, year, updatedAt, deadlineAt',
+    });
+    await legacy.open();
+    await legacy.table('b1PracticeSessions').put({
+      id: 'b1-v9-practice',
+      subjectId: 'b1',
+      version: 2,
+      status: 'in_progress',
+      mode: 'training',
+      caseId: 'B1-2025-Q1',
+      unitIds: ['B1-2025-Q1-U01'],
+      answers: { 'B1-2025-Q1-U01': { a: '旧データの回答' } },
+      selfGrades: { 'B1-2025-Q1-U01': 'partial' },
+      reviewQuestionIds: [],
+      requirementDisclosureQuestionIds: [],
+      attemptIdsByQuestion: {},
+      currentIndex: 0,
+      createdAt: '2026-08-01T00:00:00.000Z',
+      updatedAt: '2026-08-01T00:00:00.000Z',
+    });
+    legacy.close();
+
+    const upgraded = createDatabase(name);
+    await initializeDatabase(upgraded);
+    await expect(upgraded.b1PracticeSessions.get('b1-v9-practice')).resolves.toMatchObject({
+      version: 3,
+      answers: { 'B1-2025-Q1-U01': { a: '旧データの回答' } },
+      unitConfirmations: {},
+      selfGradeUpdatedAt: {},
+    });
     upgraded.close();
   });
 });

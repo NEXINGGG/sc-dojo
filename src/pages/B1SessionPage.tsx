@@ -15,6 +15,7 @@ import {
 import { B1LearningSupportRepository } from '../features/b1/b1LearningSupportRepository';
 import { B1PdfReference } from '../features/b1/B1PdfReference';
 import { applyB1Answer, B1Repository } from '../features/b1/b1Repository';
+import { getB1UnansweredFieldIds } from '../domain/b1Progress';
 import { PracticeSessionRepository } from '../features/practice/practiceSessionRepository';
 import {
   createPracticeSession,
@@ -54,6 +55,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
   >([]);
   const [isRewriting, setIsRewriting] = useState(false);
   const [requestedPdfPage, setRequestedPdfPage] = useState<number>();
+  const [confirmationMessage, setConfirmationMessage] = useState<string>();
   const sessionRef = useRef<B1PracticeSessionRow | B1MockSessionRow | undefined>(undefined);
   const saveQueue = useRef<Promise<void>>(Promise.resolve());
   const saveRevision = useRef(0);
@@ -160,6 +162,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
         if (active) setError('答案の書き直し履歴を読み込めませんでした。');
       });
     setIsRewriting(false);
+    setConfirmationMessage(undefined);
     return () => {
       active = false;
     };
@@ -197,7 +200,8 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
     if (
       active === undefined ||
       currentUnit === undefined ||
-      (active.status !== 'in_progress' && !isRewriting)
+      (active.status !== 'in_progress' && !isRewriting) ||
+      active.unitConfirmations?.[currentUnit.questionId] !== undefined
     )
       return;
     const next = {
@@ -210,12 +214,19 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
 
   function changeSelfGrade(grade: 'correct' | 'partial' | 'incorrect' | 'review') {
     const active = sessionRef.current;
-    if (active === undefined || currentUnit === undefined || active.status === 'in_progress')
+    if (
+      active === undefined ||
+      currentUnit === undefined ||
+      (active.status === 'in_progress' &&
+        active.unitConfirmations?.[currentUnit.questionId] === undefined)
+    )
       return;
+    const updatedAt = new Date().toISOString();
     save({
       ...active,
       selfGrades: { ...active.selfGrades, [currentUnit.questionId]: grade },
-      updatedAt: new Date().toISOString(),
+      selfGradeUpdatedAt: { ...active.selfGradeUpdatedAt, [currentUnit.questionId]: updatedAt },
+      updatedAt,
     });
     void repository
       .updateLatestAnswerAttempt(active.id, currentUnit.questionId, {
@@ -229,39 +240,78 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
           );
         }
       });
+    void learningSupportRepository
+      .saveLearningReflection({
+        sessionId: active.id,
+        questionId: currentUnit.questionId,
+        selfAssessment:
+          grade === 'correct' ? 'correct' : grade === 'partial' ? 'partial' : 'incorrect',
+        failureCauseIds: [],
+      })
+      .catch(() =>
+        setConfirmationMessage(
+          '自己評価は保存しましたが、振り返りの保存に失敗しました。もう一度お試しください。',
+        ),
+      );
   }
 
   function setSelfGrade(grade: 'correct' | 'partial' | 'incorrect' | 'review') {
+    changeSelfGrade(grade);
+  }
+
+  function clearSelfGrade() {
     const active = sessionRef.current;
-    if (active === undefined || currentUnit === undefined || active.status === 'in_progress')
+    if (active === undefined || currentUnit === undefined) return;
+    const selfGrades = { ...active.selfGrades };
+    const selfGradeUpdatedAt = { ...active.selfGradeUpdatedAt };
+    delete selfGrades[currentUnit.questionId];
+    delete selfGradeUpdatedAt[currentUnit.questionId];
+    save({ ...active, selfGrades, selfGradeUpdatedAt, updatedAt: new Date().toISOString() });
+    setConfirmationMessage('自己評価を未評価に戻しました。回答内容は残っています。');
+  }
+
+  function confirmCurrentUnit() {
+    const active = sessionRef.current;
+    if (
+      active === undefined ||
+      currentUnit === undefined ||
+      (active.status !== 'in_progress' && !isRewriting)
+    )
       return;
+    const answers = active.answers[currentUnit.questionId] ?? {};
+    const missingFieldIds = getB1UnansweredFieldIds(currentUnit, answers);
+    if (missingFieldIds.length > 0) {
+      const missingLabels = currentUnit.answerFields
+        .filter((field) => missingFieldIds.includes(field.fieldId))
+        .map((field) => field.label)
+        .join('、');
+      setConfirmationMessage(
+        `未入力の回答欄があります: ${missingLabels}。入力してから回答を確定してください。`,
+      );
+      return;
+    }
+    const confirmedAt = new Date().toISOString();
     save({
       ...active,
-      selfGrades: { ...active.selfGrades, [currentUnit.questionId]: grade },
-      updatedAt: new Date().toISOString(),
+      unitConfirmations: {
+        ...active.unitConfirmations,
+        [currentUnit.questionId]: { answers: { ...answers }, confirmedAt },
+      },
+      updatedAt: confirmedAt,
     });
-    void repository
-      .updateLatestAnswerAttempt(active.id, currentUnit.questionId, {
-        selfGrade: grade,
-        failureCauseIds: [],
-      })
-      .then((updated) => {
-        if (updated !== undefined) {
-          setAttempts((current) =>
-            current.map((attempt) => (attempt.id === updated.id ? updated : attempt)),
-          );
-        }
-      });
-    if (grade === 'correct') {
-      void learningSupportRepository
-        .saveLearningReflection({
-          sessionId: active.id,
-          questionId: currentUnit.questionId,
-          selfAssessment: 'correct',
-          failureCauseIds: [],
-        })
-        .catch(() => setError('自己採点を保存できませんでした。もう一度お試しください。'));
-    }
+    setConfirmationMessage('回答を確定しました。内容は保存され、模範解答と比較できます。');
+  }
+
+  function unlockConfirmedUnit() {
+    const active = sessionRef.current;
+    if (active === undefined || currentUnit === undefined || active.status !== 'in_progress')
+      return;
+    const unitConfirmations = { ...active.unitConfirmations };
+    delete unitConfirmations[currentUnit.questionId];
+    save({ ...active, unitConfirmations, updatedAt: new Date().toISOString() });
+    setConfirmationMessage(
+      '回答の確定を取り消しました。入力済みの回答は残っているので、修正後にもう一度確定してください。',
+    );
   }
 
   function toggleRequirement() {
@@ -289,9 +339,12 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
         answers: active.answers[currentUnit.questionId] ?? {},
         selfGrade: active.selfGrades[currentUnit.questionId],
       });
+      const unitConfirmations = { ...active.unitConfirmations };
+      delete unitConfirmations[currentUnit.questionId];
       const next = {
         ...active,
         answers: { ...active.answers, [currentUnit.questionId]: {} },
+        unitConfirmations,
         updatedAt: new Date().toISOString(),
       };
       save(next);
@@ -305,6 +358,10 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
   async function finishRewrite() {
     const active = sessionRef.current;
     if (active === undefined || currentUnit === undefined) return;
+    if (active.unitConfirmations?.[currentUnit.questionId] === undefined) {
+      setConfirmationMessage('書き直した回答を確定してから保存してください。');
+      return;
+    }
     try {
       const remediations = await learningSupportRepository.listRemediationsByOriginQuestion(
         currentUnit.questionId,
@@ -459,9 +516,14 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
   const isInProgress = session.status === 'in_progress';
   const isMock = kind === 'mock';
   const learningMode = isMock ? 'mock90' : (session.mode ?? 'training');
-  const revealReference = !isInProgress;
-  const unanswered = session.unitIds.filter((unitId) =>
-    Object.values(session.answers[unitId] ?? {}).every((value) => value.trim() === ''),
+  const confirmation = session.unitConfirmations?.[currentUnit.questionId];
+  const revealReference =
+    confirmation !== undefined || (learningMode === 'mock90' && !isInProgress);
+  const showPostSubmission =
+    !isInProgress && (confirmation !== undefined || learningMode === 'mock90');
+  const isAnswerEditable = (isInProgress || isRewriting) && confirmation === undefined;
+  const unanswered = session.unitIds.filter(
+    (unitId) => session.unitConfirmations?.[unitId] === undefined,
   ).length;
   const reviewed = session.reviewQuestionIds.includes(currentUnit.questionId);
   const answerInputUnit = toB1AnswerInputUnit(currentUnit);
@@ -526,15 +588,51 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
             />
           ) : null}
           <B1AnswerForm
-            disabled={!isInProgress && !isRewriting}
+            disabled={!isAnswerEditable}
             onChange={changeAnswer}
-            onSelfGrade={changeSelfGrade}
+            onClearSelfGrade={clearSelfGrade}
+            onSelfGrade={setSelfGrade}
             revealReference={revealReference}
             selfGrade={session.selfGrades[currentUnit.questionId]}
             referenceUnit={revealReference ? currentUnit : undefined}
             unit={answerInputUnit}
             values={session.answers[currentUnit.questionId] ?? {}}
           />
+          {isInProgress || isRewriting ? (
+            <section aria-live="polite" className="surface-card b1-confirmation-panel">
+              <h2>{confirmation === undefined ? '回答を確定する' : '回答を確定済みです'}</h2>
+              {confirmation === undefined ? (
+                <>
+                  <p>
+                    すべての回答欄を入力したら確定してください。確定後に模範解答と比較できます。
+                  </p>
+                  <button
+                    className="primary-button"
+                    disabled={isSaving}
+                    onClick={confirmCurrentUnit}
+                    type="button"
+                  >
+                    回答を確定して模範解答を確認する
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p>確定日時: {formatB1DateTime(confirmation.confirmedAt)}</p>
+                  {isInProgress ? (
+                    <button
+                      className="secondary-button"
+                      disabled={isSaving}
+                      onClick={unlockConfirmedUnit}
+                      type="button"
+                    >
+                      回答を修正する
+                    </button>
+                  ) : null}
+                </>
+              )}
+              {confirmationMessage !== undefined ? <p>{confirmationMessage}</p> : null}
+            </section>
+          ) : null}
           {isInProgress && learningMode !== 'mock90' ? (
             <B1LearnerEvidencePanel
               defaultPrintedPage={
@@ -548,7 +646,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
           ) : null}
         </div>
       </div>
-      {!isInProgress ? (
+      {showPostSubmission ? (
         <B1PostSubmissionPanel
           attempts={attempts}
           caseItem={caseItem}
@@ -697,4 +795,12 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
 
 function formatRemaining(totalSeconds: number): string {
   return `${String(Math.floor(totalSeconds / 60)).padStart(2, '0')}:${String(totalSeconds % 60).padStart(2, '0')}`;
+}
+
+function formatB1DateTime(value: string): string {
+  return new Intl.DateTimeFormat('ja-JP', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Asia/Tokyo',
+  }).format(new Date(value));
 }

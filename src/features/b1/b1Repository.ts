@@ -18,6 +18,12 @@ import type {
   ExamSubmissionReason,
 } from '../../database/types';
 import { gradeB1Unit, type B1AnswerValues } from '../../domain/b1';
+import {
+  getB1UnansweredFieldIds,
+  summarizeB1UnitProgress,
+  type B1ProgressBreakdown,
+  type B1ReviewTarget,
+} from '../../domain/b1Progress';
 import type { B1FailureCauseId, B1LearningMode, B1MockType } from '../../domain/b1LearningSupport';
 
 export class B1DataError extends Error {
@@ -36,6 +42,16 @@ export interface B1ProgressSummary {
   reviewSelfGrades: number;
   learnerEvidenceCount: number;
   rewriteCount: number;
+  totalUnitCount: number;
+  unansweredUnitCount: number;
+  confirmedUnitCount: number;
+  selfAssessedUnitCount: number;
+  incorrectSelfGrades: number;
+  reviewTargetCount: number;
+  progressRate: number;
+  byYear: readonly B1ProgressBreakdown[];
+  byCase: readonly B1ProgressBreakdown[];
+  reviewTargets: readonly B1ReviewTarget[];
 }
 
 export interface B1LearningAnalytics {
@@ -115,13 +131,15 @@ export class B1Repository {
     const session: B1PracticeSessionRow = {
       id: createB1SessionId('practice'),
       subjectId: 'b1',
-      version: 2,
+      version: 3,
       status: 'in_progress',
       mode,
       caseId: caseItem.caseId,
       unitIds: caseItem.questionUnits.map((unit) => unit.questionId),
       answers: {},
+      unitConfirmations: {},
       selfGrades: {},
+      selfGradeUpdatedAt: {},
       reviewQuestionIds: [],
       requirementDisclosureQuestionIds: [],
       attemptIdsByQuestion: {},
@@ -153,6 +171,23 @@ export class B1Repository {
     };
     await this.database.b1PracticeSessions.put(completed);
     return completed;
+  }
+
+  async createReviewPractice(
+    questionId: string,
+    now = new Date().toISOString(),
+  ): Promise<B1PracticeSessionRow> {
+    const caseItem = b1Cases.find((item) =>
+      item.questionUnits.some((unit) => unit.questionId === questionId),
+    );
+    if (caseItem === undefined) {
+      throw new B1DataError('復習するB-1設問が見つかりません。進捗画面を再読み込みしてください。');
+    }
+    const created = await this.createPractice(caseItem, 'training', now);
+    const currentIndex = created.unitIds.indexOf(questionId);
+    const session = { ...created, currentIndex: Math.max(0, currentIndex), updatedAt: now };
+    await this.savePractice(session);
+    return session;
   }
 
   async getMock(id: string): Promise<B1MockSessionRow | undefined> {
@@ -214,7 +249,7 @@ export class B1Repository {
     const session: B1MockSessionRow = {
       id: createB1SessionId('mock'),
       subjectId: 'b1',
-      version: 2,
+      version: 3,
       status: 'in_progress',
       year,
       mode: 'mock90',
@@ -222,7 +257,9 @@ export class B1Repository {
       caseIds: [...caseIds],
       unitIds,
       answers: {},
+      unitConfirmations: {},
       selfGrades: {},
+      selfGradeUpdatedAt: {},
       reviewQuestionIds: [],
       requirementDisclosureQuestionIds: [],
       attemptIdsByQuestion: {},
@@ -288,24 +325,34 @@ export class B1Repository {
 
   async getProgressSummary(): Promise<B1ProgressSummary> {
     await this.database.open();
-    const [practice, rawMocks, learnerEvidence, answerAttempts] = await Promise.all([
-      this.database.b1PracticeSessions.where('status').equals('completed').count(),
-      this.database.b1MockSessions.orderBy('updatedAt').reverse().toArray(),
-      this.database.b1LearnerEvidence.count(),
-      this.database.b1AnswerAttempts.toArray(),
-    ]);
-    const mocks = await Promise.all(rawMocks.map((session) => this.migrateMockCatalog(session)));
-    const grades = mocks.flatMap((session) => Object.values(session.selfGrades));
+    const [practices, mocks, completedPracticeCount, learnerEvidenceCount, answerAttempts] =
+      await Promise.all([
+        this.listPractices(),
+        this.listMocks(),
+        this.database.b1PracticeSessions.where('status').equals('completed').count(),
+        this.database.b1LearnerEvidence.count(),
+        this.database.b1AnswerAttempts.toArray(),
+      ]);
+    const progress = summarizeB1UnitProgress(b1Cases, [...practices, ...mocks]);
     return {
-      completedPracticeCount: practice,
+      completedPracticeCount,
       completedMockCount: mocks.filter((session) => session.status === 'completed').length,
       submittedMockCount: mocks.filter((session) => session.status === 'submitted').length,
-      correctSelfGrades: grades.filter((grade) => grade === 'correct').length,
-      partialSelfGrades: grades.filter((grade) => grade === 'partial').length,
-      reviewSelfGrades: grades.filter((grade) => grade === 'incorrect' || grade === 'review')
-        .length,
-      learnerEvidenceCount: learnerEvidence,
+      correctSelfGrades: progress.correctSelfGradeCount,
+      partialSelfGrades: progress.partialSelfGradeCount,
+      reviewSelfGrades: progress.incorrectSelfGradeCount,
+      learnerEvidenceCount,
       rewriteCount: answerAttempts.filter((attempt) => attempt.attemptNumber > 1).length,
+      totalUnitCount: progress.totalUnitCount,
+      unansweredUnitCount: progress.unansweredUnitCount,
+      confirmedUnitCount: progress.confirmedUnitCount,
+      selfAssessedUnitCount: progress.selfAssessedUnitCount,
+      incorrectSelfGrades: progress.incorrectSelfGradeCount,
+      reviewTargetCount: progress.reviewTargetCount,
+      progressRate: progress.progressRate,
+      byYear: progress.byYear,
+      byCase: progress.byCase,
+      reviewTargets: progress.reviewTargets,
     };
   }
 
@@ -463,8 +510,10 @@ export class B1Repository {
     );
     const migrated: B1PracticeSessionRow = {
       ...catalogMigrated,
-      version: 2,
+      version: 3,
       mode: catalogMigrated.mode ?? 'training',
+      unitConfirmations: catalogMigrated.unitConfirmations ?? {},
+      selfGradeUpdatedAt: catalogMigrated.selfGradeUpdatedAt ?? {},
       requirementDisclosureQuestionIds: catalogMigrated.requirementDisclosureQuestionIds ?? [],
       attemptIdsByQuestion: catalogMigrated.attemptIdsByQuestion ?? {},
     };
@@ -476,9 +525,11 @@ export class B1Repository {
     const catalogMigrated = migrateB1SessionCatalog(session, getB1UnitIds(session.caseIds));
     const migrated: B1MockSessionRow = {
       ...catalogMigrated,
-      version: 2,
+      version: 3,
       mode: 'mock90',
       mockType: catalogMigrated.mockType ?? 'official_year',
+      unitConfirmations: catalogMigrated.unitConfirmations ?? {},
+      selfGradeUpdatedAt: catalogMigrated.selfGradeUpdatedAt ?? {},
       requirementDisclosureQuestionIds: catalogMigrated.requirementDisclosureQuestionIds ?? [],
       attemptIdsByQuestion: catalogMigrated.attemptIdsByQuestion ?? {},
     };
@@ -506,7 +557,13 @@ export function getB1ReferenceGrade(questionId: string, answers: B1AnswerValues)
 
 type B1CatalogSession = Pick<
   B1PracticeSessionRow,
-  'unitIds' | 'answers' | 'selfGrades' | 'reviewQuestionIds' | 'currentIndex'
+  | 'unitIds'
+  | 'answers'
+  | 'unitConfirmations'
+  | 'selfGrades'
+  | 'selfGradeUpdatedAt'
+  | 'reviewQuestionIds'
+  | 'currentIndex'
 >;
 
 function migrateB1SessionCatalog<T extends B1CatalogSession>(
@@ -556,6 +613,31 @@ function migrateB1SessionCatalog<T extends B1CatalogSession>(
     }),
   );
   const reviewQuestionIds = [...new Set(session.reviewQuestionIds.flatMap(targetIdsForLegacyUnit))];
+  const unitConfirmations: NonNullable<B1PracticeSessionRow['unitConfirmations']> = {};
+  for (const [legacyQuestionId, confirmation] of Object.entries(session.unitConfirmations ?? {})) {
+    for (const questionId of targetIdsForLegacyUnit(legacyQuestionId)) {
+      const mappedAnswers: B1AnswerValues = {};
+      for (const [legacyFieldId, value] of Object.entries(confirmation.answers)) {
+        const target = getB1LegacyAnswerFieldTarget(legacyQuestionId, legacyFieldId);
+        const targetQuestionId = target?.questionId ?? legacyQuestionId;
+        const targetFieldId = target?.fieldId ?? legacyFieldId;
+        if (targetQuestionId === questionId) mappedAnswers[targetFieldId] = value;
+      }
+      if (Object.keys(mappedAnswers).length > 0) {
+        unitConfirmations[questionId] = {
+          answers: mappedAnswers,
+          confirmedAt: confirmation.confirmedAt,
+        };
+      }
+    }
+  }
+  const selfGradeUpdatedAt = Object.fromEntries(
+    Object.entries(session.selfGradeUpdatedAt ?? {}).flatMap(([legacyQuestionId, updatedAt]) =>
+      targetIdsForLegacyUnit(legacyQuestionId)
+        .filter((questionId) => selfGrades[questionId] !== undefined)
+        .map((questionId) => [questionId, updatedAt]),
+    ),
+  );
   const legacyCurrentId =
     session.unitIds[Math.min(session.currentIndex, session.unitIds.length - 1)];
   const currentId =
@@ -566,7 +648,9 @@ function migrateB1SessionCatalog<T extends B1CatalogSession>(
     ...session,
     unitIds: [...currentUnitIds],
     answers,
+    unitConfirmations,
     selfGrades,
+    selfGradeUpdatedAt,
     reviewQuestionIds,
     currentIndex,
   };
@@ -587,6 +671,7 @@ function validatePractice(session: B1PracticeSessionRow): void {
   ) {
     throw new B1DataError('B-1演習の問題構成が正しくありません。');
   }
+  validateB1UnitState(session);
 }
 
 function validateMock(session: B1MockSessionRow): void {
@@ -599,6 +684,42 @@ function validateMock(session: B1MockSessionRow): void {
   ) {
     throw new B1DataError('B-1模試の保存データが正しくありません。');
   }
+  validateB1UnitState(session);
+}
+
+function validateB1UnitState(
+  session: Pick<
+    B1PracticeSessionRow,
+    'unitIds' | 'unitConfirmations' | 'selfGrades' | 'selfGradeUpdatedAt'
+  >,
+): void {
+  for (const [questionId, confirmation] of Object.entries(session.unitConfirmations ?? {})) {
+    const unit = getB1QuestionUnit(questionId);
+    if (
+      unit === undefined ||
+      !session.unitIds.includes(questionId) ||
+      !isIsoDate(confirmation.confirmedAt) ||
+      getB1UnansweredFieldIds(unit, confirmation.answers).length > 0 ||
+      Object.keys(confirmation.answers).some(
+        (fieldId) => !unit.answerFields.some((field) => field.fieldId === fieldId),
+      )
+    ) {
+      throw new B1DataError(
+        'B-1の回答確定データに不正な内容があります。入力内容を確認してください。',
+      );
+    }
+  }
+  for (const [questionId, updatedAt] of Object.entries(session.selfGradeUpdatedAt ?? {})) {
+    if (session.selfGrades[questionId] === undefined || !isIsoDate(updatedAt)) {
+      throw new B1DataError(
+        'B-1の自己評価データに不正な内容があります。もう一度評価してください。',
+      );
+    }
+  }
+}
+
+function isIsoDate(value: string): boolean {
+  return Number.isFinite(new Date(value).getTime());
 }
 
 function toPdfMetadata(row: B1PdfFileRow): B1PdfRegistrationMetadata {

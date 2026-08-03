@@ -375,9 +375,9 @@ export function B1PostSubmissionPanel({
         <div className="card-action-row">
           {(
             [
-              ['correct', '正解相当'],
-              ['partial', '部分点相当'],
-              ['incorrect', '不正解相当'],
+              ['correct', 'できた'],
+              ['partial', '惜しい'],
+              ['incorrect', 'できなかった'],
             ] as const
           ).map(([grade, label]) => (
             <button
