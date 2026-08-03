@@ -17,6 +17,7 @@ export function B1AnswerForm({
   selfGrade,
   onChange,
   onSelfGrade,
+  onClearSelfGrade,
 }: {
   unit: B1AnswerInputUnit;
   referenceUnit?: B1QuestionUnit;
@@ -26,6 +27,7 @@ export function B1AnswerForm({
   selfGrade?: B1SelfGrade;
   onChange: (fieldId: string, value: string) => void;
   onSelfGrade?: (grade: B1SelfGrade) => void;
+  onClearSelfGrade?: () => void;
 }) {
   const composing = useRef(new Set<string>());
   const reference =
@@ -104,13 +106,23 @@ export function B1AnswerForm({
       <p className="b1-grading-notice">{B1_OFFICIAL_GRADING_NOTICE}</p>
       {reference !== undefined ? (
         <section aria-live="polite" className="b1-reference-grade surface-card">
-          <h3>提出後の参考判定・自己採点</h3>
-          <p>
-            公式解答:{' '}
-            {referenceUnit?.answerFields
-              .map((field) => `${field.label}: ${field.acceptedAnswers.join('／')}`)
-              .join('・')}
-          </p>
+          <h3>模範解答と自分の回答を確認する</h3>
+          <p className="muted-text">回答欄ごとに見比べてから、自己評価を記録してください。</p>
+          <dl className="b1-answer-comparison">
+            {referenceUnit?.answerFields.map((field) => (
+              <div key={field.fieldId}>
+                <dt>{field.label}</dt>
+                <dd>
+                  <strong>自分の回答</strong>
+                  <span>{values[field.fieldId]?.trim() || '未入力'}</span>
+                </dd>
+                <dd>
+                  <strong>模範解答・解答例</strong>
+                  <span>{field.acceptedAnswers.join('／') || '公式PDFで確認してください'}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
           {unit.grading.mode === 'automatic' ? (
             <p
               className={
@@ -120,28 +132,29 @@ export function B1AnswerForm({
               {reference.automaticCorrect ? '参考判定: 一致' : '参考判定: 要確認'}
             </p>
           ) : null}
-          {unit.grading.mode !== 'automatic' ? (
-            <>
-              <p>公式解答の観点: {referenceUnit?.grading.officialAnswerConcepts.join('／')}</p>
-              <div className="card-action-row">
-                <SelfGradeButton
-                  active={selfGrade === 'correct'}
-                  label="正解相当"
-                  onClick={() => onSelfGrade?.('correct')}
-                />
-                <SelfGradeButton
-                  active={selfGrade === 'partial'}
-                  label="部分点相当"
-                  onClick={() => onSelfGrade?.('partial')}
-                />
-                <SelfGradeButton
-                  active={selfGrade === 'review'}
-                  label="復習が必要"
-                  onClick={() => onSelfGrade?.('review')}
-                />
-              </div>
-            </>
-          ) : null}
+          <p>公式解答の観点: {referenceUnit?.grading.officialAnswerConcepts.join('／')}</p>
+          <div aria-label="自己評価" className="card-action-row">
+            <SelfGradeButton
+              active={selfGrade === 'correct'}
+              label="できた"
+              onClick={() => onSelfGrade?.('correct')}
+            />
+            <SelfGradeButton
+              active={selfGrade === 'partial'}
+              label="惜しい"
+              onClick={() => onSelfGrade?.('partial')}
+            />
+            <SelfGradeButton
+              active={selfGrade === 'incorrect' || selfGrade === 'review'}
+              label="できなかった"
+              onClick={() => onSelfGrade?.('incorrect')}
+            />
+            {selfGrade !== undefined ? (
+              <button className="text-button" onClick={onClearSelfGrade} type="button">
+                未評価に戻す
+              </button>
+            ) : null}
+          </div>
         </section>
       ) : null}
     </section>

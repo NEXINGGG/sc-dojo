@@ -42,6 +42,54 @@ describe('B1Repository', () => {
     database.close();
   });
 
+  it('persists a confirmed multi-field answer and a later self-assessment change', async () => {
+    const database = createTestDatabase();
+    await initializeDatabase(database);
+    const repository = new B1Repository(database);
+    const caseItem = b1Cases.find((item) =>
+      item.questionUnits.some((unit) => unit.answerFields.length > 1),
+    );
+    if (caseItem === undefined) throw new Error('A multi-field B-1 case is required');
+    const session = await repository.createPractice(caseItem, now);
+    const unit = caseItem.questionUnits.find((item) => item.answerFields.length > 1);
+    if (unit === undefined) throw new Error('A multi-field B-1 unit is required');
+    const answers = Object.fromEntries(
+      unit.answerFields.map((field) => [field.fieldId, '入力済み']),
+    );
+    const confirmedAt = '2026-07-21T00:01:00.000Z';
+
+    await repository.savePractice({
+      ...session,
+      answers: { [unit.questionId]: answers },
+      unitConfirmations: { [unit.questionId]: { answers, confirmedAt } },
+      selfGrades: { [unit.questionId]: 'partial' },
+      selfGradeUpdatedAt: { [unit.questionId]: confirmedAt },
+      updatedAt: confirmedAt,
+    });
+    await expect(repository.getPractice(session.id)).resolves.toMatchObject({
+      unitConfirmations: { [unit.questionId]: { answers, confirmedAt } },
+      selfGrades: { [unit.questionId]: 'partial' },
+      selfGradeUpdatedAt: { [unit.questionId]: confirmedAt },
+    });
+
+    const changedAt = '2026-07-21T00:02:00.000Z';
+    const restored = await repository.getPractice(session.id);
+    if (restored === undefined) throw new Error('The B-1 practice session must be restored');
+    await repository.savePractice({
+      ...restored,
+      selfGrades: { ...restored.selfGrades, [unit.questionId]: 'incorrect' },
+      selfGradeUpdatedAt: { ...restored.selfGradeUpdatedAt, [unit.questionId]: changedAt },
+      updatedAt: changedAt,
+    });
+
+    await expect(repository.getProgressSummary()).resolves.toMatchObject({
+      confirmedUnitCount: 1,
+      partialSelfGrades: 0,
+      incorrectSelfGrades: 1,
+    });
+    database.close();
+  });
+
   it('creates a 90-minute mock from two distinct cases in one year', async () => {
     const database = createTestDatabase();
     await initializeDatabase(database);

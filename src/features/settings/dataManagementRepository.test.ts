@@ -325,12 +325,19 @@ describe('DataManagementRepository', () => {
     await source.b1PracticeSessions.put({
       id: 'b1-practice-backup',
       subjectId: 'b1',
-      version: 1,
+      version: 3,
       status: 'in_progress',
       caseId: caseItem.caseId,
       unitIds: caseItem.questionUnits.map((unit) => unit.questionId),
       answers: { [caseItem.questionUnits[0].questionId]: { a: 'バックボーン' } },
-      selfGrades: {},
+      unitConfirmations: {
+        [caseItem.questionUnits[0].questionId]: {
+          answers: { a: 'バックボーン' },
+          confirmedAt: exportedAt,
+        },
+      },
+      selfGrades: { [caseItem.questionUnits[0].questionId]: 'partial' },
+      selfGradeUpdatedAt: { [caseItem.questionUnits[0].questionId]: exportedAt },
       reviewQuestionIds: [],
       currentIndex: 0,
       createdAt: exportedAt,
@@ -411,6 +418,13 @@ describe('DataManagementRepository', () => {
     await expect(target.b1PracticeSessions.get('b1-practice-backup')).resolves.toMatchObject({
       subjectId: 'b1',
       answers: { [caseItem.questionUnits[0].questionId]: { a: 'バックボーン' } },
+      unitConfirmations: {
+        [caseItem.questionUnits[0].questionId]: {
+          answers: { a: 'バックボーン' },
+          confirmedAt: exportedAt,
+        },
+      },
+      selfGradeUpdatedAt: { [caseItem.questionUnits[0].questionId]: exportedAt },
     });
     await expect(target.b1PdfFiles.get(2024)).resolves.toMatchObject({
       fileName: 'local-only.pdf',

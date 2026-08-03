@@ -106,7 +106,7 @@ describe('バックアップ形式', () => {
     });
     expect(
       validateBackupDocument(
-        { ...createBackupDocument(createInput()), formatVersion: 6 },
+        { ...createBackupDocument(createInput()), formatVersion: 7 },
         questions,
         identity,
       ),
@@ -303,6 +303,82 @@ describe('バックアップ形式', () => {
         answerAttempts: [],
         preferences: [],
       });
+    }
+  });
+
+  it('B-1 Phase 4の回答確定・評価日時をバックアップし、不正な回答欄は復元前に拒否する', async () => {
+    const caseItem = b1Cases[0];
+    const unit = caseItem.questionUnits[0];
+    const answers = Object.fromEntries(unit.answerFields.map((field) => [field.fieldId, '回答']));
+    const b1 = {
+      practiceSessions: [
+        {
+          id: 'b1-phase4-backup',
+          subjectId: 'b1' as const,
+          version: 3 as const,
+          status: 'in_progress' as const,
+          mode: 'training' as const,
+          caseId: caseItem.caseId,
+          unitIds: caseItem.questionUnits.map((item) => item.questionId),
+          answers: { [unit.questionId]: answers },
+          unitConfirmations: {
+            [unit.questionId]: { answers, confirmedAt: exportedAt },
+          },
+          selfGrades: { [unit.questionId]: 'partial' as const },
+          selfGradeUpdatedAt: { [unit.questionId]: exportedAt },
+          reviewQuestionIds: [unit.questionId],
+          requirementDisclosureQuestionIds: [],
+          attemptIdsByQuestion: {},
+          currentIndex: 0,
+          createdAt: exportedAt,
+          updatedAt: exportedAt,
+        },
+      ],
+      mockSessions: [],
+      pdfRegistrations: [],
+      learnerEvidence: [],
+      learningReflections: [],
+      remediationProgress: [],
+      answerAttempts: [],
+      preferences: [],
+    };
+    const document = createBackupDocument(createInput({ b1 }));
+    const valid = await validateBackupDocumentWithB1(document, questions, identity);
+    const invalid = await validateBackupDocumentWithB1(
+      {
+        ...document,
+        data: {
+          ...document.data,
+          b1: {
+            ...document.data.b1,
+            practiceSessions: [
+              {
+                ...b1.practiceSessions[0],
+                unitConfirmations: {
+                  [unit.questionId]: {
+                    answers: { unknownField: '不正' },
+                    confirmedAt: exportedAt,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      questions,
+      identity,
+    );
+
+    expect(valid).toMatchObject({ ok: true });
+    if (valid.ok) {
+      expect(valid.value.document.data.b1.practiceSessions[0]).toMatchObject({
+        unitConfirmations: { [unit.questionId]: { answers, confirmedAt: exportedAt } },
+        selfGradeUpdatedAt: { [unit.questionId]: exportedAt },
+      });
+    }
+    expect(invalid).toMatchObject({ ok: true });
+    if (invalid.ok) {
+      expect(invalid.value.document.data.b1.practiceSessions).toHaveLength(0);
     }
   });
 

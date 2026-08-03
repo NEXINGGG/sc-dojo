@@ -60,4 +60,45 @@ describe('B-1 answer flow', () => {
     expect(screen.queryByText('A2連動復習')).not.toBeInTheDocument();
     expect(screen.queryByText('失点原因（複数選択）')).not.toBeInTheDocument();
   });
+
+  it('restores a confirmed answer and its self-assessment after a page refresh', async () => {
+    const user = userEvent.setup();
+    const repository = new B1Repository(database);
+    const session = await repository.createPractice(b1Cases[0]);
+    window.location.hash = `#/b1/practice/${session.id}`;
+    const firstRender = render(<App />);
+
+    const answerFields = (await screen.findAllByRole('textbox')).filter((element) =>
+      element.id.startsWith(`${session.unitIds[0]}-`),
+    );
+    for (const answer of answerFields) {
+      await user.type(answer, '入力済み');
+    }
+    await user.click(screen.getByRole('button', { name: '回答を確定して模範解答を確認する' }));
+
+    await waitFor(async () => {
+      const saved = await database.b1PracticeSessions.get(session.id);
+      expect(saved?.unitConfirmations?.[session.unitIds[0]]).toMatchObject({
+        answers: Object.fromEntries(
+          b1Cases[0].questionUnits[0].answerFields.map((field) => [field.fieldId, '入力済み']),
+        ),
+      });
+    });
+    await user.click(screen.getByRole('button', { name: '惜しい' }));
+    await waitFor(async () => {
+      const saved = await database.b1PracticeSessions.get(session.id);
+      expect(saved?.selfGrades[session.unitIds[0]]).toBe('partial');
+      expect(saved?.selfGradeUpdatedAt?.[session.unitIds[0]]).toContain('T');
+    });
+
+    firstRender.unmount();
+    render(<App />);
+    await screen.findByText('回答を確定済みです');
+    const restoredAnswer = screen
+      .getAllByRole('textbox')
+      .find((element) => element.id.startsWith(`${session.unitIds[0]}-`));
+    expect(restoredAnswer).toBeDefined();
+    if (restoredAnswer !== undefined) expect(restoredAnswer).toBeDisabled();
+    expect(screen.getByRole('button', { name: '惜しい' })).toHaveAttribute('aria-pressed', 'true');
+  });
 });

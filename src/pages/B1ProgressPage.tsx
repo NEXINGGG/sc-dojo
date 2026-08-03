@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { database } from '../database/database';
-import { B1Repository, type B1ProgressSummary } from '../features/b1/b1Repository';
+import { B1DataError, B1Repository, type B1ProgressSummary } from '../features/b1/b1Repository';
 import { relevanceLabelText } from '../domain/b1LearningFlow';
 
 const repository = new B1Repository(database);
 
 export function B1ProgressPage() {
+  const navigate = useNavigate();
   const [summary, setSummary] = useState<B1ProgressSummary>();
   const [history, setHistory] = useState<Awaited<ReturnType<typeof repository.listMocks>>>([]);
   const [practices, setPractices] = useState<Awaited<ReturnType<typeof repository.listPractices>>>(
@@ -15,6 +16,8 @@ export function B1ProgressPage() {
   );
   const [analytics, setAnalytics] =
     useState<Awaited<ReturnType<typeof repository.getLearningAnalytics>>>();
+  const [isOpeningReview, setIsOpeningReview] = useState(false);
+  const [reviewMessage, setReviewMessage] = useState<string>();
 
   useEffect(() => {
     void Promise.all([
@@ -30,6 +33,27 @@ export function B1ProgressPage() {
     });
   }, []);
 
+  const inProgressPractice = practices.find((session) => session.status === 'in_progress');
+  const nextReviewTarget = summary?.reviewTargets[0];
+
+  async function openNextReview() {
+    if (nextReviewTarget === undefined) return;
+    setIsOpeningReview(true);
+    setReviewMessage(undefined);
+    try {
+      const session = await repository.createReviewPractice(nextReviewTarget.questionId);
+      navigate(`/b1/practice/${session.id}`);
+    } catch (error) {
+      setReviewMessage(
+        error instanceof B1DataError
+          ? error.message
+          : '復習を開始できませんでした。もう一度お試しください。',
+      );
+    } finally {
+      setIsOpeningReview(false);
+    }
+  }
+
   return (
     <>
       <PageHeader
@@ -38,29 +62,94 @@ export function B1ProgressPage() {
       />
       <section aria-label="B-1自己採点の集計" className="study-summary-grid">
         <article className="metric-card">
-          <span>正解相当</span>
+          <span>総ユニット数</span>
+          <strong>{summary?.totalUnitCount ?? 0}件</strong>
+        </article>
+        <article className="metric-card">
+          <span>未回答</span>
+          <strong>{summary?.unansweredUnitCount ?? 0}件</strong>
+        </article>
+        <article className="metric-card">
+          <span>回答確定済み</span>
+          <strong>{summary?.confirmedUnitCount ?? 0}件</strong>
+        </article>
+        <article className="metric-card">
+          <span>自己評価済み</span>
+          <strong>{summary?.selfAssessedUnitCount ?? 0}件</strong>
+        </article>
+        <article className="metric-card">
+          <span>できた</span>
           <strong>{summary?.correctSelfGrades ?? 0}件</strong>
         </article>
         <article className="metric-card">
-          <span>部分点相当</span>
+          <span>惜しい</span>
           <strong>{summary?.partialSelfGrades ?? 0}件</strong>
         </article>
         <article className="metric-card">
-          <span>復習が必要</span>
-          <strong>{summary?.reviewSelfGrades ?? 0}件</strong>
+          <span>できなかった</span>
+          <strong>{summary?.incorrectSelfGrades ?? 0}件</strong>
         </article>
         <article className="metric-card">
-          <span>完了した模試</span>
-          <strong>{summary?.completedMockCount ?? 0}回</strong>
+          <span>復習対象</span>
+          <strong>{summary?.reviewTargetCount ?? 0}件</strong>
         </article>
         <article className="metric-card">
-          <span>根拠を記録</span>
-          <strong>{summary?.learnerEvidenceCount ?? 0}件</strong>
+          <span>全体の進捗率</span>
+          <strong>{summary?.progressRate ?? 0}%</strong>
         </article>
-        <article className="metric-card">
-          <span>答案の書き直し</span>
-          <strong>{summary?.rewriteCount ?? 0}回</strong>
-        </article>
+      </section>
+      <section className="surface-card exam-history-card">
+        <h2>次に復習する問題</h2>
+        {nextReviewTarget === undefined ? (
+          <p>復習対象はありません。回答を確定して自己評価を続けましょう。</p>
+        ) : (
+          <>
+            <p>
+              {nextReviewTarget.year}年度・{nextReviewTarget.label}（
+              {reviewReasonText(nextReviewTarget.reasons)}）
+            </p>
+            {inProgressPractice !== undefined ? (
+              <Link className="primary-button" to={`/b1/practice/${inProgressPractice.id}`}>
+                途中のB-1演習を再開する
+              </Link>
+            ) : (
+              <button
+                className="primary-button"
+                disabled={isOpeningReview}
+                onClick={() => void openNextReview()}
+                type="button"
+              >
+                {isOpeningReview ? '復習を開始中…' : 'この問題を復習する'}
+              </button>
+            )}
+          </>
+        )}
+        {reviewMessage !== undefined ? <p role="status">{reviewMessage}</p> : null}
+      </section>
+      <section className="surface-card exam-history-card">
+        <h2>年度別・問題別の進捗</h2>
+        <p>進捗率は、各ユニットで回答を確定した割合です。</p>
+        {(summary?.byYear ?? []).map((year) => (
+          <details key={year.id}>
+            <summary>
+              {year.label}: {year.confirmedUnitCount} / {year.totalUnitCount}件（{year.progressRate}
+              %）
+            </summary>
+            <ul className="b1-progress-breakdown-list">
+              {(summary?.byCase ?? [])
+                .filter((caseItem) => caseItem.id.startsWith(`B1-${year.id}-`))
+                .map((caseItem) => (
+                  <li key={caseItem.id}>
+                    <span>{caseItem.label}</span>
+                    <strong>
+                      {caseItem.confirmedUnitCount} / {caseItem.totalUnitCount}件（
+                      {caseItem.progressRate}%）
+                    </strong>
+                  </li>
+                ))}
+            </ul>
+          </details>
+        ))}
       </section>
       <section className="surface-card exam-history-card">
         <h2>振返りの集計</h2>
@@ -154,4 +243,14 @@ export function B1ProgressPage() {
       </section>
     </>
   );
+}
+
+function reviewReasonText(reasons: readonly string[]): string {
+  const labels: Record<string, string> = {
+    unanswered: '未回答',
+    partial: '惜しい',
+    incorrect: 'できなかった',
+    manual: '手動で見直し',
+  };
+  return reasons.map((reason) => labels[reason] ?? reason).join('・');
 }
