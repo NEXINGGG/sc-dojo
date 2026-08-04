@@ -241,6 +241,33 @@ describe('バックアップ形式', () => {
 
   it('B-1 sessions and PDF metadata round-trip without PDF blobs, and older backups default to empty B-1 data', () => {
     const caseItem = b1Cases[0];
+    const secondCaseItem = b1Cases[1];
+    const mockSession = {
+      id: 'b1-mock-1',
+      subjectId: 'b1' as const,
+      version: 3 as const,
+      status: 'submitted' as const,
+      year: caseItem.year,
+      mode: 'mock90' as const,
+      mockType: 'official_year' as const,
+      caseIds: [caseItem.caseId, secondCaseItem.caseId],
+      unitIds: [...caseItem.questionUnits, ...secondCaseItem.questionUnits].map(
+        (unit) => unit.questionId,
+      ),
+      answers: {},
+      unitConfirmations: {},
+      selfGrades: {},
+      selfGradeUpdatedAt: {},
+      reviewQuestionIds: [],
+      requirementDisclosureQuestionIds: [],
+      attemptIdsByQuestion: {},
+      currentIndex: 0,
+      startedAt: exportedAt,
+      deadlineAt: '2026-07-18T01:30:00.000Z',
+      updatedAt: exportedAt,
+      submittedAt: exportedAt,
+      submissionReason: 'manual' as const,
+    };
     const b1 = {
       practiceSessions: [
         {
@@ -258,7 +285,7 @@ describe('バックアップ形式', () => {
           updatedAt: exportedAt,
         },
       ],
-      mockSessions: [],
+      mockSessions: [mockSession],
       pdfRegistrations: [
         {
           subjectId: 'b1' as const,
@@ -290,6 +317,9 @@ describe('バックアップ形式', () => {
     if (result.ok) {
       expect(result.value.document.data.b1).toMatchObject(b1);
       expect(JSON.stringify(result.value.document.data.b1)).not.toContain('blob');
+      expect(result.value.document.data.b1.mockSessions).toMatchObject([
+        { id: 'b1-mock-1', status: 'submitted', reviewQuestionIds: [] },
+      ]);
     }
     expect(oldVersion).toMatchObject({ ok: true });
     if (oldVersion.ok) {
