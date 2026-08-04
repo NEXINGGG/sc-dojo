@@ -2081,6 +2081,38 @@ h2 {
   font-weight: 700;
 }
 
+.b1-autosave-status {
+  margin: 0 0 12px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.b1-mock-summary-list {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.b1-mock-summary-list > div {
+  display: grid;
+  gap: 4px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.b1-mock-summary-list dt {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.b1-mock-summary-list dd {
+  margin: 0;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
 .b1-mobile-tabs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2276,6 +2308,21 @@ h2 {
 
 .b1-number-grid {
   margin-bottom: 16px;
+}
+
+.b1-number-grid .exam-number-button {
+  gap: 2px;
+  place-items: center;
+}
+
+.b1-number-grid .exam-number-button > span {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.b1-number-grid .exam-number-button small {
+  font-size: 11px;
+  font-weight: 800;
 }
 
 @media (min-width: 768px) {

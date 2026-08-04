@@ -16,6 +16,11 @@ import { B1LearningSupportRepository } from '../features/b1/b1LearningSupportRep
 import { B1PdfReference } from '../features/b1/B1PdfReference';
 import { applyB1Answer, B1Repository } from '../features/b1/b1Repository';
 import { getB1UnansweredFieldIds } from '../domain/b1Progress';
+import {
+  formatB1MockElapsedTime,
+  getB1MockElapsedSeconds,
+  summarizeB1MockAnswers,
+} from '../domain/b1MockExam';
 import { PracticeSessionRepository } from '../features/practice/practiceSessionRepository';
 import {
   createPracticeSession,
@@ -504,6 +509,19 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       </section>
     );
   }
+  if (session !== undefined && (currentUnit === undefined || caseItem === undefined)) {
+    return (
+      <section className="surface-card recovery-card">
+        <h1>B-1模試の保存内容を確認してください</h1>
+        <p>
+          保存した問題構成を読み込めませんでした。模試一覧へ戻り、途中模試を破棄してから新しく開始できます。
+        </p>
+        <Link className="primary-button" to={kind === 'mock' ? '/exam' : '/practice'}>
+          {kind === 'mock' ? 'B-1模試一覧へ戻る' : 'B-1演習一覧へ戻る'}
+        </Link>
+      </section>
+    );
+  }
   if (session === undefined || currentUnit === undefined || caseItem === undefined) {
     return (
       <section aria-busy="true" aria-live="polite" className="surface-card loading-card">
@@ -515,16 +533,29 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
 
   const isInProgress = session.status === 'in_progress';
   const isMock = kind === 'mock';
+  const mockSession = isMock && 'startedAt' in session ? session : undefined;
   const learningMode = isMock ? 'mock90' : (session.mode ?? 'training');
+  const mockAnswerProgress = isMock
+    ? summarizeB1MockAnswers(
+        session.unitIds.flatMap((unitId) => {
+          const unit = getB1QuestionUnit(unitId);
+          return unit === undefined ? [] : [unit];
+        }),
+        session.answers,
+        session.reviewQuestionIds,
+      )
+    : undefined;
+  const mockElapsedSeconds =
+    mockSession === undefined ? undefined : getB1MockElapsedSeconds(mockSession);
   const confirmation = session.unitConfirmations?.[currentUnit.questionId];
   const revealReference =
     confirmation !== undefined || (learningMode === 'mock90' && !isInProgress);
   const showPostSubmission =
     !isInProgress && (confirmation !== undefined || learningMode === 'mock90');
-  const isAnswerEditable = (isInProgress || isRewriting) && confirmation === undefined;
-  const unanswered = session.unitIds.filter(
-    (unitId) => session.unitConfirmations?.[unitId] === undefined,
-  ).length;
+  const isAnswerEditable = (isInProgress || isRewriting) && (isMock || confirmation === undefined);
+  const unanswered = isMock
+    ? (mockAnswerProgress?.unansweredUnitCount ?? 0)
+    : session.unitIds.filter((unitId) => session.unitConfirmations?.[unitId] === undefined).length;
   const reviewed = session.reviewQuestionIds.includes(currentUnit.questionId);
   const answerInputUnit = toB1AnswerInputUnit(currentUnit);
 
@@ -537,18 +568,31 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
           </p>
           <h1>{currentUnit.label}</h1>
           <p>
-            {session.currentIndex + 1} / {session.unitIds.length} 解答単位・未回答 {unanswered}件
+            {session.currentIndex + 1} / {session.unitIds.length} 解答単位・
+            {isMock
+              ? `回答済み ${mockAnswerProgress?.answeredUnitCount ?? 0}件・未回答 ${unanswered}件`
+              : `未回答 ${unanswered}件`}
           </p>
+          {isMock &&
+          mockAnswerProgress !== undefined &&
+          mockAnswerProgress.partiallyAnsweredUnitCount > 0 ? (
+            <p>一部入力中 {mockAnswerProgress.partiallyAnsweredUnitCount}件</p>
+          ) : null}
         </div>
         {isMock && isInProgress ? (
           <div className={`exam-timer${(remainingSeconds ?? 0) < 300 ? ' is-warning' : ''}`}>
             <span>残り時間</span>
             <strong>{formatRemaining(remainingSeconds ?? 0)}</strong>
+            <span>経過時間</span>
+            <strong>{formatB1MockElapsedTime(mockElapsedSeconds ?? 0)}</strong>
           </div>
         ) : null}
       </header>
       <p className="b1-grading-notice">
         アプリの判定はIPAの正式採点ではありません。模試中は正答・解答概念・判定結果を表示しません。
+      </p>
+      <p aria-live="polite" className="b1-autosave-status" role="status">
+        {isSaving ? '答案をこの端末に保存中です。' : '答案はこの端末に自動保存されています。'}
       </p>
       <div className="b1-mobile-tabs" role="tablist" aria-label="B-1表示を切り替え">
         <button
@@ -598,7 +642,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
             unit={answerInputUnit}
             values={session.answers[currentUnit.questionId] ?? {}}
           />
-          {isInProgress || isRewriting ? (
+          {(isInProgress || isRewriting) && learningMode !== 'mock90' ? (
             <section aria-live="polite" className="surface-card b1-confirmation-panel">
               <h2>{confirmation === undefined ? '回答を確定する' : '回答を確定済みです'}</h2>
               {confirmation === undefined ? (
@@ -679,6 +723,42 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
           unit={currentUnit}
         />
       ) : null}
+      {mockSession !== undefined &&
+      !isInProgress &&
+      mockAnswerProgress !== undefined &&
+      mockElapsedSeconds !== undefined ? (
+        <section
+          aria-label="B-1模試の提出結果"
+          className="surface-card b1-finalize-card b1-mock-result-summary"
+        >
+          <h2>提出結果の概要</h2>
+          <dl className="b1-mock-summary-list">
+            <div>
+              <dt>開始日時</dt>
+              <dd>{formatB1DateTime(mockSession.startedAt)}</dd>
+            </div>
+            <div>
+              <dt>所要時間</dt>
+              <dd>{formatB1MockElapsedTime(mockElapsedSeconds)}</dd>
+            </div>
+            <div>
+              <dt>解答欄</dt>
+              <dd>
+                {mockAnswerProgress.answeredAnswerFieldCount} /{' '}
+                {mockAnswerProgress.totalAnswerFieldCount}件回答済み
+              </dd>
+            </div>
+            <div>
+              <dt>未回答の解答欄</dt>
+              <dd>{mockAnswerProgress.unansweredAnswerFieldCount}件</dd>
+            </div>
+            <div>
+              <dt>見直し指定</dt>
+              <dd>{mockAnswerProgress.reviewUnitCount}件</dd>
+            </div>
+          </dl>
+        </section>
+      ) : null}
       <div className="b1-session-tools">
         <button
           className={`secondary-button review-button${reviewed ? ' is-active' : ''}`}
@@ -716,19 +796,29 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
         ) : null}
       </div>
       <nav aria-label="解答単位一覧" className="exam-number-grid b1-number-grid">
-        {session.unitIds.map((unitId, index) => (
-          <button
-            aria-label={`${index + 1}番 ${session.reviewQuestionIds.includes(unitId) ? '見直し' : ''}`}
-            className={`exam-number-button${index === session.currentIndex ? ' is-current' : ''}${Object.values(session.answers[unitId] ?? {}).some((value) => value.trim() !== '') ? ' is-answered' : ''}${session.reviewQuestionIds.includes(unitId) ? ' is-review' : ''}`}
-            key={unitId}
-            onClick={() =>
-              save({ ...session, currentIndex: index, updatedAt: new Date().toISOString() })
-            }
-            type="button"
-          >
-            {index + 1}
-          </button>
-        ))}
+        {session.unitIds.map((unitId, index) => {
+          const answerStatus = isMock
+            ? mockUnitAnswerStatus(unitId, session.answers[unitId] ?? {})
+            : Object.values(session.answers[unitId] ?? {}).some((value) => value.trim() !== '')
+              ? '回答済み'
+              : '未回答';
+          return (
+            <button
+              aria-label={`${index + 1}番 ${answerStatus}${session.reviewQuestionIds.includes(unitId) ? ' 見直し' : ''}`}
+              className={`exam-number-button${index === session.currentIndex ? ' is-current' : ''}${answerStatus === '回答済み' ? ' is-answered' : ''}${session.reviewQuestionIds.includes(unitId) ? ' is-review' : ''}`}
+              key={unitId}
+              onClick={() =>
+                save({ ...session, currentIndex: index, updatedAt: new Date().toISOString() })
+              }
+              type="button"
+            >
+              <span>{index + 1}</span>
+              <small>
+                {answerStatus === '回答済み' ? '済' : answerStatus === '一部入力' ? '一部' : '未'}
+              </small>
+            </button>
+          );
+        })}
       </nav>
       {isMock && session.status === 'submitted' ? (
         <section className="surface-card b1-finalize-card">
@@ -766,7 +856,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
         <ConfirmDialog
           description={
             isMock
-              ? `未回答は${unanswered}件です。提出後に参考判定と自己採点を表示します。`
+              ? `解答欄 ${mockAnswerProgress?.answeredAnswerFieldCount ?? 0} / ${mockAnswerProgress?.totalAnswerFieldCount ?? 0}件を入力済みです。未回答は${mockAnswerProgress?.unansweredAnswerFieldCount ?? 0}件、見直し指定は${mockAnswerProgress?.reviewUnitCount ?? 0}件です。経過時間は${formatB1MockElapsedTime(mockElapsedSeconds ?? 0)}です。提出後に参考判定と自己採点を表示します。`
               : `未回答は${unanswered}件です。完了後に参考判定と自己採点を表示します。`
           }
           title={isMock ? 'B-1模試を提出しますか？' : 'B-1演習を完了しますか？'}
@@ -803,4 +893,14 @@ function formatB1DateTime(value: string): string {
     timeStyle: 'short',
     timeZone: 'Asia/Tokyo',
   }).format(new Date(value));
+}
+
+function mockUnitAnswerStatus(questionId: string, answers: Record<string, string>): string {
+  const unit = getB1QuestionUnit(questionId);
+  if (unit === undefined) return '未回答';
+  const answeredCount = unit.answerFields.filter(
+    (field) => (answers[field.fieldId] ?? '').trim().length > 0,
+  ).length;
+  if (answeredCount === unit.answerFields.length && answeredCount > 0) return '回答済み';
+  return answeredCount > 0 ? '一部入力' : '未回答';
 }

@@ -1,9 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { PageHeader } from '../components/PageHeader';
+import { b1Cases, getB1QuestionUnit } from '../data/b1';
 import { database } from '../database/database';
+import type { B1MockSessionRow } from '../database/types';
 import { B1DataError, B1Repository, type B1ProgressSummary } from '../features/b1/b1Repository';
 import { relevanceLabelText } from '../domain/b1LearningFlow';
+import {
+  formatB1MockElapsedTime,
+  getB1MockElapsedSeconds,
+  summarizeB1MockAnswers,
+} from '../domain/b1MockExam';
 
 const repository = new B1Repository(database);
 
@@ -18,20 +26,30 @@ export function B1ProgressPage() {
     useState<Awaited<ReturnType<typeof repository.getLearningAnalytics>>>();
   const [isOpeningReview, setIsOpeningReview] = useState(false);
   const [reviewMessage, setReviewMessage] = useState<string>();
+  const [deleteTarget, setDeleteTarget] = useState<B1MockSessionRow>();
+  const [isDeletingMock, setIsDeletingMock] = useState(false);
+  const [mockMessage, setMockMessage] = useState<string>();
 
-  useEffect(() => {
-    void Promise.all([
-      repository.getProgressSummary(),
-      repository.listMocks(),
-      repository.listPractices(),
-      repository.getLearningAnalytics(),
-    ]).then(([nextSummary, nextHistory, nextPractices, nextAnalytics]) => {
+  const load = useCallback(async () => {
+    try {
+      const [nextSummary, nextHistory, nextPractices, nextAnalytics] = await Promise.all([
+        repository.getProgressSummary(),
+        repository.listMocks(),
+        repository.listPractices(),
+        repository.getLearningAnalytics(),
+      ]);
       setSummary(nextSummary);
       setHistory(nextHistory);
       setPractices(nextPractices);
       setAnalytics(nextAnalytics);
-    });
+    } catch {
+      setMockMessage('B-1の履歴を読み込めませんでした。ページを再読み込みしてください。');
+    }
   }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   const inProgressPractice = practices.find((session) => session.status === 'in_progress');
   const nextReviewTarget = summary?.reviewTargets[0];
@@ -51,6 +69,28 @@ export function B1ProgressPage() {
       );
     } finally {
       setIsOpeningReview(false);
+    }
+  }
+
+  async function deleteCompletedMock() {
+    if (deleteTarget === undefined) return;
+    setIsDeletingMock(true);
+    setMockMessage(undefined);
+    try {
+      await repository.deleteCompletedMock(deleteTarget.id);
+      setDeleteTarget(undefined);
+      await load();
+      setMockMessage(
+        'B-1模試履歴を削除しました。通常演習やA-1/A-2の学習データは削除していません。',
+      );
+    } catch (error) {
+      setMockMessage(
+        error instanceof B1DataError
+          ? error.message
+          : 'B-1模試履歴を削除できませんでした。もう一度お試しください。',
+      );
+    } finally {
+      setIsDeletingMock(false);
     }
   }
 
@@ -213,34 +253,76 @@ export function B1ProgressPage() {
           <p>まだB-1模試の履歴はありません。</p>
         ) : (
           <ol className="exam-history-list">
-            {history.map((session) => (
-              <li key={session.id}>
-                <Link to={`/b1/mock/${session.id}`}>
-                  <strong>
-                    {session.year}年度・問{session.caseIds.map((id) => id.slice(-1)).join('・')}
-                  </strong>
-                  <span>
-                    {session.status === 'completed'
-                      ? '結果確定済み'
-                      : session.status === 'submitted'
-                        ? '自己採点待ち'
-                        : '途中保存中'}
-                  </span>
-                  <span>
-                    {session.submittedAt === undefined
-                      ? '90分模試'
-                      : new Intl.DateTimeFormat('ja-JP', {
-                          dateStyle: 'medium',
-                          timeStyle: 'short',
-                          timeZone: 'Asia/Tokyo',
-                        }).format(new Date(session.submittedAt))}
-                  </span>
-                </Link>
-              </li>
-            ))}
+            {history.map((session) => {
+              const historySummary = getMockHistorySummary(session);
+              return (
+                <li key={session.id}>
+                  <Link to={`/b1/mock/${session.id}`}>
+                    <strong>{mockCaseLabel(session)}</strong>
+                    <span>
+                      {session.status === 'completed'
+                        ? '結果確定済み'
+                        : session.status === 'submitted'
+                          ? '自己採点待ち'
+                          : '途中保存中'}
+                    </span>
+                    <span>
+                      {session.submittedAt === undefined
+                        ? '90分模試・途中から再開できます'
+                        : `${formatB1DateTime(session.submittedAt)}・${formatB1MockElapsedTime(historySummary.elapsedSeconds)}`}
+                    </span>
+                    <span>
+                      解答欄 {historySummary.answers.answeredAnswerFieldCount} /{' '}
+                      {historySummary.answers.totalAnswerFieldCount}件・未回答{' '}
+                      {historySummary.answers.unansweredAnswerFieldCount}件・見直し{' '}
+                      {historySummary.answers.reviewUnitCount}件
+                    </span>
+                    <span>
+                      自己評価: できた {historySummary.correctCount}件 / 惜しい{' '}
+                      {historySummary.partialCount}件 / できなかった {historySummary.incorrectCount}
+                      件 / 未評価 {historySummary.unassessedCount}件
+                    </span>
+                  </Link>
+                  {session.status === 'completed' ? (
+                    <button
+                      className="text-button"
+                      disabled={isDeletingMock}
+                      onClick={() => setDeleteTarget(session)}
+                      type="button"
+                    >
+                      この模試履歴を削除する
+                    </button>
+                  ) : null}
+                </li>
+              );
+            })}
           </ol>
         )}
+        {mockMessage !== undefined ? <p role="status">{mockMessage}</p> : null}
       </section>
+      {deleteTarget !== undefined ? (
+        <ConfirmDialog
+          description="この模試の答案、自己評価、振り返り記録を削除します。通常演習とA-1/A-2の学習データは削除されません。"
+          title="確定済みのB-1模試履歴を削除しますか？"
+        >
+          <button
+            className="danger-button"
+            disabled={isDeletingMock}
+            onClick={() => void deleteCompletedMock()}
+            type="button"
+          >
+            {isDeletingMock ? '削除中…' : '模試履歴を削除する'}
+          </button>
+          <button
+            className="secondary-button"
+            disabled={isDeletingMock}
+            onClick={() => setDeleteTarget(undefined)}
+            type="button"
+          >
+            戻る
+          </button>
+        </ConfirmDialog>
+      ) : null}
     </>
   );
 }
@@ -253,4 +335,44 @@ function reviewReasonText(reasons: readonly string[]): string {
     manual: '手動で見直し',
   };
   return reasons.map((reason) => labels[reason] ?? reason).join('・');
+}
+
+function getMockHistorySummary(session: B1MockSessionRow) {
+  const answers = summarizeB1MockAnswers(
+    session.unitIds.flatMap((unitId) => {
+      const unit = getB1QuestionUnit(unitId);
+      return unit === undefined ? [] : [unit];
+    }),
+    session.answers,
+    session.reviewQuestionIds,
+  );
+  const grades = Object.values(session.selfGrades);
+  return {
+    answers,
+    elapsedSeconds: getB1MockElapsedSeconds(session),
+    correctCount: grades.filter((grade) => grade === 'correct').length,
+    partialCount: grades.filter((grade) => grade === 'partial').length,
+    incorrectCount: grades.filter((grade) => grade === 'incorrect' || grade === 'review').length,
+    unassessedCount: session.unitIds.length - grades.length,
+  };
+}
+
+function mockCaseLabel(session: B1MockSessionRow): string {
+  const selectedCases = session.caseIds.flatMap((caseId) => {
+    const caseItem = b1Cases.find((item) => item.caseId === caseId);
+    return caseItem === undefined ? [] : [caseItem];
+  });
+  return selectedCases.length === session.caseIds.length
+    ? selectedCases
+        .map((caseItem) => `${caseItem.year}年度 問${caseItem.questionNumber}`)
+        .join('・')
+    : `${session.year}年度・B-1模試`;
+}
+
+function formatB1DateTime(value: string): string {
+  return new Intl.DateTimeFormat('ja-JP', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Asia/Tokyo',
+  }).format(new Date(value));
 }

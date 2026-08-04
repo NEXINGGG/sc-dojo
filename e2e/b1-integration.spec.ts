@@ -16,7 +16,11 @@ test('B-1 starts a 90-minute two-case mock and keeps the official PDF route usab
 
   await page.getByRole('checkbox').nth(0).check();
   await page.getByRole('checkbox').nth(1).check();
-  await page.getByRole('button', { name: /90分.*B-1模試/ }).click();
+  await page.getByRole('button', { name: '開始内容を確認する' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'この内容でB-1模試を開始しますか？' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'この内容で開始する' }).click();
   await expect(page.getByRole('link', { name: '公式PDFを開く' })).toBeVisible();
   await expect(page.getByText(/残り時間/)).toBeVisible();
   await expect(page.getByText('何を確認して答えるか')).toHaveCount(0);

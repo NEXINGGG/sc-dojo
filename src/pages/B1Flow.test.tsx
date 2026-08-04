@@ -44,7 +44,33 @@ describe('B-1 answer flow', () => {
     });
   });
 
-  it('keeps mock90 support and answer-revealing content out of the pre-submit DOM', async () => {
+  it('shows the selected B-1 mock contents for confirmation before creating the session', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(await screen.findByRole('radio', { name: /B-1/ }));
+    await user.click(screen.getByRole('link', { name: 'B-1模試を開始' }));
+    await screen.findByRole('heading', { name: 'B-1模試', level: 1 });
+    const caseChoices = screen.getAllByRole('checkbox', { name: 'この大問を選ぶ' });
+    await user.click(caseChoices[0]);
+    await user.click(caseChoices[1]);
+    await user.click(screen.getByRole('button', { name: '開始内容を確認する' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'この内容でB-1模試を開始しますか？' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('制限時間')).toBeInTheDocument();
+    expect(screen.getByText('90分')).toBeInTheDocument();
+    await expect(database.b1MockSessions.count()).resolves.toBe(0);
+
+    await user.click(screen.getByRole('button', { name: 'この内容で開始する' }));
+    await waitFor(async () => {
+      expect(await database.b1MockSessions.count()).toBe(1);
+    });
+  });
+
+  it('keeps mock90 support out of the pre-submit DOM and autosaves before navigation', async () => {
+    const user = userEvent.setup();
     const repository = new B1Repository(database);
     const session = await repository.createMock(
       2025,
@@ -59,6 +85,19 @@ describe('B-1 answer flow', () => {
     expect(screen.queryByText('公式根拠')).not.toBeInTheDocument();
     expect(screen.queryByText('A2連動復習')).not.toBeInTheDocument();
     expect(screen.queryByText('失点原因（複数選択）')).not.toBeInTheDocument();
+
+    const answer = screen
+      .getAllByRole('textbox')
+      .find((element) => element.id.startsWith(`${session.unitIds[0]}-`));
+    if (answer === undefined) throw new Error('A B-1 mock answer field is required');
+    await user.type(answer, '模試の回答');
+    await user.click(screen.getByRole('button', { name: '次へ' }));
+
+    await waitFor(async () => {
+      const saved = await database.b1MockSessions.get(session.id);
+      expect(saved?.answers[session.unitIds[0]]).toEqual({ a: '模試の回答' });
+      expect(saved?.currentIndex).toBe(1);
+    });
   });
 
   it('restores a confirmed answer and its self-assessment after a page refresh', async () => {
@@ -76,14 +115,17 @@ describe('B-1 answer flow', () => {
     }
     await user.click(screen.getByRole('button', { name: '回答を確定して模範解答を確認する' }));
 
-    await waitFor(async () => {
-      const saved = await database.b1PracticeSessions.get(session.id);
-      expect(saved?.unitConfirmations?.[session.unitIds[0]]).toMatchObject({
-        answers: Object.fromEntries(
-          b1Cases[0].questionUnits[0].answerFields.map((field) => [field.fieldId, '入力済み']),
-        ),
-      });
-    });
+    await waitFor(
+      async () => {
+        const saved = await database.b1PracticeSessions.get(session.id);
+        expect(saved?.unitConfirmations?.[session.unitIds[0]]).toMatchObject({
+          answers: Object.fromEntries(
+            b1Cases[0].questionUnits[0].answerFields.map((field) => [field.fieldId, '入力済み']),
+          ),
+        });
+      },
+      { timeout: 5_000 },
+    );
     await user.click(screen.getByRole('button', { name: '惜しい' }));
     await waitFor(async () => {
       const saved = await database.b1PracticeSessions.get(session.id);

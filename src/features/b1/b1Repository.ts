@@ -246,6 +246,11 @@ export class B1Repository {
       );
     }
     const unitIds = getB1UnitIds(caseIds);
+    if (unitIds.length === 0 || new Set(unitIds).size !== unitIds.length) {
+      throw new B1DataError(
+        'B-1模試の問題構成に重複または不足があります。選択をやり直してください。',
+      );
+    }
     const session: B1MockSessionRow = {
       id: createB1SessionId('mock'),
       subjectId: 'b1',
@@ -286,9 +291,11 @@ export class B1Repository {
     const session = await this.getMock(id);
     if (session === undefined) throw new B1DataError('B-1模試が見つかりません。');
     if (session.status !== 'in_progress') return session;
+    validateMock(session);
     const submitted: B1MockSessionRow = {
       ...session,
       status: 'submitted',
+      unitConfirmations: createSubmittedMockConfirmations(session, submittedAt),
       submittedAt,
       submissionReason: reason,
       updatedAt: submittedAt,
@@ -321,6 +328,14 @@ export class B1Repository {
     };
     await this.database.b1MockSessions.put(completed);
     return completed;
+  }
+
+  async discardInProgressMock(id: string): Promise<void> {
+    await this.deleteMockSession(id, 'in_progress', '途中のB-1模試だけを破棄できます。');
+  }
+
+  async deleteCompletedMock(id: string): Promise<void> {
+    await this.deleteMockSession(id, 'completed', '確定済みのB-1模試だけを履歴から削除できます。');
   }
 
   async getProgressSummary(): Promise<B1ProgressSummary> {
@@ -523,18 +538,54 @@ export class B1Repository {
 
   private async migrateMockCatalog(session: B1MockSessionRow): Promise<B1MockSessionRow> {
     const catalogMigrated = migrateB1SessionCatalog(session, getB1UnitIds(session.caseIds));
+    const unitConfirmations =
+      catalogMigrated.status === 'in_progress'
+        ? (catalogMigrated.unitConfirmations ?? {})
+        : createSubmittedMockConfirmations(
+            catalogMigrated,
+            catalogMigrated.submittedAt ?? catalogMigrated.updatedAt,
+          );
     const migrated: B1MockSessionRow = {
       ...catalogMigrated,
       version: 3,
       mode: 'mock90',
       mockType: catalogMigrated.mockType ?? 'official_year',
-      unitConfirmations: catalogMigrated.unitConfirmations ?? {},
+      unitConfirmations,
       selfGradeUpdatedAt: catalogMigrated.selfGradeUpdatedAt ?? {},
       requirementDisclosureQuestionIds: catalogMigrated.requirementDisclosureQuestionIds ?? [],
       attemptIdsByQuestion: catalogMigrated.attemptIdsByQuestion ?? {},
     };
     if (migrated !== session) await this.database.b1MockSessions.put(migrated);
     return migrated;
+  }
+
+  private async deleteMockSession(
+    id: string,
+    expectedStatus: B1MockSessionRow['status'],
+    invalidStatusMessage: string,
+  ): Promise<void> {
+    await this.database.open();
+    const session = await this.database.b1MockSessions.get(id);
+    if (session === undefined) return;
+    if (session.status !== expectedStatus) throw new B1DataError(invalidStatusMessage);
+
+    await this.database.transaction(
+      'rw',
+      [
+        this.database.b1MockSessions,
+        this.database.b1AnswerAttempts,
+        this.database.b1LearnerEvidence,
+        this.database.b1LearningReflections,
+        this.database.b1RemediationProgress,
+      ],
+      async () => {
+        await this.database.b1MockSessions.delete(id);
+        await this.database.b1AnswerAttempts.where('sessionId').equals(id).delete();
+        await this.database.b1LearnerEvidence.where('sessionId').equals(id).delete();
+        await this.database.b1LearningReflections.where('sessionId').equals(id).delete();
+        await this.database.b1RemediationProgress.where('originSessionId').equals(id).delete();
+      },
+    );
   }
 }
 
@@ -675,9 +726,13 @@ function validatePractice(session: B1PracticeSessionRow): void {
 }
 
 function validateMock(session: B1MockSessionRow): void {
+  const expectedUnitIds = getB1UnitIds(session.caseIds);
   if (
     session.caseIds.length !== 2 ||
+    new Set(session.caseIds).size !== 2 ||
     session.unitIds.length === 0 ||
+    new Set(session.unitIds).size !== session.unitIds.length ||
+    !sameStringArray(session.unitIds, expectedUnitIds) ||
     new Date(session.deadlineAt).getTime() <= new Date(session.startedAt).getTime() ||
     (session.mockType === 'official_year' &&
       session.caseIds.some((caseId) => getB1Case(caseId)?.year !== session.year))
@@ -685,6 +740,22 @@ function validateMock(session: B1MockSessionRow): void {
     throw new B1DataError('B-1模試の保存データが正しくありません。');
   }
   validateB1UnitState(session);
+}
+
+function createSubmittedMockConfirmations(
+  session: B1MockSessionRow,
+  confirmedAt: string,
+): NonNullable<B1MockSessionRow['unitConfirmations']> {
+  const confirmations = { ...session.unitConfirmations };
+  for (const questionId of session.unitIds) {
+    const unit = getB1QuestionUnit(questionId);
+    if (unit === undefined) continue;
+    const answers = session.answers[questionId] ?? {};
+    if (getB1UnansweredFieldIds(unit, answers).length === 0) {
+      confirmations[questionId] ??= { answers: { ...answers }, confirmedAt };
+    }
+  }
+  return confirmations;
 }
 
 function validateB1UnitState(
