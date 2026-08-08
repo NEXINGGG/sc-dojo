@@ -72,6 +72,21 @@ Cloudflare PagesのGitHub連携では、Production branchを`main`、Build comma
 
 初期公開は個人利用向けで、`robots.txt`、HTMLの`noindex`、Cloudflareヘッダーの`X-Robots-Tag`により検索エンジンのクロールを抑制します。これはアクセス制限ではありません。GitHubリポジトリを非公開にしても、Cloudflare Pagesの公開URL自体は認証付きにはなりません。
 
+## Supabase認証（Phase 1）
+
+設定画面からGoogleでログイン／ログアウトし、ログイン状態を表示できます。このPhaseでは認証だけを追加しており、学習履歴・お気に入り・途中回答などをSupabaseへ同期する処理は実装していません。これらの学習データは従来どおり端末のIndexedDBに保存され、ログアウトしても削除されません。
+
+ローカル開発では、`.env.example` を参考にリポジトリ直下へ `.env.local` を作成します。実際の値はGitへ追加しません。
+
+```text
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+```
+
+Supabase DashboardでGoogle Providerを有効化し、Google Cloudで作成したOAuthクライアントの情報をSupabase側へ設定します。SupabaseのSite URLとRedirect URLsには、Cloudflare Pagesの公開URL（Previewを使う場合はそのURLも）を登録してください。OAuth完了後はアプリのVite base URLへ戻ります。
+
+Cloudflare Pagesでは、**Settings > Environment variables** に上記2つの変数をProductionと必要なPreview環境へ登録してからビルドします。`VITE_` で始まる値はブラウザへ配布されるため、Supabase secret key、service_role key、Google Client Secretは絶対に設定しないでください。公開してよいSupabaseのPublishable keyだけを使用します。
+
 ライセンスファイルは、利用条件が未決定のため追加していません。公開前にライセンス方針を決定してください。
 
 ## UIプロトタイプ

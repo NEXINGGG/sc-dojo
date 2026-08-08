@@ -682,6 +682,32 @@ h2 {
   font-size: calc(16px * var(--font-scale));
 }
 
+.cloud-auth-section {
+  display: grid;
+  gap: 12px;
+}
+
+.cloud-auth-section > h2,
+.cloud-auth-section > p,
+.cloud-auth-section .cloud-auth-account,
+.cloud-auth-section .cloud-auth-error {
+  margin: 0;
+}
+
+.cloud-auth-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cloud-auth-account {
+  margin-top: 0;
+}
+
+.cloud-auth-error {
+  margin-bottom: 0;
+}
+
 .settings-fieldset {
   min-width: 0;
   margin: 20px 0;

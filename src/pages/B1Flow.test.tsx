@@ -91,7 +91,9 @@ describe('B-1 answer flow', () => {
       .find((element) => element.id.startsWith(`${session.unitIds[0]}-`));
     if (answer === undefined) throw new Error('A B-1 mock answer field is required');
     await user.type(answer, '模試の回答');
-    await user.click(screen.getByRole('button', { name: '次へ' }));
+    const nextButton = screen.getByRole('button', { name: '次へ' });
+    await waitFor(() => expect(nextButton).toBeEnabled());
+    await user.click(nextButton);
 
     await waitFor(async () => {
       const saved = await database.b1MockSessions.get(session.id);

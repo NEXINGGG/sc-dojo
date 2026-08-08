@@ -31,6 +31,7 @@
     "check:release": "node scripts/validate-b1-phase2.mjs --require-complete && pnpm run validate:data && pnpm run validate:b1 && pnpm run validate:b1-phase2 && pnpm run validate:b1-phase3 && pnpm run validate:b1-phase4 && pnpm run validate:b1-phase5 && pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test && pnpm run build && pnpm run test:e2e"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.0",
     "dexie": "^4.0.11",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
