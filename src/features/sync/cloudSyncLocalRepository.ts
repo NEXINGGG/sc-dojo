@@ -20,6 +20,14 @@ import {
   type LearningSyncPayloadV1,
   type SyncedAnswerAttempt,
 } from './types';
+import {
+  B1_RESET_ITEM_KEY,
+  applyRemoteB1PracticeItem,
+  isB1CloudSyncDataScope,
+  isB1CloudSyncScope,
+  normalizeRemoteB1PracticeItem,
+  readLocalB1PracticeItems,
+} from './b1CloudSync';
 
 const answerSources = new Set<AnswerAttemptRow['mode']>([
   'normal_practice',
@@ -87,6 +95,7 @@ export class CloudSyncLocalRepository {
         this.database.answerAttempts,
         this.database.learningDays,
         this.database.learningDaysBySubject,
+        this.database.b1PracticeSessions,
         this.database.cloudSyncMetadata,
         this.database.cloudSyncState,
       ],
@@ -99,6 +108,7 @@ export class CloudSyncLocalRepository {
         const localItems = await this.readLocalItems();
         const localByKey = new Map(localItems.map((item) => [syncKey(item), item]));
         const remoteByKey = new Map(normalizedRemote.map((item) => [syncKey(item), item]));
+        applyB1ResetBoundary(localByKey, remoteByKey);
         const keys = new Set([...localByKey.keys(), ...remoteByKey.keys()]);
         const uploads: CloudLearningSyncUpsert[] = [];
         const downloads: LearningSyncItem[] = [];
@@ -233,6 +243,7 @@ export class CloudSyncLocalRepository {
     }
 
     for (const metadata of metadataRows) {
+      if (isB1CloudSyncScope(metadata.scope)) continue;
       const key = metadataKey(metadata.scope, metadata.itemKey);
       if (progressByKey.has(key)) continue;
       if (!metadata.isDeleted) {
@@ -249,25 +260,34 @@ export class CloudSyncLocalRepository {
       }
     }
 
+    items.push(
+      ...(await readLocalB1PracticeItems(this.database, metadataRows, deviceId, this.now)),
+    );
+
     return items;
   }
 
   private async applyRemoteItem(item: LearningSyncItem): Promise<void> {
+    if (isB1CloudSyncScope(item.scope)) {
+      await applyRemoteB1PracticeItem(this.database, item);
+      return;
+    }
     const subjectId = getSubjectForScope(item.scope);
+    const payload = item.payload as LearningSyncPayloadV1;
     await this.database.answerAttempts
       .where('[subjectId+code]')
       .equals([subjectId, item.itemKey])
       .delete();
 
-    if (item.isDeleted || item.payload.progress === null) {
+    if (item.isDeleted || payload.progress === null) {
       await this.database.questionProgress
         .where('[subjectId+code]')
         .equals([subjectId, item.itemKey])
         .delete();
     } else {
-      await this.database.questionProgress.put(item.payload.progress);
-      if (item.payload.answerAttempts.length > 0) {
-        await this.database.answerAttempts.bulkAdd(item.payload.answerAttempts);
+      await this.database.questionProgress.put(payload.progress);
+      if (payload.answerAttempts.length > 0) {
+        await this.database.answerAttempts.bulkAdd(payload.answerAttempts);
       }
     }
 
@@ -368,28 +388,36 @@ function normalizeRemoteItems(
       throw new InvalidCloudSyncDataError();
     }
 
-    const subjectId = getSubjectForScope(item.scope);
-    const question = getQuestionByCode(item.itemKey, subjectId);
-    if (question === undefined) {
-      throw new InvalidCloudSyncDataError();
-    }
     const key = metadataKey(item.scope, item.itemKey);
     if (keys.has(key)) {
       throw new InvalidCloudSyncDataError();
     }
     keys.add(key);
 
-    normalized.push({
-      scope: item.scope,
-      itemKey: item.itemKey,
-      schemaVersion: CLOUD_SYNC_SCHEMA_VERSION,
-      payload: item.isDeleted
-        ? { progress: null, answerAttempts: [] }
-        : parsePayload(item.payload, subjectId, item.itemKey),
-      clientUpdatedAt: item.clientUpdatedAt,
-      deviceId: item.deviceId,
-      isDeleted: item.isDeleted,
-    });
+    if (isB1CloudSyncScope(item.scope)) {
+      try {
+        normalized.push(normalizeRemoteB1PracticeItem(item));
+      } catch {
+        throw new InvalidCloudSyncDataError();
+      }
+    } else {
+      const subjectId = getSubjectForScope(item.scope);
+      const question = getQuestionByCode(item.itemKey, subjectId);
+      if (question === undefined) {
+        throw new InvalidCloudSyncDataError();
+      }
+      normalized.push({
+        scope: item.scope,
+        itemKey: item.itemKey,
+        schemaVersion: CLOUD_SYNC_SCHEMA_VERSION,
+        payload: item.isDeleted
+          ? { progress: null, answerAttempts: [] }
+          : parsePayload(item.payload, subjectId, item.itemKey),
+        clientUpdatedAt: item.clientUpdatedAt,
+        deviceId: item.deviceId,
+        isDeleted: item.isDeleted,
+      });
+    }
   }
   return normalized;
 }
@@ -491,7 +519,9 @@ function parseAttempt(value: unknown, subjectId: 'a1' | 'a2', code: string): Syn
   } as SyncedAnswerAttempt;
 }
 
-function getSubjectForScope(scope: CloudSyncScope): 'a1' | 'a2' {
+function getSubjectForScope(
+  scope: Exclude<CloudSyncScope, 'b1.answer' | 'b1.progress' | 'b1.reset'>,
+): 'a1' | 'a2' {
   return scope === 'a1.question' ? 'a1' : 'a2';
 }
 
@@ -519,6 +549,59 @@ function compareAttempts(left: SyncedAnswerAttempt, right: SyncedAnswerAttempt):
   return (
     left.answeredAt.localeCompare(right.answeredAt) || left.sessionId.localeCompare(right.sessionId)
   );
+}
+
+function applyB1ResetBoundary(
+  localByKey: Map<string, LearningSyncItem>,
+  remoteByKey: Map<string, LearningSyncItem>,
+): void {
+  const resetKey = metadataKey('b1.reset', B1_RESET_ITEM_KEY);
+  const localReset = localByKey.get(resetKey);
+  const remoteReset = remoteByKey.get(resetKey);
+  if (localReset === undefined && remoteReset === undefined) return;
+
+  const resetSource =
+    remoteReset === undefined ||
+    (localReset !== undefined && compareSyncItems(localReset, remoteReset) >= 0)
+      ? 'local'
+      : 'remote';
+  const resetItem = resetSource === 'local' ? localReset : remoteReset;
+  if (resetItem === undefined) return;
+
+  const keys = new Set([...localByKey.keys(), ...remoteByKey.keys()]);
+  for (const key of keys) {
+    const local = localByKey.get(key);
+    const remote = remoteByKey.get(key);
+    const sample = local ?? remote;
+    if (sample === undefined || !isB1CloudSyncDataScope(sample.scope)) continue;
+
+    if (resetSource === 'local') {
+      if (local !== undefined && local.clientUpdatedAt >= resetItem.clientUpdatedAt) continue;
+      if (remote !== undefined && remote.clientUpdatedAt <= resetItem.clientUpdatedAt) {
+        localByKey.set(key, createResetTombstone(sample, resetItem));
+      }
+    } else {
+      if (remote !== undefined && remote.clientUpdatedAt >= resetItem.clientUpdatedAt) continue;
+      if (local !== undefined && local.clientUpdatedAt <= resetItem.clientUpdatedAt) {
+        remoteByKey.set(key, createResetTombstone(sample, resetItem));
+      }
+    }
+  }
+}
+
+function createResetTombstone(
+  item: LearningSyncItem,
+  resetItem: LearningSyncItem,
+): LearningSyncItem {
+  return {
+    scope: item.scope,
+    itemKey: item.itemKey,
+    schemaVersion: CLOUD_SYNC_SCHEMA_VERSION,
+    payload: { kind: 'b1.tombstone' },
+    clientUpdatedAt: resetItem.clientUpdatedAt,
+    deviceId: resetItem.deviceId,
+    isDeleted: true,
+  };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

@@ -24,6 +24,7 @@ interface CloudSyncContextValue {
   error?: string;
   errorKind?: CloudSyncErrorKind;
   lastSuccessfulSyncAt?: string;
+  lastSyncCounts?: { uploaded: number; downloaded: number };
   requestSync: () => Promise<void>;
   clearSyncError: () => void;
 }
@@ -47,7 +48,12 @@ export function CloudSyncProvider({
   const [error, setError] = useState<string>();
   const [errorKind, setErrorKind] = useState<CloudSyncErrorKind>();
   const [lastSuccessfulSyncAt, setLastSuccessfulSyncAt] = useState<string>();
+  const [lastSyncCounts, setLastSyncCounts] = useState<{
+    uploaded: number;
+    downloaded: number;
+  }>();
   const inFlightRef = useRef<Promise<CloudSyncResult> | undefined>(undefined);
+  const rerunRequestedRef = useRef(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const activeUserIdRef = useRef<string | undefined>(undefined);
   activeUserIdRef.current = user?.id;
@@ -55,6 +61,7 @@ export function CloudSyncProvider({
   useEffect(() => {
     if (service === undefined || user === undefined) {
       setLastSuccessfulSyncAt(undefined);
+      setLastSyncCounts(undefined);
       return;
     }
     let isCurrent = true;
@@ -72,6 +79,7 @@ export function CloudSyncProvider({
     async (manual: boolean): Promise<void> => {
       if (service === undefined || user === undefined || isLoading) return;
       if (inFlightRef.current !== undefined) {
+        rerunRequestedRef.current = true;
         await inFlightRef.current;
         return;
       }
@@ -87,35 +95,48 @@ export function CloudSyncProvider({
       }
 
       const userId = user.id;
-      setStatus('syncing');
-      setError(undefined);
-      setErrorKind(undefined);
-      const synchronization = service.synchronize({ userId, isOnline: true });
-      inFlightRef.current = synchronization;
-      try {
-        const result = await synchronization;
-        if (activeUserIdRef.current !== userId) return;
-        if (result.status === 'synchronized') {
-          setLastSuccessfulSyncAt(result.completedAt);
-          setStatus('success');
+      let shouldRunAgain: boolean;
+      do {
+        shouldRunAgain = false;
+        rerunRequestedRef.current = false;
+        setStatus('syncing');
+        setError(undefined);
+        setErrorKind(undefined);
+        const synchronization = service.synchronize({ userId, isOnline: true });
+        inFlightRef.current = synchronization;
+        let succeeded = false;
+        try {
+          const result = await synchronization;
+          if (activeUserIdRef.current !== userId) return;
+          if (result.status === 'synchronized') {
+            setLastSuccessfulSyncAt(result.completedAt);
+            setLastSyncCounts({
+              uploaded: result.uploadedCount,
+              downloaded: result.downloadedCount,
+            });
+            setStatus('success');
+            succeeded = true;
+          }
+        } catch (syncError) {
+          if (activeUserIdRef.current !== userId) return;
+          setStatus('error');
+          if (syncError instanceof CloudSyncUserMismatchError) {
+            setErrorKind('user_switch');
+            setError(
+              'この端末には別のGoogleアカウントで同期した学習データがあります。データ混在を防ぐため同期を停止しました。',
+            );
+          } else {
+            setErrorKind('general');
+            setError('クラウド同期に失敗しました。接続を確認して、もう一度お試しください。');
+          }
+        } finally {
+          if (inFlightRef.current === synchronization) {
+            inFlightRef.current = undefined;
+          }
         }
-      } catch (syncError) {
-        if (activeUserIdRef.current !== userId) return;
-        setStatus('error');
-        if (syncError instanceof CloudSyncUserMismatchError) {
-          setErrorKind('user_switch');
-          setError(
-            'この端末には別のGoogleアカウントで同期した学習データがあります。データ混在を防ぐため同期を停止しました。',
-          );
-        } else {
-          setErrorKind('general');
-          setError('クラウド同期に失敗しました。接続を確認して、もう一度お試しください。');
-        }
-      } finally {
-        if (inFlightRef.current === synchronization) {
-          inFlightRef.current = undefined;
-        }
-      }
+        shouldRunAgain =
+          succeeded && rerunRequestedRef.current && activeUserIdRef.current === userId;
+      } while (shouldRunAgain);
     },
     [isLoading, service, user],
   );
@@ -137,11 +158,11 @@ export function CloudSyncProvider({
   }, [runSync]);
 
   useEffect(() => {
-    const unsubscribe = subscribeToCloudSyncNeeded(() => {
+    const unsubscribe = subscribeToCloudSyncNeeded(({ debounceMs = 750 }) => {
       if (debounceRef.current !== undefined) {
         clearTimeout(debounceRef.current);
       }
-      debounceRef.current = setTimeout(() => void runSync(false), 750);
+      debounceRef.current = setTimeout(() => void runSync(false), debounceMs);
     });
     return () => {
       unsubscribe();
@@ -158,6 +179,7 @@ export function CloudSyncProvider({
       error,
       errorKind,
       lastSuccessfulSyncAt,
+      lastSyncCounts,
       requestSync: () => runSync(true),
       clearSyncError: () => {
         setStatus('idle');
@@ -165,7 +187,7 @@ export function CloudSyncProvider({
         setErrorKind(undefined);
       },
     }),
-    [error, errorKind, lastSuccessfulSyncAt, runSync, status],
+    [error, errorKind, lastSuccessfulSyncAt, lastSyncCounts, runSync, status],
   );
 
   return <CloudSyncContext.Provider value={value}>{children}</CloudSyncContext.Provider>;
