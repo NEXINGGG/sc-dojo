@@ -20,7 +20,6 @@ import {
 import { useDisplaySettings } from '../features/settings/DisplaySettingsContext';
 import { PwaSettingsSection } from '../features/pwa/PwaSettingsSection';
 import { usePwa } from '../features/pwa/PwaContext';
-import { AuthProvider } from '../features/auth/AuthContext';
 import { CloudAuthSection } from '../features/auth/CloudAuthSection';
 
 type DialogKind = 'reset-display' | 'restore' | 'clear-learning-data';
@@ -200,9 +199,7 @@ export function SettingsPage() {
         </div>
       )}
 
-      <AuthProvider>
-        <CloudAuthSection />
-      </AuthProvider>
+      <CloudAuthSection />
 
       <section aria-labelledby="display-settings-heading" className="surface-card settings-section">
         <h2 id="display-settings-heading">表示設定</h2>

@@ -17,6 +17,8 @@ import {
 } from '../../domain/exam';
 import { ensureLearningDataReady } from '../learning/learningRepository';
 import type { SubjectId } from '../../domain/subject';
+import { markQuestionForCloudSync } from '../sync/cloudSyncLocalRepository';
+import { notifyCloudSyncNeeded } from '../sync/syncEvents';
 
 export interface ExamTypeHistorySummary {
   attempts: number;
@@ -116,7 +118,7 @@ export class ExamRepository {
   ): Promise<{ result: ExamResultRow; created: boolean }> {
     await ensureLearningDataReady(this.database);
 
-    return this.database.transaction(
+    const submission = await this.database.transaction(
       'rw',
       [
         this.database.examSessions,
@@ -125,6 +127,7 @@ export class ExamRepository {
         this.database.questionProgress,
         this.database.learningDays,
         this.database.learningDaysBySubject,
+        this.database.cloudSyncMetadata,
       ],
       async () => {
         const existingResult = await this.database.examResults
@@ -181,6 +184,10 @@ export class ExamRepository {
         return { result, created: true };
       },
     );
+    if (submission.created) {
+      notifyCloudSyncNeeded();
+    }
+    return submission;
   }
 
   async submitExpiredInProgress(
@@ -286,6 +293,7 @@ async function saveExamAnswerAttempts(
       .equals([result.subjectId, code])
       .first();
     await database.questionProgress.put(applyAnswerToQuestionProgress(progress, attempt));
+    await markQuestionForCloudSync(database, result.subjectId, code, result.submittedAt);
     const date = getAsiaTokyoDate(new Date(result.submittedAt));
     const currentDay = await database.learningDaysBySubject.get([result.subjectId, date]);
     const nextDay: LearningDayRow = {

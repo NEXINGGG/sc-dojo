@@ -176,6 +176,23 @@ export interface MetadataRow {
   updatedAt: string;
 }
 
+export type CloudSyncScope = 'a1.question' | 'a2.question';
+
+export interface CloudSyncMetadataRow {
+  scope: CloudSyncScope;
+  itemKey: string;
+  clientUpdatedAt: string;
+  deviceId: string;
+  isDeleted: boolean;
+}
+
+export interface CloudSyncStateRow {
+  key: 'cloud-sync';
+  ownerUserId?: string;
+  lastSuccessfulSyncAt?: string;
+  updatedAt: string;
+}
+
 export interface B1PdfFileRow {
   subjectId: 'b1';
   year: number;

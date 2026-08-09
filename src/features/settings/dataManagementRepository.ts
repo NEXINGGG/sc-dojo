@@ -15,6 +15,9 @@ import {
   createEmptyQuestionProgress,
   getAsiaTokyoDate,
 } from '../../domain/learning';
+import { createCloudSyncMetadataRow } from '../sync/cloudSyncLocalRepository';
+import { getDeviceId } from '../sync/deviceId';
+import { notifyCloudSyncNeeded } from '../sync/syncEvents';
 
 export { APP_VERSION } from '../../app/appVersion';
 
@@ -193,6 +196,18 @@ export class DataManagementRepository {
     const data = backup.document.data;
     const progressRows = createQuestionProgress(data.answerHistory, data.favorites);
     const learningDays = createLearningDays(data.answerHistory);
+    const syncUpdatedAt = new Date().toISOString();
+    const deviceId = getDeviceId();
+    const restoredQuestionKeys = new Set(progressRows.map((row) => `${row.subjectId}:${row.code}`));
+    const cloudSyncMetadata = allQuestions.map((question) =>
+      createCloudSyncMetadataRow(
+        question.subjectId,
+        question.code,
+        syncUpdatedAt,
+        deviceId,
+        !restoredQuestionKeys.has(`${question.subjectId}:${question.code}`),
+      ),
+    );
 
     try {
       await this.database.transaction(
@@ -214,6 +229,7 @@ export class DataManagementRepository {
           this.database.b1RemediationProgress,
           this.database.b1AnswerAttempts,
           this.database.b1Preferences,
+          this.database.cloudSyncMetadata,
         ],
         async () => {
           await Promise.all([
@@ -233,6 +249,7 @@ export class DataManagementRepository {
             this.database.b1RemediationProgress.clear(),
             this.database.b1AnswerAttempts.clear(),
             this.database.b1Preferences.clear(),
+            this.database.cloudSyncMetadata.clear(),
           ]);
 
           if (data.answerHistory.length > 0) {
@@ -283,8 +300,10 @@ export class DataManagementRepository {
           if ((data.b1.preferences?.length ?? 0) > 0) {
             await this.database.b1Preferences.bulkPut(data.b1.preferences ?? []);
           }
+          await this.database.cloudSyncMetadata.bulkPut(cloudSyncMetadata);
         },
       );
+      notifyCloudSyncNeeded();
     } catch {
       throw new DataManagementError(
         '復元に失敗しました。現在の学習データは変更されていません。再試行するか、別のファイルを選んでください。',
@@ -294,6 +313,11 @@ export class DataManagementRepository {
 
   async clearLearningData(): Promise<void> {
     await this.database.open();
+    const deletedAt = new Date().toISOString();
+    const deviceId = getDeviceId();
+    const tombstones = allQuestions.map((question) =>
+      createCloudSyncMetadataRow(question.subjectId, question.code, deletedAt, deviceId, true),
+    );
     try {
       await this.database.transaction(
         'rw',
@@ -313,6 +337,7 @@ export class DataManagementRepository {
           this.database.b1LearningReflections,
           this.database.b1RemediationProgress,
           this.database.b1AnswerAttempts,
+          this.database.cloudSyncMetadata,
         ],
         async () => {
           await Promise.all([
@@ -331,9 +356,12 @@ export class DataManagementRepository {
             this.database.b1LearningReflections.clear(),
             this.database.b1RemediationProgress.clear(),
             this.database.b1AnswerAttempts.clear(),
+            this.database.cloudSyncMetadata.clear(),
           ]);
+          await this.database.cloudSyncMetadata.bulkPut(tombstones);
         },
       );
+      notifyCloudSyncNeeded();
     } catch {
       throw new DataManagementError(
         '学習データを削除できませんでした。現在のデータは変更されていません。再試行してください。',
