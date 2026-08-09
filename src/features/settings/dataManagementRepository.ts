@@ -19,6 +19,7 @@ import { createCloudSyncMetadataRow } from '../sync/cloudSyncLocalRepository';
 import { createB1PracticeRestoreMetadata, createB1PracticeTombstones } from '../sync/b1CloudSync';
 import { getDeviceId } from '../sync/deviceId';
 import { notifyCloudSyncNeeded } from '../sync/syncEvents';
+import { queueCloudSyncMetadataForActiveUser } from '../sync/cloudSyncOutbox';
 
 export { APP_VERSION } from '../../app/appVersion';
 
@@ -244,6 +245,7 @@ export class DataManagementRepository {
           this.database.b1AnswerAttempts,
           this.database.b1Preferences,
           this.database.cloudSyncMetadata,
+          this.database.cloudSyncOutbox,
         ],
         async () => {
           await Promise.all([
@@ -315,6 +317,11 @@ export class DataManagementRepository {
             await this.database.b1Preferences.bulkPut(data.b1.preferences ?? []);
           }
           await this.database.cloudSyncMetadata.bulkPut(cloudSyncMetadata);
+          await queueCloudSyncMetadataForActiveUser(
+            this.database,
+            cloudSyncMetadata,
+            syncUpdatedAt,
+          );
         },
       );
       notifyCloudSyncNeeded();
@@ -359,6 +366,7 @@ export class DataManagementRepository {
           this.database.b1RemediationProgress,
           this.database.b1AnswerAttempts,
           this.database.cloudSyncMetadata,
+          this.database.cloudSyncOutbox,
         ],
         async () => {
           await Promise.all([
@@ -380,6 +388,7 @@ export class DataManagementRepository {
             this.database.cloudSyncMetadata.clear(),
           ]);
           await this.database.cloudSyncMetadata.bulkPut(tombstones);
+          await queueCloudSyncMetadataForActiveUser(this.database, tombstones, deletedAt);
         },
       );
       notifyCloudSyncNeeded();

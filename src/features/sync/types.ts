@@ -3,6 +3,7 @@ import type {
   B1PracticeSessionRow,
   B1UnitConfirmation,
   CloudSyncScope,
+  CloudSyncFailureKind,
   QuestionProgressRow,
 } from '../../database/types';
 import type { B1AnswerValues, B1SelfGrade } from '../../domain/b1';
@@ -92,4 +93,15 @@ export interface CloudLearningSyncUpsert extends LearningSyncItem {
 export interface CloudSyncGateway {
   fetchItems(userId: string): Promise<readonly CloudLearningSyncItem[]>;
   upsertItems(items: readonly CloudLearningSyncUpsert[]): Promise<void>;
+}
+
+export class CloudSyncGatewayError extends Error {
+  constructor(
+    message: string,
+    readonly kind: CloudSyncFailureKind,
+    readonly code?: string,
+  ) {
+    super(message);
+    this.name = 'CloudSyncGatewayError';
+  }
 }

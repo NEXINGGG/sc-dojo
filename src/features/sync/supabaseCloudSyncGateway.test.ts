@@ -57,4 +57,87 @@ describe('Supabaseクラウド同期gateway', () => {
       { onConflict: 'user_id,scope,item_key' },
     );
   });
+
+  it('401/403を再ログインが必要な非自動retryエラーとして分類する', async () => {
+    const query = {
+      select: vi.fn(),
+      eq: vi.fn(),
+      in: vi.fn(),
+    };
+    query.select.mockReturnValue(query);
+    query.eq.mockReturnValue(query);
+    query.in.mockResolvedValue({
+      data: null,
+      error: { code: 'PGRST301', message: 'JWT expired' },
+      status: 401,
+    });
+    const gateway = new SupabaseCloudSyncGateway({
+      from: vi.fn(() => query),
+    } as unknown as SupabaseClient);
+
+    await expect(gateway.fetchItems('user-a')).rejects.toMatchObject({
+      kind: 'auth',
+      code: 'PGRST301',
+    });
+  });
+
+  it('5xxを自動retry対象、4xx payload不正を非retry対象として分類する', async () => {
+    const query = {
+      select: vi.fn(),
+      eq: vi.fn(),
+      in: vi.fn(),
+    };
+    query.select.mockReturnValue(query);
+    query.eq.mockReturnValue(query);
+    const from = vi.fn(() => query);
+    const gateway = new SupabaseCloudSyncGateway({ from } as unknown as SupabaseClient);
+    query.in.mockResolvedValueOnce({
+      data: null,
+      error: { code: 'SERVER_ERROR' },
+      status: 503,
+    });
+
+    await expect(gateway.fetchItems('user-a')).rejects.toMatchObject({ kind: 'transient' });
+
+    query.in.mockResolvedValueOnce({
+      data: null,
+      error: { code: 'INVALID_PAYLOAD' },
+      status: 400,
+    });
+    await expect(gateway.fetchItems('user-a')).rejects.toMatchObject({ kind: 'permanent' });
+
+    query.in.mockResolvedValueOnce({
+      data: null,
+      error: { code: '42501' },
+      status: undefined,
+    });
+    await expect(gateway.fetchItems('user-a')).rejects.toMatchObject({ kind: 'permanent' });
+  });
+
+  it('応答しないrequestを中断してtimeoutを一時エラーにする', async () => {
+    const request = {
+      abortSignal: (signal: AbortSignal) =>
+        new Promise((_, reject) => {
+          signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')));
+        }),
+      then: () => undefined,
+    };
+    const query = {
+      select: vi.fn(),
+      eq: vi.fn(),
+      in: vi.fn(),
+    };
+    query.select.mockReturnValue(query);
+    query.eq.mockReturnValue(query);
+    query.in.mockReturnValue(request);
+    const gateway = new SupabaseCloudSyncGateway(
+      { from: vi.fn(() => query) } as unknown as SupabaseClient,
+      1,
+    );
+
+    await expect(gateway.fetchItems('user-a')).rejects.toMatchObject({
+      kind: 'transient',
+      code: 'TIMEOUT',
+    });
+  });
 });

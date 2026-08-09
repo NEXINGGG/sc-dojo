@@ -5,8 +5,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../App';
 import { database } from '../../database/database';
 import { b1Cases } from '../../data/b1';
+import { getSubjectCatalog } from '../../data/catalog';
 import { waitForRouteLoadingToFinish } from '../../test/routeLoading';
 import { B1Repository } from '../b1/b1Repository';
+import { LearningRepository } from '../learning/learningRepository';
 
 const supabaseMocks = vi.hoisted(() => {
   const unsubscribe = vi.fn();
@@ -48,6 +50,8 @@ import { CloudAuthSection } from './CloudAuthSection';
 import { CloudSyncProvider } from '../sync/CloudSyncContext';
 import { notifyCloudSyncNeeded } from '../sync/syncEvents';
 
+const a1QuestionCode = getSubjectCatalog('a1').questions[0].code;
+
 function signedInSession(): Session {
   return {
     access_token: 'test-access-token',
@@ -79,10 +83,12 @@ function renderAuthSection() {
 }
 
 beforeEach(async () => {
+  setNavigatorOnline(true);
   window.history.replaceState({}, '', '/#/');
   await Promise.all([
     database.cloudSyncMetadata.clear(),
     database.cloudSyncState.clear(),
+    database.cloudSyncOutbox.clear(),
     database.b1PracticeSessions.clear(),
   ]);
   supabaseMocks.configuration.isConfigured = true;
@@ -103,6 +109,7 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
+  setNavigatorOnline(true);
   cleanup();
   vi.restoreAllMocks();
   supabaseMocks.auth.getSession.mockReset();
@@ -162,6 +169,63 @@ describe('Supabase認証', () => {
     window.dispatchEvent(new Event('online'));
 
     await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(2));
+  });
+
+  it('オフラインと未同期件数を表示し、オンライン復帰で自動送信する', async () => {
+    setNavigatorOnline(false);
+    supabaseMocks.auth.getSession.mockResolvedValue({
+      data: { session: signedInSession() },
+      error: null,
+    });
+    renderAuthSection();
+    expect(await screen.findByText('オフライン')).toBeInTheDocument();
+    expect(screen.getByText(/学習内容はこの端末に保存されています/)).toBeInTheDocument();
+    await new LearningRepository(database, 'a1').setFavorite(
+      a1QuestionCode,
+      true,
+      '2026-08-09T08:00:00.000Z',
+    );
+
+    expect(await screen.findByText('未同期 1件')).toBeInTheDocument();
+    expect(supabaseMocks.query.in).not.toHaveBeenCalled();
+
+    setNavigatorOnline(true);
+    window.dispatchEvent(new Event('online'));
+    expect(await screen.findByText('同期完了')).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByText('未同期 1件')).not.toBeInTheDocument());
+    await expect(database.cloudSyncOutbox.count()).resolves.toBe(0);
+  });
+
+  it('一時失敗後に未同期を保持し、再試行ボタンで送信できる', async () => {
+    setNavigatorOnline(false);
+    supabaseMocks.auth.getSession.mockResolvedValue({
+      data: { session: signedInSession() },
+      error: null,
+    });
+    const user = userEvent.setup();
+    renderAuthSection();
+    await screen.findByText('オフライン');
+    await new LearningRepository(database, 'a1').setFavorite(
+      a1QuestionCode,
+      true,
+      '2026-08-09T08:10:00.000Z',
+    );
+    await screen.findByText('未同期 1件');
+    setNavigatorOnline(true);
+    supabaseMocks.query.upsert.mockResolvedValueOnce({
+      error: { code: 'SERVER_ERROR' },
+      status: 503,
+    });
+
+    await user.click(screen.getByRole('button', { name: '今すぐ同期' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('この端末に保存され');
+    expect(screen.getByRole('button', { name: '再試行' })).toBeEnabled();
+    await expect(database.cloudSyncOutbox.count()).resolves.toBe(1);
+
+    supabaseMocks.query.upsert.mockResolvedValueOnce({ error: null, status: 201 });
+    await user.click(screen.getByRole('button', { name: '再試行' }));
+    expect(await screen.findByText('同期完了')).toBeInTheDocument();
+    await expect(database.cloudSyncOutbox.count()).resolves.toBe(0);
   });
 
   it('同期中に更新通知を受けた場合は並列化せず完了後にもう一度同期する', async () => {
@@ -368,3 +432,10 @@ describe('Supabase認証', () => {
     expect(supabaseMocks.unsubscribe).toHaveBeenCalledTimes(1);
   });
 });
+
+function setNavigatorOnline(value: boolean): void {
+  Object.defineProperty(window.navigator, 'onLine', {
+    configurable: true,
+    value,
+  });
+}

@@ -15,10 +15,12 @@ export function CloudAuthSection() {
   } = useAuth();
   const {
     status: syncStatus,
+    isOnline,
     error: syncError,
     errorKind: syncErrorKind,
     lastSuccessfulSyncAt,
     lastSyncCounts,
+    pending,
     requestSync,
     clearSyncError,
   } = useCloudSync();
@@ -32,6 +34,11 @@ export function CloudAuthSection() {
       className="surface-card settings-section cloud-auth-section"
     >
       <h2 id="cloud-auth-heading">クラウド同期</h2>
+
+      <p className={`cloud-connection-status ${isOnline ? 'is-online' : 'is-offline'}`}>
+        <strong>{isOnline ? 'オンライン' : 'オフライン'}</strong>
+        {!isOnline && <span> - 学習内容はこの端末に保存されています</span>}
+      </p>
 
       {!isConfigured ? (
         <p className="muted-text">
@@ -80,7 +87,7 @@ export function CloudAuthSection() {
               onClick={() => void requestSync()}
               type="button"
             >
-              今すぐ同期
+              {pending.failed > 0 ? '再試行' : '今すぐ同期'}
             </button>
             <button
               className="secondary-button"
@@ -102,13 +109,21 @@ export function CloudAuthSection() {
 
       {isSyncing && (
         <p aria-live="polite" className="muted-text" role="status">
-          学習履歴を同期しています。
+          同期中...
+          <span className="visually-hidden">学習履歴を同期しています。</span>
         </p>
+      )}
+
+      {user !== undefined && pending.pending > 0 && (
+        <div className="cloud-pending-summary" role="status">
+          <strong>未同期 {pending.pending}件</strong>
+          <span>学習内容はこの端末に保存されています。</span>
+        </div>
       )}
 
       {syncStatus === 'success' && (
         <div className="inline-notice inline-notice-success cloud-auth-error" role="status">
-          <strong>クラウド同期が完了しました</strong>
+          <strong>同期完了</strong>
           <p>対象: A-1 / A-2 / B-1</p>
           {lastSyncCounts !== undefined ? (
             <p>
@@ -116,6 +131,24 @@ export function CloudAuthSection() {
               件
             </p>
           ) : null}
+          {lastSyncCounts !== undefined ? (
+            <CloudSubjectCounts
+              counts={lastSyncCounts.bySubject}
+              pendingBySubject={pending.bySubject}
+            />
+          ) : null}
+        </div>
+      )}
+
+      {syncStatus === 'partial' && syncError !== undefined && (
+        <div className="inline-notice inline-notice-warning cloud-auth-error" role="status">
+          <strong>
+            {syncErrorKind === 'auth'
+              ? '再ログインが必要です'
+              : `${pending.pending}件中${pending.failed}件を同期できませんでした`}
+          </strong>
+          <p>{syncError}</p>
+          <p>学習内容はこの端末に保存されています。</p>
         </div>
       )}
 
@@ -127,7 +160,9 @@ export function CloudAuthSection() {
           <strong>
             {syncErrorKind === 'user_switch'
               ? 'アカウントの切替を検出しました'
-              : 'クラウド同期に失敗しました'}
+              : syncErrorKind === 'auth'
+                ? '再ログインが必要です'
+                : 'クラウド同期に失敗しました'}
           </strong>
           <p>{syncError}</p>
           <p>この端末の学習データは引き続き利用できます。</p>
@@ -148,6 +183,39 @@ export function CloudAuthSection() {
       )}
     </section>
   );
+}
+
+function CloudSubjectCounts({
+  counts,
+  pendingBySubject,
+}: {
+  counts: Record<'A1' | 'A2' | 'B1', { uploaded: number; downloaded: number }>;
+  pendingBySubject: Record<'A1' | 'A2' | 'B1', number>;
+}) {
+  return (
+    <dl className="cloud-scope-summary">
+      {(['A1', 'A2', 'B1'] as const).map((subject) => (
+        <div key={subject}>
+          <dt>{subject}</dt>
+          <dd>
+            {formatSubjectSyncCounts(
+              counts[subject].uploaded,
+              counts[subject].downloaded,
+              pendingBySubject[subject],
+            )}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function formatSubjectSyncCounts(uploaded: number, downloaded: number, pending: number): string {
+  const parts: string[] = [];
+  if (uploaded > 0) parts.push(`${uploaded}件アップロード`);
+  if (downloaded > 0) parts.push(`${downloaded}件ダウンロード`);
+  if (pending > 0) parts.push(`未同期${pending}件`);
+  return parts.length === 0 ? '変更なし' : parts.join(' / ');
 }
 
 function getAccountLabel(user: User): string {

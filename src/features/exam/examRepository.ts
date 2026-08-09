@@ -128,6 +128,7 @@ export class ExamRepository {
         this.database.learningDays,
         this.database.learningDaysBySubject,
         this.database.cloudSyncMetadata,
+        this.database.cloudSyncOutbox,
       ],
       async () => {
         const existingResult = await this.database.examResults
