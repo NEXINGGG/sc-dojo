@@ -176,7 +176,8 @@ export interface MetadataRow {
   updatedAt: string;
 }
 
-export type CloudSyncScope = 'a1.question' | 'a2.question';
+export type CloudSyncScope =
+  'a1.question' | 'a2.question' | 'b1.answer' | 'b1.progress' | 'b1.reset';
 
 export interface CloudSyncMetadataRow {
   scope: CloudSyncScope;

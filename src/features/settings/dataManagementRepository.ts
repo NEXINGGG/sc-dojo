@@ -16,6 +16,7 @@ import {
   getAsiaTokyoDate,
 } from '../../domain/learning';
 import { createCloudSyncMetadataRow } from '../sync/cloudSyncLocalRepository';
+import { createB1PracticeRestoreMetadata, createB1PracticeTombstones } from '../sync/b1CloudSync';
 import { getDeviceId } from '../sync/deviceId';
 import { notifyCloudSyncNeeded } from '../sync/syncEvents';
 
@@ -198,16 +199,29 @@ export class DataManagementRepository {
     const learningDays = createLearningDays(data.answerHistory);
     const syncUpdatedAt = new Date().toISOString();
     const deviceId = getDeviceId();
+    const [previousB1PracticeSessions, previousCloudSyncMetadata] = await Promise.all([
+      this.database.b1PracticeSessions.toArray(),
+      this.database.cloudSyncMetadata.toArray(),
+    ]);
     const restoredQuestionKeys = new Set(progressRows.map((row) => `${row.subjectId}:${row.code}`));
-    const cloudSyncMetadata = allQuestions.map((question) =>
-      createCloudSyncMetadataRow(
-        question.subjectId,
-        question.code,
+    const cloudSyncMetadata = [
+      ...allQuestions.map((question) =>
+        createCloudSyncMetadataRow(
+          question.subjectId,
+          question.code,
+          syncUpdatedAt,
+          deviceId,
+          !restoredQuestionKeys.has(`${question.subjectId}:${question.code}`),
+        ),
+      ),
+      ...createB1PracticeRestoreMetadata(
+        data.b1.practiceSessions,
+        previousB1PracticeSessions,
+        previousCloudSyncMetadata,
         syncUpdatedAt,
         deviceId,
-        !restoredQuestionKeys.has(`${question.subjectId}:${question.code}`),
       ),
-    );
+    ];
 
     try {
       await this.database.transaction(
@@ -315,9 +329,16 @@ export class DataManagementRepository {
     await this.database.open();
     const deletedAt = new Date().toISOString();
     const deviceId = getDeviceId();
-    const tombstones = allQuestions.map((question) =>
-      createCloudSyncMetadataRow(question.subjectId, question.code, deletedAt, deviceId, true),
-    );
+    const [b1PracticeSessions, cloudSyncMetadata] = await Promise.all([
+      this.database.b1PracticeSessions.toArray(),
+      this.database.cloudSyncMetadata.toArray(),
+    ]);
+    const tombstones = [
+      ...allQuestions.map((question) =>
+        createCloudSyncMetadataRow(question.subjectId, question.code, deletedAt, deviceId, true),
+      ),
+      ...createB1PracticeTombstones(b1PracticeSessions, cloudSyncMetadata, deletedAt, deviceId),
+    ];
     try {
       await this.database.transaction(
         'rw',

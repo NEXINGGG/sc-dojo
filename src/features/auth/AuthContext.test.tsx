@@ -4,7 +4,9 @@ import type { Session } from '@supabase/supabase-js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../App';
 import { database } from '../../database/database';
+import { b1Cases } from '../../data/b1';
 import { waitForRouteLoadingToFinish } from '../../test/routeLoading';
+import { B1Repository } from '../b1/b1Repository';
 
 const supabaseMocks = vi.hoisted(() => {
   const unsubscribe = vi.fn();
@@ -44,6 +46,7 @@ vi.mock('./supabaseClient', () => ({
 import { AuthProvider } from './AuthContext';
 import { CloudAuthSection } from './CloudAuthSection';
 import { CloudSyncProvider } from '../sync/CloudSyncContext';
+import { notifyCloudSyncNeeded } from '../sync/syncEvents';
 
 function signedInSession(): Session {
   return {
@@ -77,7 +80,11 @@ function renderAuthSection() {
 
 beforeEach(async () => {
   window.history.replaceState({}, '', '/#/');
-  await Promise.all([database.cloudSyncMetadata.clear(), database.cloudSyncState.clear()]);
+  await Promise.all([
+    database.cloudSyncMetadata.clear(),
+    database.cloudSyncState.clear(),
+    database.b1PracticeSessions.clear(),
+  ]);
   supabaseMocks.configuration.isConfigured = true;
   supabaseMocks.auth.getSession.mockResolvedValue({ data: { session: null }, error: null });
   supabaseMocks.auth.onAuthStateChange.mockReturnValue({
@@ -134,7 +141,13 @@ describe('Supabase認証', () => {
     await waitFor(() => {
       expect(supabaseMocks.from).toHaveBeenCalledWith('learning_sync_items');
       expect(supabaseMocks.query.eq).toHaveBeenCalledWith('user_id', 'test-user-id');
-      expect(supabaseMocks.query.in).toHaveBeenCalledWith('scope', ['a1.question', 'a2.question']);
+      expect(supabaseMocks.query.in).toHaveBeenCalledWith('scope', [
+        'a1.question',
+        'a2.question',
+        'b1.answer',
+        'b1.progress',
+        'b1.reset',
+      ]);
     });
   });
 
@@ -147,6 +160,29 @@ describe('Supabase認証', () => {
     await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(1));
 
     window.dispatchEvent(new Event('online'));
+
+    await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(2));
+  });
+
+  it('同期中に更新通知を受けた場合は並列化せず完了後にもう一度同期する', async () => {
+    let resolveInitialSync: ((value: { data: []; error: null }) => void) | undefined;
+    supabaseMocks.auth.getSession.mockResolvedValue({
+      data: { session: signedInSession() },
+      error: null,
+    });
+    supabaseMocks.query.in.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveInitialSync = resolve;
+        }),
+    );
+    renderAuthSection();
+    await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(1));
+
+    notifyCloudSyncNeeded({ debounceMs: 0 });
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(supabaseMocks.query.in).toHaveBeenCalledTimes(1);
+    resolveInitialSync?.({ data: [], error: null });
 
     await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(2));
   });
@@ -237,6 +273,43 @@ describe('Supabase認証', () => {
 
     await waitFor(() => expect(supabaseMocks.auth.signOut).toHaveBeenCalledTimes(1));
     expect(deleteDatabase).not.toHaveBeenCalled();
+    resolveInitialSync?.({ data: [], error: null });
+  });
+
+  it('クラウド同期中でもB-1回答と次への移動をブロックしない', async () => {
+    const user = userEvent.setup();
+    let resolveInitialSync: ((value: { data: []; error: null }) => void) | undefined;
+    supabaseMocks.auth.getSession.mockResolvedValue({
+      data: { session: signedInSession() },
+      error: null,
+    });
+    supabaseMocks.query.in.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveInitialSync = resolve;
+        }),
+    );
+    const session = await new B1Repository(database).createPractice(
+      b1Cases[0],
+      '2026-08-09T08:00:00.000Z',
+    );
+    window.location.hash = `#/b1/practice/${session.id}`;
+    render(<App />);
+
+    await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(1));
+    const answer = (await screen.findAllByRole('textbox')).find((element) =>
+      element.id.startsWith(`${session.unitIds[0]}-`),
+    );
+    if (answer === undefined) throw new Error('B-1 answer field is required');
+    expect(answer).toBeEnabled();
+    await user.type(answer, '同期中の回答');
+    const nextButton = screen.getByRole('button', { name: '次へ' });
+    await waitFor(() => expect(nextButton).toBeEnabled());
+    await user.click(nextButton);
+
+    await waitFor(async () => {
+      expect((await database.b1PracticeSessions.get(session.id))?.currentIndex).toBe(1);
+    });
     resolveInitialSync?.({ data: [], error: null });
   });
 

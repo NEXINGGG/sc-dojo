@@ -182,7 +182,10 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
     const revision = ++saveRevision.current;
     const pending = saveQueue.current.then(async () => {
       if (kind === 'mock') await repository.saveMock(next as B1MockSessionRow);
-      else await repository.savePractice(next as B1PracticeSessionRow);
+      else
+        await repository.savePractice(next as B1PracticeSessionRow, {
+          previous: previous as B1PracticeSessionRow | undefined,
+        });
       confirmPersistenceSaved();
     });
     saveQueue.current = pending.catch(() => undefined);
@@ -650,12 +653,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
                   <p>
                     すべての回答欄を入力したら確定してください。確定後に模範解答と比較できます。
                   </p>
-                  <button
-                    className="primary-button"
-                    disabled={isSaving}
-                    onClick={confirmCurrentUnit}
-                    type="button"
-                  >
+                  <button className="primary-button" onClick={confirmCurrentUnit} type="button">
                     回答を確定して模範解答を確認する
                   </button>
                 </>

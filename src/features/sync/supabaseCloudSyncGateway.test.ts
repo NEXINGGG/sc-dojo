@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { SupabaseCloudSyncGateway } from './supabaseCloudSyncGateway';
 
 describe('Supabaseクラウド同期gateway', () => {
-  it('user_idとA-1/A-2 scopeを明示して取得し、複合キーでbulk upsertする', async () => {
+  it('user_idとA-1/A-2/B-1 scopeを明示して取得し、複合キーでbulk upsertする', async () => {
     const query = {
       select: vi.fn(),
       eq: vi.fn(),
@@ -33,7 +33,13 @@ describe('Supabaseクラウド同期gateway', () => {
 
     expect(from).toHaveBeenNthCalledWith(1, 'learning_sync_items');
     expect(query.eq).toHaveBeenCalledWith('user_id', 'user-a');
-    expect(query.in).toHaveBeenCalledWith('scope', ['a1.question', 'a2.question']);
+    expect(query.in).toHaveBeenCalledWith('scope', [
+      'a1.question',
+      'a2.question',
+      'b1.answer',
+      'b1.progress',
+      'b1.reset',
+    ]);
     expect(from).toHaveBeenNthCalledWith(2, 'learning_sync_items');
     expect(query.upsert).toHaveBeenCalledWith(
       [

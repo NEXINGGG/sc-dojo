@@ -25,6 +25,8 @@ import {
   type B1ReviewTarget,
 } from '../../domain/b1Progress';
 import type { B1FailureCauseId, B1LearningMode, B1MockType } from '../../domain/b1LearningSupport';
+import { B1_CLOUD_SYNC_DEBOUNCE_MS, markB1PracticeForCloudSync } from '../sync/b1CloudSync';
+import { notifyCloudSyncNeeded } from '../sync/syncEvents';
 
 export class B1DataError extends Error {
   constructor(message: string) {
@@ -60,6 +62,10 @@ export interface B1LearningAnalytics {
   rewriteImprovementRate: number;
   remediationImprovementRate: number;
   relevancePracticeCounts: Readonly<Record<string, number>>;
+}
+
+export interface B1PracticeSaveOptions {
+  previous?: B1PracticeSessionRow;
 }
 
 export class B1Repository {
@@ -147,14 +153,27 @@ export class B1Repository {
       createdAt: now,
       updatedAt: now,
     };
-    await this.database.b1PracticeSessions.put(session);
+    await this.savePractice(session);
     return session;
   }
 
-  async savePractice(session: B1PracticeSessionRow): Promise<void> {
+  async savePractice(
+    session: B1PracticeSessionRow,
+    options: B1PracticeSaveOptions = {},
+  ): Promise<void> {
     validatePractice(session);
     await this.database.open();
-    await this.database.b1PracticeSessions.put(session);
+    await this.database.transaction(
+      'rw',
+      [this.database.b1PracticeSessions, this.database.cloudSyncMetadata],
+      async () => {
+        const previous =
+          options.previous ?? (await this.database.b1PracticeSessions.get(session.id));
+        await this.database.b1PracticeSessions.put(session);
+        await markB1PracticeForCloudSync(this.database, previous, session);
+      },
+    );
+    notifyCloudSyncNeeded({ debounceMs: B1_CLOUD_SYNC_DEBOUNCE_MS });
   }
 
   async completePractice(
@@ -169,7 +188,7 @@ export class B1Repository {
       completedAt,
       updatedAt: completedAt,
     };
-    await this.database.b1PracticeSessions.put(completed);
+    await this.savePractice(completed, { previous: session });
     return completed;
   }
 

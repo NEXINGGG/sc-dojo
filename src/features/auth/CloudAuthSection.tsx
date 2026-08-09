@@ -18,6 +18,7 @@ export function CloudAuthSection() {
     error: syncError,
     errorKind: syncErrorKind,
     lastSuccessfulSyncAt,
+    lastSyncCounts,
     requestSync,
     clearSyncError,
   } = useCloudSync();
@@ -108,7 +109,13 @@ export function CloudAuthSection() {
       {syncStatus === 'success' && (
         <div className="inline-notice inline-notice-success cloud-auth-error" role="status">
           <strong>クラウド同期が完了しました</strong>
-          <p>この端末とクラウドのA-1・A-2学習履歴を問題単位で統合しました。</p>
+          <p>対象: A-1 / A-2 / B-1</p>
+          {lastSyncCounts !== undefined ? (
+            <p>
+              アップロード: {lastSyncCounts.uploaded}件 / ダウンロード: {lastSyncCounts.downloaded}
+              件
+            </p>
+          ) : null}
         </div>
       )}
 
