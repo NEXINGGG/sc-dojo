@@ -1,7 +1,9 @@
 import type { A1DojoDatabase } from '../../database/database';
 import type {
   AnswerAttemptRow,
+  CloudSyncFailureKind,
   CloudSyncMetadataRow,
+  CloudSyncOutboxRow,
   CloudSyncScope,
   CloudSyncStateRow,
   LearningDayRow,
@@ -28,6 +30,14 @@ import {
   normalizeRemoteB1PracticeItem,
   readLocalB1PracticeItems,
 } from './b1CloudSync';
+import {
+  clearActiveCloudSyncUser,
+  cloudSyncItemKey,
+  isActiveCloudSyncUser,
+  queueCloudSyncMetadata,
+  queueCloudSyncMetadataForActiveUser,
+  setActiveCloudSyncUser,
+} from './cloudSyncOutbox';
 
 const answerSources = new Set<AnswerAttemptRow['mode']>([
   'normal_practice',
@@ -43,6 +53,16 @@ const answerSources = new Set<AnswerAttemptRow['mode']>([
 export interface CloudSyncMergeResult {
   uploads: readonly CloudLearningSyncUpsert[];
   downloadedCount: number;
+  downloadedScopes: readonly CloudSyncScope[];
+}
+
+export interface CloudSyncPendingSummary {
+  pending: number;
+  failed: number;
+  authFailed: number;
+  permanentFailed: number;
+  nextRetryAt?: string;
+  bySubject: { A1: number; A2: number; B1: number };
 }
 
 export class CloudSyncUserMismatchError extends Error {
@@ -72,6 +92,176 @@ export class CloudSyncLocalRepository {
   async getState(): Promise<CloudSyncStateRow | undefined> {
     await this.database.open();
     return this.database.cloudSyncState.get('cloud-sync');
+  }
+
+  async activateUser(userId: string): Promise<void> {
+    if (isActiveCloudSyncUser(this.database, userId)) return;
+    await this.database.open();
+    await this.database.transaction(
+      'rw',
+      [
+        this.database.cloudSyncState,
+        this.database.cloudSyncMetadata,
+        this.database.cloudSyncOutbox,
+      ],
+      async () => {
+        const state = await this.database.cloudSyncState.get('cloud-sync');
+        if (state?.ownerUserId !== undefined && state.ownerUserId !== userId) {
+          throw new CloudSyncUserMismatchError(state.ownerUserId, userId);
+        }
+        const activatedAt = this.now();
+        const deviceId = this.resolveDeviceId();
+        const metadataRows = (await this.database.cloudSyncMetadata.toArray()).filter(
+          (row) =>
+            row.deviceId === deviceId &&
+            (state?.lastSuccessfulSyncAt === undefined ||
+              row.clientUpdatedAt > state.lastSuccessfulSyncAt),
+        );
+        await queueCloudSyncMetadata(this.database, userId, metadataRows, activatedAt);
+        await this.database.cloudSyncState.put({
+          key: 'cloud-sync',
+          ownerUserId: userId,
+          lastSuccessfulSyncAt: state?.lastSuccessfulSyncAt,
+          updatedAt: activatedAt,
+        });
+      },
+    );
+    setActiveCloudSyncUser(this.database, userId);
+  }
+
+  deactivateUser(userId: string): void {
+    clearActiveCloudSyncUser(this.database, userId);
+  }
+
+  isUserActive(userId: string): boolean {
+    return isActiveCloudSyncUser(this.database, userId);
+  }
+
+  async getPendingSummary(userId: string): Promise<CloudSyncPendingSummary> {
+    await this.database.open();
+    const rows = await this.database.cloudSyncOutbox.where('userId').equals(userId).toArray();
+    return summarizePendingRows(rows);
+  }
+
+  async getAttemptablePending(
+    userId: string,
+    at: string,
+    force: boolean,
+  ): Promise<readonly CloudSyncOutboxRow[]> {
+    await this.database.open();
+    const rows = await this.database.cloudSyncOutbox.where('userId').equals(userId).toArray();
+    return rows.filter((row) => isPendingAttemptDue(row, at, force));
+  }
+
+  async queueUploads(
+    userId: string,
+    uploads: readonly CloudLearningSyncUpsert[],
+    queuedAt: string,
+  ): Promise<void> {
+    await queueCloudSyncMetadata(
+      this.database,
+      userId,
+      uploads.map((item) => ({
+        scope: item.scope,
+        itemKey: item.itemKey,
+        clientUpdatedAt: item.clientUpdatedAt,
+        deviceId: item.deviceId,
+        isDeleted: item.isDeleted,
+      })),
+      queuedAt,
+    );
+  }
+
+  async selectAttemptableUploads(
+    userId: string,
+    uploads: readonly CloudLearningSyncUpsert[],
+    at: string,
+    force: boolean,
+  ): Promise<readonly CloudLearningSyncUpsert[]> {
+    const pending = await this.getAttemptablePending(userId, at, force);
+    const dueByKey = new Map(pending.map((row) => [cloudSyncItemKey(row), row]));
+    return uploads.filter((item) => {
+      const pendingRow = dueByKey.get(cloudSyncItemKey(item));
+      return (
+        pendingRow?.clientUpdatedAt === item.clientUpdatedAt &&
+        pendingRow.deviceId === item.deviceId
+      );
+    });
+  }
+
+  async reconcileResolvedPending(
+    userId: string,
+    uploads: readonly CloudLearningSyncUpsert[],
+  ): Promise<void> {
+    await this.database.open();
+    const uploadKeys = new Set(uploads.map(cloudSyncItemKey));
+    const rows = await this.database.cloudSyncOutbox.where('userId').equals(userId).toArray();
+    const resolvedKeys = rows
+      .filter((row) => !uploadKeys.has(cloudSyncItemKey(row)))
+      .map((row) => [row.userId, row.scope, row.itemKey] as [string, CloudSyncScope, string]);
+    if (resolvedKeys.length > 0) {
+      await this.database.cloudSyncOutbox.bulkDelete(resolvedKeys);
+    }
+  }
+
+  async recordUploaded(userId: string, uploads: readonly CloudLearningSyncUpsert[]): Promise<void> {
+    if (uploads.length === 0) return;
+    await this.database.open();
+    await this.database.transaction('rw', this.database.cloudSyncOutbox, async () => {
+      const keys = uploads.map(
+        (item) => [userId, item.scope, item.itemKey] as [string, CloudSyncScope, string],
+      );
+      const currentRows = await this.database.cloudSyncOutbox.bulkGet(keys);
+      const uploadedKeys = keys.filter((_, index) => {
+        const current = currentRows[index];
+        const item = uploads[index];
+        return (
+          current?.clientUpdatedAt === item.clientUpdatedAt && current.deviceId === item.deviceId
+        );
+      });
+      if (uploadedKeys.length > 0) {
+        await this.database.cloudSyncOutbox.bulkDelete(uploadedKeys);
+      }
+    });
+  }
+
+  async recordFailedPending(
+    rows: readonly CloudSyncOutboxRow[],
+    failure: { kind: CloudSyncFailureKind; code?: string },
+    attemptedAt: string,
+    retryDelay: (retryCount: number) => number,
+  ): Promise<void> {
+    if (rows.length === 0) return;
+    await this.database.open();
+    await this.database.transaction('rw', this.database.cloudSyncOutbox, async () => {
+      for (const attempted of rows) {
+        const key = [attempted.userId, attempted.scope, attempted.itemKey] as [
+          string,
+          CloudSyncScope,
+          string,
+        ];
+        const current = await this.database.cloudSyncOutbox.get(key);
+        if (
+          current?.clientUpdatedAt !== attempted.clientUpdatedAt ||
+          current.deviceId !== attempted.deviceId
+        ) {
+          continue;
+        }
+        const retryCount = current.retryCount + 1;
+        const nextRetryAt =
+          failure.kind === 'transient'
+            ? new Date(new Date(attemptedAt).getTime() + retryDelay(retryCount)).toISOString()
+            : undefined;
+        await this.database.cloudSyncOutbox.put({
+          ...current,
+          lastAttemptAt: attemptedAt,
+          retryCount,
+          nextRetryAt,
+          failureKind: failure.kind,
+          errorCode: failure.code,
+        });
+      }
+    });
   }
 
   async assertUserCanSync(userId: string): Promise<void> {
@@ -131,9 +321,7 @@ export class CloudSyncLocalRepository {
         }
 
         if (downloads.length > 0) {
-          for (const item of downloads) {
-            await this.applyRemoteItem(item);
-          }
+          await this.applyRemoteItems(downloads);
           await this.rebuildLearningDays();
         }
 
@@ -145,7 +333,11 @@ export class CloudSyncLocalRepository {
           updatedAt: claimedAt,
         });
 
-        return { uploads, downloadedCount: downloads.length };
+        return {
+          uploads,
+          downloadedCount: downloads.length,
+          downloadedScopes: downloads.map((item) => item.scope),
+        };
       },
     );
   }
@@ -267,37 +459,48 @@ export class CloudSyncLocalRepository {
     return items;
   }
 
-  private async applyRemoteItem(item: LearningSyncItem): Promise<void> {
-    if (isB1CloudSyncScope(item.scope)) {
+  private async applyRemoteItems(items: readonly LearningSyncItem[]): Promise<void> {
+    const b1Items = items.filter((item) => isB1CloudSyncScope(item.scope));
+    for (const item of b1Items) {
       await applyRemoteB1PracticeItem(this.database, item);
-      return;
     }
-    const subjectId = getSubjectForScope(item.scope);
-    const payload = item.payload as LearningSyncPayloadV1;
-    await this.database.answerAttempts
-      .where('[subjectId+code]')
-      .equals([subjectId, item.itemKey])
-      .delete();
 
-    if (item.isDeleted || payload.progress === null) {
+    const questionItems = items.filter(
+      (
+        item,
+      ): item is LearningSyncItem & { scope: 'a1.question' | 'a2.question' } =>
+        !isB1CloudSyncScope(item.scope),
+    );
+    if (questionItems.length === 0) return;
+
+    for (const subjectId of ['a1', 'a2'] as const) {
+      const keys = questionItems
+        .filter((item) => getSubjectForScope(item.scope) === subjectId)
+        .map((item) => [subjectId, item.itemKey] as [SubjectId, string]);
+      if (keys.length === 0) continue;
+      await this.database.answerAttempts.where('[subjectId+code]').anyOf(keys).delete();
       await this.database.questionProgress
         .where('[subjectId+code]')
-        .equals([subjectId, item.itemKey])
+        .anyOf(keys)
         .delete();
-    } else {
-      await this.database.questionProgress.put(payload.progress);
-      if (payload.answerAttempts.length > 0) {
-        await this.database.answerAttempts.bulkAdd(payload.answerAttempts);
-      }
     }
 
-    await this.database.cloudSyncMetadata.put({
-      scope: item.scope,
-      itemKey: item.itemKey,
-      clientUpdatedAt: item.clientUpdatedAt,
-      deviceId: item.deviceId,
-      isDeleted: item.isDeleted,
-    });
+    const payloads = questionItems.map((item) => item.payload as LearningSyncPayloadV1);
+    const progressRows = payloads.flatMap((payload) =>
+      payload.progress === null ? [] : [payload.progress],
+    );
+    const answerAttempts = payloads.flatMap((payload) => payload.answerAttempts);
+    if (progressRows.length > 0) await this.database.questionProgress.bulkPut(progressRows);
+    if (answerAttempts.length > 0) await this.database.answerAttempts.bulkAdd(answerAttempts);
+    await this.database.cloudSyncMetadata.bulkPut(
+      questionItems.map((item) => ({
+        scope: item.scope,
+        itemKey: item.itemKey,
+        clientUpdatedAt: item.clientUpdatedAt,
+        deviceId: item.deviceId,
+        isDeleted: item.isDeleted,
+      })),
+    );
   }
 
   private async rebuildLearningDays(): Promise<void> {
@@ -356,9 +559,54 @@ export async function markQuestionForCloudSync(
 ): Promise<void> {
   const scope = getCloudSyncScope(subjectId);
   if (scope === undefined) return;
-  await database.cloudSyncMetadata.put(
-    createCloudSyncMetadataRow(subjectId, code, clientUpdatedAt, getDeviceId(), false),
+  const metadata = createCloudSyncMetadataRow(
+    subjectId,
+    code,
+    clientUpdatedAt,
+    getDeviceId(),
+    false,
   );
+  await database.cloudSyncMetadata.put(metadata);
+  await queueCloudSyncMetadataForActiveUser(database, [metadata], clientUpdatedAt);
+}
+
+function summarizePendingRows(rows: readonly CloudSyncOutboxRow[]): CloudSyncPendingSummary {
+  const bySubject = { A1: 0, A2: 0, B1: 0 };
+  let failed = 0;
+  let authFailed = 0;
+  let permanentFailed = 0;
+  let nextRetryAt: string | undefined;
+  for (const row of rows) {
+    bySubject[getSubjectLabelForScope(row.scope)] += 1;
+    if (row.failureKind !== undefined) failed += 1;
+    if (row.failureKind === 'auth') authFailed += 1;
+    if (row.failureKind === 'permanent') permanentFailed += 1;
+    if (
+      row.failureKind === 'transient' &&
+      row.nextRetryAt !== undefined &&
+      (nextRetryAt === undefined || row.nextRetryAt < nextRetryAt)
+    ) {
+      nextRetryAt = row.nextRetryAt;
+    }
+  }
+  return {
+    pending: rows.length,
+    failed,
+    authFailed,
+    permanentFailed,
+    nextRetryAt,
+    bySubject,
+  };
+}
+
+function isPendingAttemptDue(row: CloudSyncOutboxRow, at: string, force: boolean): boolean {
+  if (force) return true;
+  if (row.failureKind === 'auth' || row.failureKind === 'permanent') return false;
+  return row.nextRetryAt === undefined || row.nextRetryAt <= at;
+}
+
+export function getSubjectLabelForScope(scope: CloudSyncScope): 'A1' | 'A2' | 'B1' {
+  return scope === 'a1.question' ? 'A1' : scope === 'a2.question' ? 'A2' : 'B1';
 }
 
 export function compareSyncItems(left: LearningSyncItem, right: LearningSyncItem): number {

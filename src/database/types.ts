@@ -194,6 +194,22 @@ export interface CloudSyncStateRow {
   updatedAt: string;
 }
 
+export type CloudSyncFailureKind = 'transient' | 'auth' | 'permanent';
+
+export interface CloudSyncOutboxRow {
+  userId: string;
+  scope: CloudSyncScope;
+  itemKey: string;
+  clientUpdatedAt: string;
+  deviceId: string;
+  queuedAt: string;
+  lastAttemptAt?: string;
+  retryCount: number;
+  nextRetryAt?: string;
+  failureKind?: CloudSyncFailureKind;
+  errorCode?: string;
+}
+
 export interface B1PdfFileRow {
   subjectId: 'b1';
   year: number;

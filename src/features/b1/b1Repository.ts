@@ -165,7 +165,11 @@ export class B1Repository {
     await this.database.open();
     await this.database.transaction(
       'rw',
-      [this.database.b1PracticeSessions, this.database.cloudSyncMetadata],
+      [
+        this.database.b1PracticeSessions,
+        this.database.cloudSyncMetadata,
+        this.database.cloudSyncOutbox,
+      ],
       async () => {
         const previous =
           options.previous ?? (await this.database.b1PracticeSessions.get(session.id));

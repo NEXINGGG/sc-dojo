@@ -2,12 +2,15 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { createDatabase, type A1DojoDatabase } from '../../database/database';
 import type { QuestionProgressRow } from '../../database/types';
 import { getSubjectCatalog } from '../../data/catalog';
+import { b1Cases } from '../../data/b1';
 import { defaultB1RelevanceFilter } from '../../domain/b1LearningSupport';
 import type { Question } from '../../types/question';
 import { LearningRepository } from '../learning/learningRepository';
+import { B1Repository } from '../b1/b1Repository';
 import { DataManagementRepository } from '../settings/dataManagementRepository';
 import { CloudSyncLocalRepository, createCloudSyncMetadataRow } from './cloudSyncLocalRepository';
 import { CloudSyncService } from './cloudSyncService';
+import { CloudSyncGatewayError } from './types';
 import type {
   CloudLearningSyncItem,
   CloudLearningSyncUpsert,
@@ -28,6 +31,8 @@ class InMemoryCloudSyncGateway implements CloudSyncGateway {
   leakAllUsers = false;
   fetchError = false;
   upsertError = false;
+  upsertCount = 0;
+  beforeUpsert?: (items: readonly CloudLearningSyncUpsert[]) => Promise<void>;
 
   constructor(rows: readonly CloudLearningSyncItem[] = []) {
     this.rows = structuredClone(rows);
@@ -42,6 +47,8 @@ class InMemoryCloudSyncGateway implements CloudSyncGateway {
   }
 
   async upsertItems(items: readonly CloudLearningSyncUpsert[]): Promise<void> {
+    this.upsertCount += 1;
+    await this.beforeUpsert?.(items);
     if (this.upsertError) throw new Error('upsert failed');
     this.uploadedItemCount += items.length;
     for (const item of items) {
@@ -282,6 +289,241 @@ describe('A-1・A-2クラウド同期', () => {
     const cloudRow = gateway.rows.find((row) => row.itemKey === a1Question.code);
     expect(cloudRow).toMatchObject({ isDeleted: true, scope: 'a1.question' });
     expect(cloudRow?.payload).toEqual({ progress: null, answerAttempts: [] });
+  });
+
+  it('オフラインのA-1・A-2変更をユーザー別outboxへ保存し、オンライン復帰後に一括送信して消去する', async () => {
+    const database = createTestDatabase();
+    const gateway = new InMemoryCloudSyncGateway();
+    const service = createService(database, gateway);
+    await service.synchronize({ userId, isOnline: false });
+
+    await new LearningRepository(database, 'a1').setFavorite(
+      a1Question.code,
+      true,
+      '2026-08-09T01:00:00.000Z',
+    );
+    await new LearningRepository(database, 'a2').setFavorite(
+      a2Question.code,
+      true,
+      '2026-08-09T01:01:00.000Z',
+    );
+
+    expect(await database.cloudSyncOutbox.toArray()).toMatchObject([
+      { userId, scope: 'a1.question', itemKey: a1Question.code, retryCount: 0 },
+      { userId, scope: 'a2.question', itemKey: a2Question.code, retryCount: 0 },
+    ]);
+
+    const result = await service.synchronize({ userId, isOnline: true });
+
+    expect(result).toMatchObject({ status: 'synchronized', uploadedCount: 2 });
+    expect(gateway.upsertCount).toBe(1);
+    await expect(database.cloudSyncOutbox.count()).resolves.toBe(0);
+  });
+
+  it('オフラインのB-1途中回答をautosaveとoutboxへ保存し、復帰後に最新回答を送信する', async () => {
+    const database = createTestDatabase();
+    const gateway = new InMemoryCloudSyncGateway();
+    const service = createService(database, gateway);
+    await service.synchronize({ userId, isOnline: false });
+    const repository = new B1Repository(database);
+    const session = await repository.createPractice(b1Cases[0], '2026-08-09T02:00:00.000Z');
+    const answered = {
+      ...session,
+      answers: { [session.unitIds[0]]: { a: 'オフライン回答' } },
+      updatedAt: '2026-08-09T02:01:00.000Z',
+    };
+    await repository.savePractice(answered, { previous: session });
+
+    await expect(database.b1PracticeSessions.get(session.id)).resolves.toMatchObject({
+      answers: { [session.unitIds[0]]: { a: 'オフライン回答' } },
+    });
+    expect(await database.cloudSyncOutbox.where('userId').equals(userId).toArray()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ userId, scope: 'b1.answer' }),
+        expect.objectContaining({ userId, scope: 'b1.progress' }),
+      ]),
+    );
+
+    await service.synchronize({ userId, isOnline: true });
+
+    expect(
+      gateway.rows.some(
+        (row) =>
+          row.scope === 'b1.answer' && JSON.stringify(row.payload).includes('オフライン回答'),
+      ),
+    ).toBe(true);
+    await expect(database.cloudSyncOutbox.count()).resolves.toBe(0);
+  });
+
+  it('一時失敗を永続化し、backoff中は自動送信せず、手動再試行の成功時だけ消去する', async () => {
+    const database = createTestDatabase();
+    const gateway = new InMemoryCloudSyncGateway();
+    const service = createService(database, gateway);
+    await service.synchronize({ userId, isOnline: false });
+    await new LearningRepository(database, 'a1').setFavorite(
+      a1Question.code,
+      true,
+      '2026-08-09T03:00:00.000Z',
+    );
+    gateway.upsertError = true;
+
+    await expect(service.synchronize({ userId, isOnline: true })).rejects.toThrow('upsert failed');
+    await expect(database.cloudSyncOutbox.toArray()).resolves.toMatchObject([
+      {
+        userId,
+        retryCount: 1,
+        failureKind: 'transient',
+        nextRetryAt: '2026-08-09T00:00:03.000Z',
+      },
+    ]);
+
+    const reloadedService = createService(database, gateway);
+    const fetchCount = gateway.fetchCount;
+    await expect(reloadedService.synchronize({ userId, isOnline: true })).resolves.toMatchObject({
+      status: 'deferred',
+      pendingCount: 1,
+    });
+    expect(gateway.fetchCount).toBe(fetchCount);
+
+    gateway.upsertError = false;
+    await reloadedService.synchronize({ userId, isOnline: true, force: true });
+    await expect(database.cloudSyncOutbox.count()).resolves.toBe(0);
+  });
+
+  it('同一itemの変更を1件へcoalesceし、古いpending payloadではなく最新IndexedDB状態を送る', async () => {
+    const database = createTestDatabase();
+    const gateway = new InMemoryCloudSyncGateway();
+    const service = createService(database, gateway);
+    await service.synchronize({ userId, isOnline: false });
+    const learning = new LearningRepository(database, 'a1');
+    await learning.setFavorite(a1Question.code, true, '2026-08-09T04:00:00.000Z');
+    await learning.setFavorite(a1Question.code, false, '2026-08-09T04:01:00.000Z');
+
+    await expect(database.cloudSyncOutbox.count()).resolves.toBe(1);
+    await expect(database.cloudSyncOutbox.toArray()).resolves.toMatchObject([
+      { clientUpdatedAt: '2026-08-09T04:01:00.000Z', retryCount: 0 },
+    ]);
+
+    await service.synchronize({ userId, isOnline: true });
+    expect((gateway.rows[0].payload as LearningSyncPayloadV1).progress).toMatchObject({
+      favorite: false,
+      updatedAt: '2026-08-09T04:01:00.000Z',
+    });
+  });
+
+  it('同期中の新規変更では送信済み世代だけを消し、次回flush用pendingを残す', async () => {
+    const database = createTestDatabase();
+    const gateway = new InMemoryCloudSyncGateway();
+    const service = createService(database, gateway);
+    await service.synchronize({ userId, isOnline: false });
+    const learning = new LearningRepository(database, 'a1');
+    await learning.setFavorite(a1Question.code, true, '2026-08-09T05:00:00.000Z');
+    let releaseUpsert: (() => void) | undefined;
+    let notifyUpsertStarted: (() => void) | undefined;
+    const upsertStarted = new Promise<void>((resolve) => {
+      notifyUpsertStarted = resolve;
+    });
+    gateway.beforeUpsert = async () => {
+      notifyUpsertStarted?.();
+      await new Promise<void>((resolve) => {
+        releaseUpsert = resolve;
+      });
+    };
+
+    const firstSync = service.synchronize({ userId, isOnline: true });
+    await upsertStarted;
+    await learning.setFavorite(a1Question.code, false, '2026-08-09T05:01:00.000Z');
+    releaseUpsert?.();
+    await firstSync;
+
+    await expect(database.cloudSyncOutbox.toArray()).resolves.toMatchObject([
+      { clientUpdatedAt: '2026-08-09T05:01:00.000Z' },
+    ]);
+    gateway.beforeUpsert = undefined;
+    await service.synchronize({ userId, isOnline: true });
+    expect((gateway.rows[0].payload as LearningSyncPayloadV1).progress?.favorite).toBe(false);
+    await expect(database.cloudSyncOutbox.count()).resolves.toBe(0);
+  });
+
+  it('同じユーザーの同期多重起動をsingle-flightにまとめる', async () => {
+    const database = createTestDatabase();
+    let releaseFetch: (() => void) | undefined;
+    let notifyFetchStarted: (() => void) | undefined;
+    const fetchStarted = new Promise<void>((resolve) => {
+      notifyFetchStarted = resolve;
+    });
+    const gateway = new InMemoryCloudSyncGateway();
+    const originalFetch = gateway.fetchItems.bind(gateway);
+    gateway.fetchItems = async (requestedUserId: string) => {
+      notifyFetchStarted?.();
+      await new Promise<void>((resolve) => {
+        releaseFetch = resolve;
+      });
+      return originalFetch(requestedUserId);
+    };
+    const service = createService(database, gateway);
+
+    const first = service.synchronize({ userId, isOnline: true });
+    await fetchStarted;
+    const second = service.synchronize({ userId, isOnline: true });
+    expect(second).toBe(first);
+    releaseFetch?.();
+    await Promise.all([first, second]);
+    expect(gateway.fetchCount).toBe(1);
+  });
+
+  it('ログアウト中と別ユーザーではAのpendingを送らず、Aの再ログイン時だけ再送する', async () => {
+    const database = createTestDatabase();
+    const gateway = new InMemoryCloudSyncGateway();
+    const service = createService(database, gateway);
+    await service.synchronize({ userId: 'user-a', isOnline: false });
+    await new LearningRepository(database, 'a1').setFavorite(
+      a1Question.code,
+      true,
+      '2026-08-09T06:00:00.000Z',
+    );
+    service.deactivateUser('user-a');
+    const fetchCount = gateway.fetchCount;
+
+    await expect(service.synchronize({ isOnline: true })).resolves.toEqual({
+      status: 'skipped_logged_out',
+    });
+    await expect(service.synchronize({ userId: 'user-b', isOnline: true })).rejects.toThrow(
+      '別のアカウント',
+    );
+    expect(gateway.fetchCount).toBe(fetchCount);
+    await expect(database.cloudSyncOutbox.toArray()).resolves.toMatchObject([{ userId: 'user-a' }]);
+
+    await service.synchronize({ userId: 'user-a', isOnline: true });
+    expect(gateway.rows).toHaveLength(1);
+    expect(gateway.rows[0].userId).toBe('user-a');
+    await expect(database.cloudSyncOutbox.count()).resolves.toBe(0);
+  });
+
+  it('401/403相当の認証エラーは自動retryせず、手動操作までpendingを保持する', async () => {
+    const database = createTestDatabase();
+    const gateway = new InMemoryCloudSyncGateway();
+    gateway.beforeUpsert = async () => {
+      throw new CloudSyncGatewayError('unauthorized', 'auth', '401');
+    };
+    const service = createService(database, gateway);
+    await service.synchronize({ userId, isOnline: false });
+    await new LearningRepository(database, 'a1').setFavorite(
+      a1Question.code,
+      true,
+      '2026-08-09T07:00:00.000Z',
+    );
+
+    await expect(service.synchronize({ userId, isOnline: true })).rejects.toThrow('unauthorized');
+    await expect(database.cloudSyncOutbox.toArray()).resolves.toMatchObject([
+      { failureKind: 'auth', retryCount: 1, nextRetryAt: undefined },
+    ]);
+    const fetchCount = gateway.fetchCount;
+    await expect(service.synchronize({ userId, isOnline: true })).resolves.toMatchObject({
+      status: 'deferred',
+      failedCount: 1,
+    });
+    expect(gateway.fetchCount).toBe(fetchCount);
   });
 });
 

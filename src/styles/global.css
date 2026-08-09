@@ -704,6 +704,55 @@ h2 {
   margin-top: 0;
 }
 
+.cloud-connection-status {
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-muted);
+}
+
+.cloud-connection-status.is-online {
+  border-color: var(--color-correct);
+}
+
+.cloud-connection-status.is-offline {
+  border-color: var(--color-review);
+}
+
+.cloud-pending-summary {
+  display: flex;
+  gap: 4px 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border: 1px solid var(--color-review);
+  border-radius: 12px;
+  background: var(--color-review-background);
+}
+
+.cloud-scope-summary {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0 0;
+}
+
+.cloud-scope-summary > div {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.cloud-scope-summary dt {
+  font-weight: 700;
+}
+
+.cloud-scope-summary dd {
+  margin: 0;
+}
+
 .cloud-auth-error {
   margin-bottom: 0;
 }

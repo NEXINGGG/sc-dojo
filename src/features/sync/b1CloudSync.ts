@@ -8,6 +8,7 @@ import type {
 import { getB1Case, getB1QuestionUnit } from '../../data/b1';
 import type { B1AnswerValues, B1SelfGrade } from '../../domain/b1';
 import { getDeviceId } from './deviceId';
+import { queueCloudSyncMetadataForActiveUser } from './cloudSyncOutbox';
 import {
   CLOUD_SYNC_SCHEMA_VERSION,
   type B1AnswerSyncPayloadV1,
@@ -42,6 +43,7 @@ export async function markB1PracticeForCloudSync(
   const rows = createChangedMetadata(previous, next, deviceId);
   if (rows.length > 0) {
     await database.cloudSyncMetadata.bulkPut(rows);
+    await queueCloudSyncMetadataForActiveUser(database, rows, next.updatedAt);
   }
 }
 

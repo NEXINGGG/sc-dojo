@@ -38,6 +38,7 @@ describe('A1DojoDatabase', () => {
       'b1Preferences',
       'cloudSyncMetadata',
       'cloudSyncState',
+      'cloudSyncOutbox',
     ]);
 
     database.close();
@@ -84,7 +85,7 @@ describe('A1DojoDatabase', () => {
     const upgraded = createDatabase(name);
     await initializeDatabase(upgraded);
 
-    expect(upgraded.verno).toBe(11);
+    expect(upgraded.verno).toBe(DATABASE_VERSION);
     await expect(upgraded.questionProgress.get('A1-001')).resolves.toMatchObject({
       favorite: true,
       attemptCount: 2,
@@ -230,6 +231,82 @@ describe('A1DojoDatabase', () => {
       unitConfirmations: {},
       selfGradeUpdatedAt: {},
     });
+    upgraded.close();
+  });
+
+  it('v11のA-1・B-1・同期metadataを保持したままPhase 4 outboxを追加する', async () => {
+    const name = `a1-dojo-v11-cloud-outbox-${crypto.randomUUID()}`;
+    databaseNames.push(name);
+    const legacy = new Dexie(name);
+    legacy.version(11).stores({
+      questionProgress:
+        '&code, &[subjectId+code], subjectId, favorite, lastAnsweredAt, lastIsCorrect',
+      b1PracticeSessions:
+        '&id, &[subjectId+id], [subjectId+status], subjectId, status, caseId, updatedAt',
+      cloudSyncMetadata: '&[scope+itemKey], scope, itemKey, clientUpdatedAt, isDeleted',
+      cloudSyncState: '&key, ownerUserId, updatedAt',
+    });
+    await legacy.open();
+    await legacy.table('questionProgress').put({
+      subjectId: 'a1',
+      code: 'A1-001',
+      attemptCount: 0,
+      correctCount: 0,
+      incorrectCount: 0,
+      favorite: true,
+      updatedAt: '2026-08-09T00:00:00.000Z',
+    });
+    await legacy.table('b1PracticeSessions').put({
+      id: 'b1-v11-practice',
+      subjectId: 'b1',
+      version: 3,
+      status: 'in_progress',
+      mode: 'training',
+      caseId: 'B1-2025-Q1',
+      unitIds: ['B1-2025-Q1-U01'],
+      answers: { 'B1-2025-Q1-U01': { a: '既存回答' } },
+      unitConfirmations: {},
+      selfGrades: {},
+      selfGradeUpdatedAt: {},
+      reviewQuestionIds: [],
+      requirementDisclosureQuestionIds: [],
+      attemptIdsByQuestion: {},
+      currentIndex: 0,
+      createdAt: '2026-08-09T00:00:00.000Z',
+      updatedAt: '2026-08-09T00:00:00.000Z',
+    });
+    await legacy.table('cloudSyncMetadata').put({
+      scope: 'a1.question',
+      itemKey: 'A1-001',
+      clientUpdatedAt: '2026-08-09T00:00:00.000Z',
+      deviceId: 'device-a',
+      isDeleted: false,
+    });
+    await legacy.table('cloudSyncState').put({
+      key: 'cloud-sync',
+      ownerUserId: 'user-a',
+      lastSuccessfulSyncAt: '2026-08-08T00:00:00.000Z',
+      updatedAt: '2026-08-08T00:00:00.000Z',
+    });
+    legacy.close();
+
+    const upgraded = createDatabase(name);
+    await initializeDatabase(upgraded);
+
+    expect(upgraded.verno).toBe(DATABASE_VERSION);
+    await expect(upgraded.questionProgress.get('A1-001')).resolves.toMatchObject({
+      favorite: true,
+    });
+    await expect(upgraded.b1PracticeSessions.get('b1-v11-practice')).resolves.toMatchObject({
+      answers: { 'B1-2025-Q1-U01': { a: '既存回答' } },
+    });
+    await expect(upgraded.cloudSyncMetadata.get(['a1.question', 'A1-001'])).resolves.toMatchObject({
+      deviceId: 'device-a',
+    });
+    await expect(upgraded.cloudSyncState.get('cloud-sync')).resolves.toMatchObject({
+      ownerUserId: 'user-a',
+    });
+    await expect(upgraded.cloudSyncOutbox.count()).resolves.toBe(0);
     upgraded.close();
   });
 });

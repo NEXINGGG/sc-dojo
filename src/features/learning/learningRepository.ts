@@ -90,7 +90,11 @@ export class LearningRepository {
 
     const next = await this.database.transaction(
       'rw',
-      [this.database.questionProgress, this.database.cloudSyncMetadata],
+      [
+        this.database.questionProgress,
+        this.database.cloudSyncMetadata,
+        this.database.cloudSyncOutbox,
+      ],
       async () => {
         const current = await this.database.questionProgress
           .where('[subjectId+code]')
@@ -146,6 +150,7 @@ export class LearningRepository {
         this.database.learningDays,
         this.database.learningDaysBySubject,
         this.database.cloudSyncMetadata,
+        this.database.cloudSyncOutbox,
       ],
       async () => {
         const existing = await getAttemptForSessionQuestion(
