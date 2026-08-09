@@ -4,19 +4,25 @@ import { DisplaySettingsProvider } from './features/settings/DisplaySettingsCont
 import { PwaProvider } from './features/pwa/PwaContext';
 import { SubjectProvider } from './features/subjects/SubjectContext';
 import { AppRoutes } from './routes/AppRoutes';
+import { AuthProvider } from './features/auth/AuthContext';
+import { CloudSyncProvider } from './features/sync/CloudSyncContext';
 
 export function App() {
   return (
     <AppErrorBoundary>
-      <PwaProvider>
-        <SubjectProvider>
-          <DisplaySettingsProvider>
-            <HashRouter>
-              <AppRoutes />
-            </HashRouter>
-          </DisplaySettingsProvider>
-        </SubjectProvider>
-      </PwaProvider>
+      <AuthProvider>
+        <CloudSyncProvider>
+          <PwaProvider>
+            <SubjectProvider>
+              <DisplaySettingsProvider>
+                <HashRouter>
+                  <AppRoutes />
+                </HashRouter>
+              </DisplaySettingsProvider>
+            </SubjectProvider>
+          </PwaProvider>
+        </CloudSyncProvider>
+      </AuthProvider>
     </AppErrorBoundary>
   );
 }

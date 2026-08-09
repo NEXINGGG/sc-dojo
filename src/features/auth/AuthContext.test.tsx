@@ -14,11 +14,24 @@ const supabaseMocks = vi.hoisted(() => {
     signInWithOAuth: vi.fn(),
     signOut: vi.fn(),
   };
+  const query = {
+    select: vi.fn(),
+    eq: vi.fn(),
+    in: vi.fn(),
+    upsert: vi.fn(),
+  };
+  query.select.mockReturnValue(query);
+  query.eq.mockReturnValue(query);
+  query.in.mockResolvedValue({ data: [], error: null });
+  query.upsert.mockResolvedValue({ error: null });
+  const from = vi.fn(() => query);
 
   return {
     auth,
-    client: { auth },
+    client: { auth, from },
     configuration: { isConfigured: true },
+    from,
+    query,
     unsubscribe,
   };
 });
@@ -30,6 +43,7 @@ vi.mock('./supabaseClient', () => ({
 
 import { AuthProvider } from './AuthContext';
 import { CloudAuthSection } from './CloudAuthSection';
+import { CloudSyncProvider } from '../sync/CloudSyncContext';
 
 function signedInSession(): Session {
   return {
@@ -54,13 +68,16 @@ function signedInSession(): Session {
 function renderAuthSection() {
   return render(
     <AuthProvider>
-      <CloudAuthSection />
+      <CloudSyncProvider>
+        <CloudAuthSection />
+      </CloudSyncProvider>
     </AuthProvider>,
   );
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   window.history.replaceState({}, '', '/#/');
+  await Promise.all([database.cloudSyncMetadata.clear(), database.cloudSyncState.clear()]);
   supabaseMocks.configuration.isConfigured = true;
   supabaseMocks.auth.getSession.mockResolvedValue({ data: { session: null }, error: null });
   supabaseMocks.auth.onAuthStateChange.mockReturnValue({
@@ -71,6 +88,11 @@ beforeEach(() => {
     error: null,
   });
   supabaseMocks.auth.signOut.mockResolvedValue({ error: null });
+  supabaseMocks.from.mockImplementation(() => supabaseMocks.query);
+  supabaseMocks.query.select.mockReturnValue(supabaseMocks.query);
+  supabaseMocks.query.eq.mockReturnValue(supabaseMocks.query);
+  supabaseMocks.query.in.mockResolvedValue({ data: [], error: null });
+  supabaseMocks.query.upsert.mockResolvedValue({ error: null });
 });
 
 afterEach(() => {
@@ -80,6 +102,11 @@ afterEach(() => {
   supabaseMocks.auth.onAuthStateChange.mockReset();
   supabaseMocks.auth.signInWithOAuth.mockReset();
   supabaseMocks.auth.signOut.mockReset();
+  supabaseMocks.from.mockClear();
+  supabaseMocks.query.select.mockClear();
+  supabaseMocks.query.eq.mockClear();
+  supabaseMocks.query.in.mockClear();
+  supabaseMocks.query.upsert.mockClear();
   supabaseMocks.unsubscribe.mockReset();
   window.history.replaceState({}, '', '/#/');
 });
@@ -102,10 +129,43 @@ describe('Supabase認証', () => {
     renderAuthSection();
 
     expect(await screen.findByText('学習 太郎')).toBeInTheDocument();
-    expect(
-      screen.getByText('クラウド同期準備完了。学習履歴の同期はまだ利用できません。'),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '今すぐ同期' })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'ログアウト' })).toBeEnabled();
+    await waitFor(() => {
+      expect(supabaseMocks.from).toHaveBeenCalledWith('learning_sync_items');
+      expect(supabaseMocks.query.eq).toHaveBeenCalledWith('user_id', 'test-user-id');
+      expect(supabaseMocks.query.in).toHaveBeenCalledWith('scope', ['a1.question', 'a2.question']);
+    });
+  });
+
+  it('オンライン復帰時にA-1・A-2同期を再実行する', async () => {
+    supabaseMocks.auth.getSession.mockResolvedValue({
+      data: { session: signedInSession() },
+      error: null,
+    });
+    renderAuthSection();
+    await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(1));
+
+    window.dispatchEvent(new Event('online'));
+
+    await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(2));
+  });
+
+  it('同期失敗時も端末の学習を利用できることを表示する', async () => {
+    supabaseMocks.auth.getSession.mockResolvedValue({
+      data: { session: signedInSession() },
+      error: null,
+    });
+    supabaseMocks.query.in.mockResolvedValue({
+      data: null,
+      error: { message: 'network error' },
+    });
+
+    renderAuthSection();
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('クラウド同期に失敗しました');
+    expect(alert).toHaveTextContent('この端末の学習データは引き続き利用できます。');
   });
 
   it('PKCEの認証後はセッション確立後にcodeだけを除去し、HashRouterのhashを保持する', async () => {
@@ -157,16 +217,27 @@ describe('Supabase認証', () => {
   it('ログアウト時にSupabaseのログアウトだけを呼び、IndexedDBを削除しない', async () => {
     const user = userEvent.setup();
     const deleteDatabase = vi.spyOn(database, 'delete');
+    let resolveInitialSync: ((value: { data: []; error: null }) => void) | undefined;
     supabaseMocks.auth.getSession.mockResolvedValue({
       data: { session: signedInSession() },
       error: null,
     });
+    supabaseMocks.query.in.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveInitialSync = resolve;
+        }),
+    );
     renderAuthSection();
 
-    await user.click(await screen.findByRole('button', { name: 'ログアウト' }));
+    await screen.findByText('学習履歴を同期しています。');
+    const signOutButton = await screen.findByRole('button', { name: 'ログアウト' });
+    expect(signOutButton).toBeEnabled();
+    await user.click(signOutButton);
 
     await waitFor(() => expect(supabaseMocks.auth.signOut).toHaveBeenCalledTimes(1));
     expect(deleteDatabase).not.toHaveBeenCalled();
+    resolveInitialSync?.({ data: [], error: null });
   });
 
   it('認証に失敗した場合は日本語のエラーを表示する', async () => {

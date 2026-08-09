@@ -18,6 +18,8 @@ import {
 } from '../../domain/learning';
 import type { SubjectId } from '../../domain/subject';
 import type { Question } from '../../types/question';
+import { markQuestionForCloudSync } from '../sync/cloudSyncLocalRepository';
+import { notifyCloudSyncNeeded } from '../sync/syncEvents';
 
 const readinessByDatabase = new WeakMap<A1DojoDatabase, Promise<void>>();
 
@@ -86,21 +88,28 @@ export class LearningRepository {
   ): Promise<QuestionProgressRow> {
     await ensureLearningDataReady(this.database);
 
-    return this.database.transaction('rw', this.database.questionProgress, async () => {
-      const current = await this.database.questionProgress
-        .where('[subjectId+code]')
-        .equals([this.subjectId, code])
-        .first();
-      const base = current ?? createEmptyQuestionProgress(code, updatedAt, this.subjectId);
-      const next: QuestionProgressRow = {
-        ...base,
-        favorite,
-        favoriteAt: favorite ? (base.favoriteAt ?? updatedAt) : undefined,
-        updatedAt,
-      };
-      await this.database.questionProgress.put(next);
-      return next;
-    });
+    const next = await this.database.transaction(
+      'rw',
+      [this.database.questionProgress, this.database.cloudSyncMetadata],
+      async () => {
+        const current = await this.database.questionProgress
+          .where('[subjectId+code]')
+          .equals([this.subjectId, code])
+          .first();
+        const base = current ?? createEmptyQuestionProgress(code, updatedAt, this.subjectId);
+        const updated: QuestionProgressRow = {
+          ...base,
+          favorite,
+          favoriteAt: favorite ? (base.favoriteAt ?? updatedAt) : undefined,
+          updatedAt,
+        };
+        await this.database.questionProgress.put(updated);
+        await markQuestionForCloudSync(this.database, this.subjectId, code, updatedAt);
+        return updated;
+      },
+    );
+    notifyCloudSyncNeeded();
+    return next;
   }
 
   async recordConfirmedPracticeAnswer(
@@ -128,13 +137,16 @@ export class LearningRepository {
       throw new LearningDataError('選択肢の形式に問題があるため、回答を保存できません。');
     }
 
-    return this.database.transaction(
+    const result = await this.database.transaction(
       'rw',
-      this.database.practiceSessions,
-      this.database.answerAttempts,
-      this.database.questionProgress,
-      this.database.learningDays,
-      this.database.learningDaysBySubject,
+      [
+        this.database.practiceSessions,
+        this.database.answerAttempts,
+        this.database.questionProgress,
+        this.database.learningDays,
+        this.database.learningDaysBySubject,
+        this.database.cloudSyncMetadata,
+      ],
       async () => {
         const existing = await getAttemptForSessionQuestion(
           this.database,
@@ -157,10 +169,20 @@ export class LearningRepository {
         );
         await this.database.answerAttempts.add(attempt);
         await updateProgressAndLearningDay(this.database, attempt);
+        await markQuestionForCloudSync(
+          this.database,
+          attempt.subjectId,
+          attempt.code,
+          attempt.answeredAt,
+        );
 
         return { session, recorded: true };
       },
     );
+    if (result.recorded) {
+      notifyCloudSyncNeeded();
+    }
+    return result;
   }
 
   async completePracticeSession(session: PracticeSessionRow): Promise<PracticeResultRow> {

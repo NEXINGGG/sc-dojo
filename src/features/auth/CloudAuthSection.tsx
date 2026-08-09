@@ -1,5 +1,6 @@
 import type { User } from '@supabase/supabase-js';
 import { useAuth } from './AuthContext';
+import { useCloudSync } from '../sync/CloudSyncContext';
 
 export function CloudAuthSection() {
   const {
@@ -12,7 +13,17 @@ export function CloudAuthSection() {
     signOut,
     clearError,
   } = useAuth();
-  const isBusy = isLoading || isActionInProgress;
+  const {
+    status: syncStatus,
+    error: syncError,
+    errorKind: syncErrorKind,
+    lastSuccessfulSyncAt,
+    requestSync,
+    clearSyncError,
+  } = useCloudSync();
+  const isSyncing = syncStatus === 'syncing';
+  const isAuthBusy = isLoading || isActionInProgress;
+  const isSyncBusy = isAuthBusy || isSyncing;
 
   return (
     <section
@@ -35,7 +46,7 @@ export function CloudAuthSection() {
           <div className="cloud-auth-actions">
             <button
               className="primary-button"
-              disabled={isBusy}
+              disabled={isAuthBusy}
               onClick={() => void signInWithGoogle()}
               type="button"
             >
@@ -51,11 +62,28 @@ export function CloudAuthSection() {
               <dd>{getAccountLabel(user)}</dd>
             </div>
           </dl>
-          <p className="muted-text">クラウド同期準備完了。学習履歴の同期はまだ利用できません。</p>
+          <dl className="settings-summary-list cloud-auth-account">
+            <div>
+              <dt>最終同期</dt>
+              <dd>
+                {lastSuccessfulSyncAt === undefined
+                  ? 'まだ同期していません'
+                  : formatSyncDateTime(lastSuccessfulSyncAt)}
+              </dd>
+            </div>
+          </dl>
           <div className="cloud-auth-actions">
             <button
+              className="primary-button"
+              disabled={isSyncBusy}
+              onClick={() => void requestSync()}
+              type="button"
+            >
+              今すぐ同期
+            </button>
+            <button
               className="secondary-button"
-              disabled={isBusy}
+              disabled={isAuthBusy}
               onClick={() => void signOut()}
               type="button"
             >
@@ -69,6 +97,37 @@ export function CloudAuthSection() {
         <p aria-live="polite" className="muted-text" role="status">
           処理しています。
         </p>
+      )}
+
+      {isSyncing && (
+        <p aria-live="polite" className="muted-text" role="status">
+          学習履歴を同期しています。
+        </p>
+      )}
+
+      {syncStatus === 'success' && (
+        <div className="inline-notice inline-notice-success cloud-auth-error" role="status">
+          <strong>クラウド同期が完了しました</strong>
+          <p>この端末とクラウドのA-1・A-2学習履歴を問題単位で統合しました。</p>
+        </div>
+      )}
+
+      {syncStatus === 'error' && syncError !== undefined && (
+        <div
+          className={`inline-notice ${syncErrorKind === 'user_switch' ? 'inline-notice-warning' : 'inline-notice-error'} cloud-auth-error`}
+          role="alert"
+        >
+          <strong>
+            {syncErrorKind === 'user_switch'
+              ? 'アカウントの切替を検出しました'
+              : 'クラウド同期に失敗しました'}
+          </strong>
+          <p>{syncError}</p>
+          <p>この端末の学習データは引き続き利用できます。</p>
+          <button className="text-button" onClick={clearSyncError} type="button">
+            閉じる
+          </button>
+        </div>
       )}
 
       {error !== undefined && (
@@ -96,4 +155,15 @@ function getAccountLabel(user: User): string {
     return name;
   }
   return user.email ?? 'Googleアカウント';
+}
+
+function formatSyncDateTime(value: string): string {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? '不明'
+    : new Intl.DateTimeFormat('ja-JP', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+        timeZone: 'Asia/Tokyo',
+      }).format(date);
 }

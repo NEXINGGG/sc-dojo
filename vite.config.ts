@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { fileURLToPath, URL } from 'node:url';
 import { createPwaManifest, normalizeAppBase } from './src/features/pwa/manifest';
 
 const appBase = normalizeAppBase(process.env.VITE_APP_BASE);
@@ -13,6 +14,7 @@ export default defineConfig({
         manualChunks: {
           react: ['react', 'react-dom', 'react-router-dom'],
           dexie: ['dexie'],
+          learning: [fileURLToPath(new URL('./src/data/catalog.ts', import.meta.url))],
         },
       },
     },

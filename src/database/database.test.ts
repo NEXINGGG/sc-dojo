@@ -36,6 +36,8 @@ describe('A1DojoDatabase', () => {
       'b1RemediationProgress',
       'b1AnswerAttempts',
       'b1Preferences',
+      'cloudSyncMetadata',
+      'cloudSyncState',
     ]);
 
     database.close();
@@ -82,7 +84,7 @@ describe('A1DojoDatabase', () => {
     const upgraded = createDatabase(name);
     await initializeDatabase(upgraded);
 
-    expect(upgraded.verno).toBe(10);
+    expect(upgraded.verno).toBe(11);
     await expect(upgraded.questionProgress.get('A1-001')).resolves.toMatchObject({
       favorite: true,
       attemptCount: 2,
