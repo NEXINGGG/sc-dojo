@@ -1,6 +1,6 @@
 import Dexie from 'dexie';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createDatabase, DATABASE_VERSION, initializeDatabase } from './database';
+import { createDatabase, DATABASE_NAME, DATABASE_VERSION, initializeDatabase } from './database';
 
 const databaseNames: string[] = [];
 
@@ -9,6 +9,39 @@ afterEach(async () => {
 });
 
 describe('A1DojoDatabase', () => {
+  it('SCは別DBを新規作成し、既存NWのDBバージョン・設定・進捗を変更しない', async () => {
+    // These are fake-indexeddb databases in the test environment, not browser user data.
+    const nw = new Dexie('a1-dojo');
+    nw.version(1).stores({ questionProgress: '&code', settings: '&key' });
+    databaseNames.push(nw.name, DATABASE_NAME);
+    const progress = { code: 'A1-001', favorite: true, attemptCount: 5 };
+    const settings = { key: 'appearance', theme: 'dark', selectedSubject: 'b1' };
+    await nw.table('questionProgress').put(progress);
+    await nw.table('settings').put(settings);
+    const sc = createDatabase();
+    try {
+      expect(sc.name).toBe('sc-dojo');
+      await initializeDatabase(sc);
+      await expect(sc.questionProgress.count()).resolves.toBe(0);
+      await expect(sc.settings.get('appearance')).resolves.toBeUndefined();
+      await sc.questionProgress.put({
+        subjectId: 'a1',
+        code: 'A1-001',
+        favorite: false,
+        attemptCount: 1,
+        correctCount: 1,
+        incorrectCount: 0,
+        updatedAt: '2026-10-05T00:00:00.000Z',
+      });
+      expect(nw.verno).toBe(1);
+      await expect(nw.table('questionProgress').get('A1-001')).resolves.toEqual(progress);
+      await expect(nw.table('settings').get('appearance')).resolves.toEqual(settings);
+    } finally {
+      sc.close();
+      nw.close();
+    }
+  });
+
   it('バージョン付きのテーブル定義を初期化できる', async () => {
     const name = `a1-dojo-test-${crypto.randomUUID()}`;
     databaseNames.push(name);

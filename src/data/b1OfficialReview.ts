@@ -37,7 +37,7 @@ export function getB1QuestionOfficialReview(
   caseItem: B1Case,
 ): B1QuestionOfficialReview {
   const review = reviewByCaseId.get(caseItem.caseId);
-  if (review === undefined) throw new Error(`B-1公式レビューが見つかりません: ${caseItem.caseId}`);
+  if (review === undefined) throw new Error(`科目B公式レビューが見つかりません: ${caseItem.caseId}`);
 
   return {
     questionId: unit.questionId,
@@ -63,7 +63,7 @@ export function getB1QuestionOfficialReview(
 export function getB1OfficialReviews(): readonly B1QuestionOfficialReview[] {
   return b1QuestionUnits.map((unit) => {
     const caseItem = caseByQuestionId.get(unit.questionId);
-    if (caseItem === undefined) throw new Error(`B-1ケースが見つかりません: ${unit.questionId}`);
+    if (caseItem === undefined) throw new Error(`科目Bケースが見つかりません: ${unit.questionId}`);
     return getB1QuestionOfficialReview(unit, caseItem);
   });
 }

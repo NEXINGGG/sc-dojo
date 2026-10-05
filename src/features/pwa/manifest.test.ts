@@ -8,8 +8,9 @@ describe('PWA Manifest設定', () => {
     const manifest = createPwaManifest('/');
 
     expect(manifest).toMatchObject({
-      name: 'ネットワークスペシャリスト NW道場',
-      short_name: 'NW道場',
+      id: '/sc-dojo',
+      name: '情報処理安全確保支援士 SC道場',
+      short_name: 'SC道場',
       lang: 'ja',
       display: 'standalone',
       start_url: '/#/',
@@ -35,6 +36,7 @@ describe('PWA Manifest設定', () => {
     expect(base).toBe('/dojo/');
     expect(manifest.start_url).toBe('/dojo/#/');
     expect(manifest.scope).toBe('/dojo/');
+    expect(manifest.id).toBe('/dojo/sc-dojo');
   });
 
   it('manifestとApple向けのローカルアイコンが存在する', () => {

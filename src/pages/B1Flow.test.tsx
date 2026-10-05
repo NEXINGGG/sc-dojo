@@ -20,15 +20,15 @@ afterEach(async () => {
   await database.settings.clear();
 });
 
-describe('B-1 answer flow', () => {
-  it('selects B-1, opens the official-PDF answer workspace, and autosaves an answer', async () => {
+describe('科目B answer flow', () => {
+  it('selects 科目B, opens the official-PDF answer workspace, and autosaves an answer', async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(await screen.findByRole('radio', { name: /B-1/ }));
-    await screen.findByRole('heading', { name: 'B-1 ホーム' });
-    await user.click(screen.getByRole('link', { name: /B-1演習を始める/ }));
-    await screen.findByRole('heading', { name: 'B-1演習' });
+    await user.click(await screen.findByRole('radio', { name: /科目B/ }));
+    await screen.findByRole('heading', { name: '科目B ホーム' });
+    await user.click(screen.getByRole('link', { name: /科目B演習を始める/ }));
+    await screen.findByRole('heading', { name: '科目B演習' });
     expect(screen.getByRole('heading', { name: '2016年度' })).toBeInTheDocument();
     await user.click(screen.getAllByRole('button', { name: /この大問を練習する/ })[0]);
 
@@ -44,20 +44,20 @@ describe('B-1 answer flow', () => {
     });
   });
 
-  it('shows the selected B-1 mock contents for confirmation before creating the session', async () => {
+  it('shows the selected 科目B mock contents for confirmation before creating the session', async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(await screen.findByRole('radio', { name: /B-1/ }));
-    await user.click(screen.getByRole('link', { name: 'B-1模試を開始' }));
-    await screen.findByRole('heading', { name: 'B-1模試', level: 1 });
+    await user.click(await screen.findByRole('radio', { name: /科目B/ }));
+    await user.click(screen.getByRole('link', { name: '科目B模試を開始' }));
+    await screen.findByRole('heading', { name: '科目B模試', level: 1 });
     const caseChoices = screen.getAllByRole('checkbox', { name: 'この大問を選ぶ' });
     await user.click(caseChoices[0]);
     await user.click(caseChoices[1]);
     await user.click(screen.getByRole('button', { name: '開始内容を確認する' }));
 
     expect(
-      await screen.findByRole('heading', { name: 'この内容でB-1模試を開始しますか？' }),
+      await screen.findByRole('heading', { name: 'この内容で科目B模試を開始しますか？' }),
     ).toBeInTheDocument();
     expect(screen.getByText('制限時間')).toBeInTheDocument();
     expect(screen.getByText('90分')).toBeInTheDocument();
@@ -89,7 +89,7 @@ describe('B-1 answer flow', () => {
     const answer = screen
       .getAllByRole('textbox')
       .find((element) => element.id.startsWith(`${session.unitIds[0]}-`));
-    if (answer === undefined) throw new Error('A B-1 mock answer field is required');
+    if (answer === undefined) throw new Error('A 科目B mock answer field is required');
     await user.type(answer, '模試の回答');
     const nextButton = screen.getByRole('button', { name: '次へ' });
     await waitFor(() => expect(nextButton).toBeEnabled());

@@ -54,8 +54,8 @@ interface PwaContextValue {
 }
 
 const PwaContext = createContext<PwaContextValue | undefined>(undefined);
-const OFFLINE_READY_NOTICE_KEY = 'a1-dojo:pwa-offline-ready-notified';
-const INSTALL_SUGGESTION_DISMISSED_KEY = 'a1-dojo:pwa-install-suggestion-dismissed';
+const OFFLINE_READY_NOTICE_KEY = 'sc-dojo:pwa-offline-ready-notified';
+const INSTALL_SUGGESTION_DISMISSED_KEY = 'sc-dojo:pwa-install-suggestion-dismissed';
 
 export function PwaProvider({ children }: PropsWithChildren) {
   const registrationRef = useRef<ServiceWorkerRegistration | undefined>(undefined);

@@ -25,7 +25,7 @@ export function recommendB1A2Questions(input: B1A2RecommendationInput): B1A2Reco
   if (!hasRelevantCause) {
     return notApplicable(
       remediation.questionId,
-      '知識不足又は計算ミスが選ばれていないため、B-1の再読・再演習を優先します。',
+      '知識不足又は計算ミスが選ばれていないため、科目Bの再読・再演習を優先します。',
     );
   }
   if (remediation.status === 'not_applicable') {
@@ -44,7 +44,7 @@ export function recommendB1A2Questions(input: B1A2RecommendationInput): B1A2Reco
   if (a2QuestionIds.length === 0) {
     return notApplicable(
       remediation.questionId,
-      'この設問に紐付く未完了のA2復習問題はありません。元のB-1設問を見直してください。',
+      'この設問に紐付く未完了のA2復習問題はありません。元の科目B設問を見直してください。',
     );
   }
   return {

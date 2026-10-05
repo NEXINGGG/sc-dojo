@@ -1,4 +1,7 @@
+import { APP_DESCRIPTION, APP_ID, APP_NAME, APP_SHORT_NAME } from '../../app/appIdentity';
+
 export interface PwaManifestDefinition {
+  id: string;
   name: string;
   short_name: string;
   description: string;
@@ -30,10 +33,10 @@ export function normalizeAppBase(value: string | undefined): string {
 export function createPwaManifest(base: string): PwaManifestDefinition {
   const normalizedBase = normalizeAppBase(base);
   return {
-    name: 'ネットワークスペシャリスト NW道場',
-    short_name: 'NW道場',
-    description:
-      'ネットワークスペシャリスト科目A-1・A-2を、短時間で繰り返し学習できる問題演習アプリです。',
+    id: `${normalizedBase}${APP_ID}`,
+    name: APP_NAME,
+    short_name: APP_SHORT_NAME,
+    description: APP_DESCRIPTION,
     lang: 'ja',
     dir: 'ltr',
     start_url: `${normalizedBase}#/`,

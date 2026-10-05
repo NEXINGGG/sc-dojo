@@ -1,4 +1,4 @@
-export const CLOUD_SYNC_NEEDED_EVENT = 'nw-a1-dojo:cloud-sync-needed';
+export const CLOUD_SYNC_NEEDED_EVENT = 'sc-dojo:cloud-sync-needed';
 
 export interface CloudSyncNeededOptions {
   debounceMs?: number;

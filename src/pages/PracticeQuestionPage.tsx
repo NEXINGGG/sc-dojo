@@ -157,11 +157,11 @@ export function PracticeQuestionPage() {
       .then((progress) => {
         if (!active) return;
         if (progress === undefined)
-          setActionMessage('B-1復習の進捗が見つかりません。A2演習は続けられます。');
+          setActionMessage('科目B復習の進捗が見つかりません。A2演習は続けられます。');
         else setB1Remediation(progress);
       })
       .catch(() => {
-        if (active) setActionMessage('B-1復習の進捗を読み込めませんでした。');
+        if (active) setActionMessage('科目B復習の進捗を読み込めませんでした。');
       });
     return () => {
       active = false;
@@ -329,13 +329,15 @@ export function PracticeQuestionPage() {
         b1.getMock(b1Remediation.originSessionId),
       ]);
       if (practice === undefined && mock === undefined) {
-        setActionMessage('元のB-1設問が見つかりません。B-1の履歴から開いてください。');
+        setActionMessage('元の科目B設問が見つかりません。科目Bの履歴から開いてください。');
         return;
       }
       await selectSubject('b1');
       navigate(practice !== undefined ? `/b1/practice/${practice.id}` : `/b1/mock/${mock?.id}`);
     } catch {
-      setActionMessage('B-1演習へ戻れませんでした。再試行するか、B-1の履歴から開いてください。');
+      setActionMessage(
+        '科目B演習へ戻れませんでした。再試行するか、科目Bの履歴から開いてください。',
+      );
     }
   }
 
@@ -387,7 +389,7 @@ export function PracticeQuestionPage() {
         <div className="practice-header-actions">
           {b1Remediation !== undefined ? (
             <span className="b1-remediation-status" role="status">
-              B-1復習中 {b1Remediation.completedA2QuestionIds.length} /{' '}
+              科目B復習中 {b1Remediation.completedA2QuestionIds.length} /{' '}
               {b1Remediation.a2QuestionIds.length}
             </span>
           ) : null}
@@ -539,10 +541,10 @@ export function PracticeQuestionPage() {
 
       {b1Remediation?.status === 'completed' ? (
         <section className="surface-card b1-finalize-card" aria-live="polite">
-          <h2>B-1復習用のA2問題を完了しました</h2>
-          <p>元のB-1設問へ戻り、答案を書き直して再自己採点できます。</p>
+          <h2>科目B復習用のA2問題を完了しました</h2>
+          <p>元の科目B設問へ戻り、答案を書き直して再自己採点できます。</p>
           <button className="primary-button" onClick={() => void returnToB1()} type="button">
-            元のB-1設問へ戻る
+            元の科目B設問へ戻る
           </button>
         </section>
       ) : null}

@@ -466,9 +466,7 @@ export class CloudSyncLocalRepository {
     }
 
     const questionItems = items.filter(
-      (
-        item,
-      ): item is LearningSyncItem & { scope: 'a1.question' | 'a2.question' } =>
+      (item): item is LearningSyncItem & { scope: 'a1.question' | 'a2.question' } =>
         !isB1CloudSyncScope(item.scope),
     );
     if (questionItems.length === 0) return;
@@ -479,10 +477,7 @@ export class CloudSyncLocalRepository {
         .map((item) => [subjectId, item.itemKey] as [SubjectId, string]);
       if (keys.length === 0) continue;
       await this.database.answerAttempts.where('[subjectId+code]').anyOf(keys).delete();
-      await this.database.questionProgress
-        .where('[subjectId+code]')
-        .anyOf(keys)
-        .delete();
+      await this.database.questionProgress.where('[subjectId+code]').anyOf(keys).delete();
     }
 
     const payloads = questionItems.map((item) => item.payload as LearningSyncPayloadV1);
@@ -546,7 +541,7 @@ export function createCloudSyncMetadataRow(
 ): CloudSyncMetadataRow {
   const scope = getCloudSyncScope(subjectId);
   if (scope === undefined) {
-    throw new Error('B-1はPhase 2のクラウド同期対象ではありません。');
+    throw new Error('科目BはPhase 2のクラウド同期対象ではありません。');
   }
   return { scope, itemKey: code, clientUpdatedAt, deviceId, isDeleted };
 }

@@ -68,6 +68,15 @@ function createInput(overrides: Partial<BackupCreateInput> = {}): BackupCreateIn
 }
 
 describe('バックアップ形式', () => {
+  it('教材とバージョンが一致してもNW形式を拒否し、SC専用の識別子で出力する', () => {
+    const scBackup = createBackupDocument(createInput());
+    expect(scBackup.format).toBe('sc-dojo-backup');
+    expect(scBackup.format).not.toBe('nw-a1-dojo-backup');
+    expect(
+      validateBackupDocument({ ...scBackup, format: 'nw-a1-dojo-backup' }, questions, identity),
+    ).toMatchObject({ ok: false, errors: [{ code: 'invalid_format' }] });
+  });
+
   it('安定した問題IDフィンガープリントと人が読めるJSONを作成できる', () => {
     const reversed = createQuestionDataIdentity([...questions].reverse(), questionDataVersion);
     const document = createBackupDocument(createInput());
@@ -491,7 +500,7 @@ describe('バックアップ形式', () => {
     expect(validateBackupFileSize(MAX_BACKUP_FILE_SIZE_BYTES)).toBeUndefined();
     expect(validateBackupFileSize(MAX_BACKUP_FILE_SIZE_BYTES + 1)).toMatchObject({ ok: false });
     expect(createBackupFileName(new Date('2026-07-18T00:00:00.000Z'))).toMatch(
-      /^nw-a1-dojo-backup-20260718-\d{6}\.json$/,
+      /^sc-dojo-backup-20260718-\d{6}\.json$/,
     );
   });
 });

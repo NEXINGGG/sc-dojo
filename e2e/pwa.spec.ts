@@ -47,8 +47,8 @@ test('本番previewでmanifest・Service Workerを登録し、オフラインで
     };
   });
   expect(manifest).toMatchObject({
-    name: 'ネットワークスペシャリスト NW道場',
-    short_name: 'NW道場',
+    name: '情報処理安全確保支援士 SC道場',
+    short_name: 'SC道場',
     display: 'standalone',
   });
   expect(manifest?.icons).toEqual(

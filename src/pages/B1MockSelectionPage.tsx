@@ -49,7 +49,7 @@ export function B1MockSelectionPage() {
         setHistoryCount(all.filter((item) => item.status === 'completed').length);
       })
       .catch(() =>
-        setMessage('B-1模試の保存データを読み込めませんでした。再読み込みしてください。'),
+        setMessage('科目B模試の保存データを読み込めませんでした。再読み込みしてください。'),
       );
   }, []);
 
@@ -82,7 +82,9 @@ export function B1MockSelectionPage() {
       const session = await repository.createMock(year, caseIds, mockType);
       navigate(`/b1/mock/${session.id}`);
     } catch (error) {
-      setMessage(error instanceof B1DataError ? error.message : 'B-1模試を開始できませんでした。');
+      setMessage(
+        error instanceof B1DataError ? error.message : '科目B模試を開始できませんでした。',
+      );
     } finally {
       setIsStarting(false);
     }
@@ -96,10 +98,10 @@ export function B1MockSelectionPage() {
       await repository.discardInProgressMock(inProgressId);
       setInProgressId(undefined);
       setIsDiscardConfirming(false);
-      setMessage('途中のB-1模試を破棄しました。新しい模試を開始できます。');
+      setMessage('途中の科目B模試を破棄しました。新しい模試を開始できます。');
     } catch (error) {
       setMessage(
-        error instanceof B1DataError ? error.message : '途中のB-1模試を破棄できませんでした。',
+        error instanceof B1DataError ? error.message : '途中の科目B模試を破棄できませんでした。',
       );
     } finally {
       setIsDiscarding(false);
@@ -110,7 +112,7 @@ export function B1MockSelectionPage() {
     <>
       <PageHeader
         description="同一年度の3大問から2大問を選択します。制限時間は90分です。"
-        title="B-1模試"
+        title="科目B模試"
       />
       <p className="exam-subject-summary">
         2大問・90分・提出後に参考判定と自己採点を行います。IPAの正式採点ではありません。
@@ -158,7 +160,7 @@ export function B1MockSelectionPage() {
       </fieldset>
       {inProgressId !== undefined ? (
         <section className="inline-notice inline-notice-info" role="status">
-          <strong>途中のB-1模試があります</strong>
+          <strong>途中の科目B模試があります</strong>
           <Link className="text-link" to={`/b1/mock/${inProgressId}`}>
             模試を再開する
           </Link>
@@ -255,11 +257,11 @@ export function B1MockSelectionPage() {
       >
         {isStarting ? '開始準備中…' : '開始内容を確認する'}
       </button>
-      <p className="muted-text">確定済みB-1模試: {historyCount}回</p>
+      <p className="muted-text">確定済み科目B模試: {historyCount}回</p>
       {isStartConfirming ? (
         <ConfirmDialog
           description="試験中は模範解答・ヒントを表示しません。途中で閉じても、この端末で再開できます。"
-          title="この内容でB-1模試を開始しますか？"
+          title="この内容で科目B模試を開始しますか？"
         >
           <dl className="b1-mock-summary-list">
             <div>
@@ -304,7 +306,7 @@ export function B1MockSelectionPage() {
       {isDiscardConfirming ? (
         <ConfirmDialog
           description="入力済みの答案、見直し指定、途中状態が削除されます。通常演習や確定済みの模試履歴は削除されません。"
-          title="途中のB-1模試を破棄しますか？"
+          title="途中の科目B模試を破棄しますか？"
         >
           <button
             className="danger-button"

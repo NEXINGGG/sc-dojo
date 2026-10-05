@@ -35,7 +35,7 @@ import type { PracticeFilters, PracticeQuestionCount } from './practice';
 import type { ChoiceId, Difficulty, Question } from '../types/question';
 import { getSubjectConfig, isSubjectId, type SubjectId } from './subject';
 
-export const BACKUP_FORMAT = 'nw-a1-dojo-backup';
+export const BACKUP_FORMAT = 'sc-dojo-backup';
 export const BACKUP_FORMAT_VERSION = 6;
 export const MAX_BACKUP_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
@@ -227,7 +227,7 @@ export function createBackupFileName(date: Date = new Date()): string {
     hourCycle: 'h23',
   });
   const parts = new Map(formatter.formatToParts(date).map((part) => [part.type, part.value]));
-  return `nw-a1-dojo-backup-${parts.get('year')}${parts.get('month')}${parts.get('day')}-${parts.get('hour')}${parts.get('minute')}${parts.get('second')}.json`;
+  return `${BACKUP_FORMAT}-${parts.get('year')}${parts.get('month')}${parts.get('day')}-${parts.get('hour')}${parts.get('minute')}${parts.get('second')}.json`;
 }
 
 export function parseBackupJson(
@@ -559,7 +559,7 @@ function parseB1BackupData(
     !Array.isArray(value.mockSessions) ||
     !Array.isArray(value.pdfRegistrations)
   ) {
-    collector.warnings.push('B-1のバックアップ形式が不正だったため、B-1データは復元しません。');
+    collector.warnings.push('科目Bのバックアップ形式が不正だったため、科目Bデータは復元しません。');
     collector.excludedRecordCount += 1;
     return emptyB1BackupData();
   }
@@ -619,7 +619,7 @@ function parseB1LearnerEvidence(
 ): B1LearnerEvidenceRow[] {
   if (value === undefined) return [];
   if (!Array.isArray(value)) {
-    invalidB1SupportData(collector, 'B-1根拠記録の形式が正しくありません。');
+    invalidB1SupportData(collector, '科目B根拠記録の形式が正しくありません。');
     return [];
   }
   const ids = new Set<string>();
@@ -636,15 +636,15 @@ function parseB1LearnerEvidence(
       !isIsoDate(item.updatedAt) ||
       (item.evidenceId !== undefined && !isNonEmptyString(item.evidenceId))
     ) {
-      invalidB1SupportData(collector, 'B-1根拠記録に不正なID又は日時があります。');
+      invalidB1SupportData(collector, '科目B根拠記録に不正なID又は日時があります。');
       continue;
     }
     if (b1Catalog !== undefined && !b1Catalog.hasQuestion(item.questionId)) {
-      invalidB1SupportData(collector, '存在しないB-1設問を含む根拠記録は復元できません。');
+      invalidB1SupportData(collector, '存在しない科目B設問を含む根拠記録は復元できません。');
       continue;
     }
     if (ids.has(item.id)) {
-      invalidB1SupportData(collector, 'B-1根拠記録に重複があります。');
+      invalidB1SupportData(collector, '科目B根拠記録に重複があります。');
       continue;
     }
     ids.add(item.id);
@@ -672,7 +672,7 @@ function parseB1LearningReflections(
 ): B1LearningReflectionRow[] {
   if (value === undefined) return [];
   if (!Array.isArray(value)) {
-    invalidB1SupportData(collector, 'B-1振返りの形式が正しくありません。');
+    invalidB1SupportData(collector, '科目B振返りの形式が正しくありません。');
     return [];
   }
   const ids = new Set<string>();
@@ -697,12 +697,12 @@ function parseB1LearningReflections(
       !isIsoDate(item.updatedAt) ||
       (b1Catalog !== undefined && !b1Catalog.hasQuestion(item.questionId))
     ) {
-      invalidB1SupportData(collector, 'B-1振返りに不正な失点原因、設問ID又は日時があります。');
+      invalidB1SupportData(collector, '科目B振返りに不正な失点原因、設問ID又は日時があります。');
       continue;
     }
     const key = `${item.sessionId}\u0000${item.questionId}`;
     if (ids.has(item.id) || sessionQuestionKeys.has(key)) {
-      invalidB1SupportData(collector, 'B-1振返りに重複があります。');
+      invalidB1SupportData(collector, '科目B振返りに重複があります。');
       continue;
     }
     ids.add(item.id);
@@ -729,7 +729,7 @@ function parseB1RemediationProgress(
 ): B1RemediationProgressRow[] {
   if (value === undefined) return [];
   if (!Array.isArray(value)) {
-    invalidB1SupportData(collector, 'B-1からA2への復習進捗の形式が正しくありません。');
+    invalidB1SupportData(collector, '科目BからA2への復習進捗の形式が正しくありません。');
     return [];
   }
   const a2QuestionIds = new Set(getSubjectCatalog('a2').questions.map((question) => question.code));
@@ -761,7 +761,7 @@ function parseB1RemediationProgress(
     ) {
       invalidB1SupportData(
         collector,
-        'B-1からA2への復習進捗に不正な参照、失点原因又は日時があります。',
+        '科目BからA2への復習進捗に不正な参照、失点原因又は日時があります。',
       );
       continue;
     }
@@ -776,7 +776,7 @@ function parseB1RemediationProgress(
         (item.completedAt !== undefined || item.cancelledAt !== undefined)) ||
       ids.has(item.id)
     ) {
-      invalidB1SupportData(collector, 'B-1からA2への復習進捗の状態が正しくありません。');
+      invalidB1SupportData(collector, '科目BからA2への復習進捗の状態が正しくありません。');
       continue;
     }
     ids.add(item.id);
@@ -810,7 +810,7 @@ function parseB1AnswerAttempts(
 ): B1AnswerAttemptRow[] {
   if (value === undefined) return [];
   if (!Array.isArray(value)) {
-    invalidB1SupportData(collector, 'B-1答案履歴の形式が正しくありません。');
+    invalidB1SupportData(collector, '科目B答案履歴の形式が正しくありません。');
     return [];
   }
   const entries: B1AnswerAttemptRow[] = [];
@@ -836,7 +836,7 @@ function parseB1AnswerAttempts(
       (b1Catalog !== undefined && !b1Catalog.hasQuestion(item.questionId)) ||
       ids.has(item.id)
     ) {
-      invalidB1SupportData(collector, 'B-1答案履歴に不正な内容があります。');
+      invalidB1SupportData(collector, '科目B答案履歴に不正な内容があります。');
       continue;
     }
     if (
@@ -846,7 +846,7 @@ function parseB1AnswerAttempts(
           (b1Catalog === undefined || b1Catalog.hasAnswerField(item.questionId as string, fieldId)),
       )
     ) {
-      invalidB1SupportData(collector, 'B-1答案履歴に存在しない答案欄があります。');
+      invalidB1SupportData(collector, '科目B答案履歴に存在しない答案欄があります。');
       continue;
     }
     ids.add(item.id);
@@ -875,7 +875,7 @@ function parseB1AnswerAttempts(
 function parseB1Preferences(value: unknown, collector: ValidationCollector): B1PreferenceRow[] {
   if (value === undefined) return [];
   if (!Array.isArray(value)) {
-    invalidB1SupportData(collector, 'B-1現在性フィルターの形式が正しくありません。');
+    invalidB1SupportData(collector, '科目B現在性フィルターの形式が正しくありません。');
     return [];
   }
   const row = value.find(isB1PreferenceRecord);

@@ -186,13 +186,13 @@ export async function applyRemoteB1PracticeItem(
   item: LearningSyncItem,
 ): Promise<void> {
   if (item.scope === 'b1.reset') {
-    if (!isB1ResetPayload(item.payload)) throw new Error('B-1リセット境界が正しくありません。');
+    if (!isB1ResetPayload(item.payload)) throw new Error('科目Bリセット境界が正しくありません。');
   } else if (item.scope === 'b1.progress') {
     await applyProgressItem(database, item);
   } else if (item.scope === 'b1.answer') {
     await applyAnswerItem(database, item);
   } else {
-    throw new Error('B-1同期対象ではないscopeです。');
+    throw new Error('科目B同期対象ではないscopeです。');
   }
 
   await database.cloudSyncMetadata.put({
@@ -206,7 +206,7 @@ export async function applyRemoteB1PracticeItem(
 
 export function normalizeRemoteB1PracticeItem(item: CloudLearningSyncItem): LearningSyncItem {
   if (!isB1CloudSyncScope(item.scope)) {
-    throw new Error('B-1同期対象ではないscopeです。');
+    throw new Error('科目B同期対象ではないscopeです。');
   }
   if (item.scope === 'b1.reset') {
     if (
@@ -217,7 +217,7 @@ export function normalizeRemoteB1PracticeItem(item: CloudLearningSyncItem): Lear
       !isIsoDate(item.payload.resetAt) ||
       item.payload.resetAt !== item.clientUpdatedAt
     ) {
-      throw new Error('B-1リセット境界の形式が正しくありません。');
+      throw new Error('科目Bリセット境界の形式が正しくありません。');
     }
     return {
       ...item,
@@ -228,19 +228,19 @@ export function normalizeRemoteB1PracticeItem(item: CloudLearningSyncItem): Lear
     validateTombstoneKey(item.scope, item.itemKey);
     return { ...item, payload: { kind: 'b1.tombstone' } };
   }
-  if (!isRecord(item.payload)) throw new Error('B-1同期データの形式が正しくありません。');
+  if (!isRecord(item.payload)) throw new Error('科目B同期データの形式が正しくありません。');
 
   if (item.scope === 'b1.progress') {
     const payload = parseProgressPayload(item.payload);
     if (item.itemKey !== payload.session.id) {
-      throw new Error('B-1進捗のitem_keyが正しくありません。');
+      throw new Error('科目B進捗のitem_keyが正しくありません。');
     }
     return { ...item, payload };
   }
 
   const payload = parseAnswerPayload(item.payload);
   if (item.itemKey !== answerItemKey(payload.session.id, payload.questionId)) {
-    throw new Error('B-1回答のitem_keyが正しくありません。');
+    throw new Error('科目B回答のitem_keyが正しくありません。');
   }
   return { ...item, payload };
 }
@@ -403,7 +403,7 @@ async function applyProgressItem(database: A1DojoDatabase, item: LearningSyncIte
     await database.b1PracticeSessions.delete(item.itemKey);
     return;
   }
-  if (!isB1ProgressPayload(item.payload)) throw new Error('B-1進捗データが正しくありません。');
+  if (!isB1ProgressPayload(item.payload)) throw new Error('科目B進捗データが正しくありません。');
   const existing = await database.b1PracticeSessions.get(item.payload.session.id);
   const base = mergeDescriptor(existing, item.payload.session, item.clientUpdatedAt);
   await database.b1PracticeSessions.put({
@@ -426,7 +426,7 @@ async function applyAnswerItem(database: A1DojoDatabase, item: LearningSyncItem)
     }
     return;
   }
-  if (!isB1AnswerPayload(item.payload)) throw new Error('B-1回答データが正しくありません。');
+  if (!isB1AnswerPayload(item.payload)) throw new Error('科目B回答データが正しくありません。');
   const existing = await database.b1PracticeSessions.get(item.payload.session.id);
   const base = mergeDescriptor(existing, item.payload.session, item.clientUpdatedAt);
   const questionId = item.payload.questionId;
@@ -471,7 +471,7 @@ function mergeDescriptor(
       existing.caseId !== descriptor.caseId ||
       JSON.stringify(existing.unitIds) !== JSON.stringify(descriptor.unitIds)
     ) {
-      throw new Error('B-1セッションの構成が一致しません。');
+      throw new Error('科目Bセッションの構成が一致しません。');
     }
     return existing;
   }
@@ -523,7 +523,7 @@ function parseProgressPayload(value: Record<string, unknown>): B1ProgressSyncPay
     !isOptionalIsoDate(value.completedAt) ||
     (value.status === 'completed' && value.completedAt === undefined)
   ) {
-    throw new Error('B-1進捗データの形式が正しくありません。');
+    throw new Error('科目B進捗データの形式が正しくありません。');
   }
   return {
     kind: 'b1.progress',
@@ -548,7 +548,7 @@ function parseAnswerPayload(value: Record<string, unknown>): B1AnswerSyncPayload
     !isOptionalSelfGrade(value.selfGrade) ||
     !isOptionalIsoDate(value.selfGradeUpdatedAt)
   ) {
-    throw new Error('B-1回答データの形式が正しくありません。');
+    throw new Error('科目B回答データの形式が正しくありません。');
   }
   const answers = parseAnswers(value.answers, value.questionId);
   const unitConfirmation = parseConfirmation(value.unitConfirmation, value.questionId);
@@ -567,7 +567,7 @@ function parseAnswerPayload(value: Record<string, unknown>): B1AnswerSyncPayload
 }
 
 function parseDescriptor(value: unknown): B1PracticeDescriptorV1 {
-  if (!isRecord(value)) throw new Error('B-1セッション情報が正しくありません。');
+  if (!isRecord(value)) throw new Error('科目Bセッション情報が正しくありません。');
   if (
     !isNonEmptyString(value.id) ||
     value.subjectId !== 'b1' ||
@@ -579,7 +579,7 @@ function parseDescriptor(value: unknown): B1PracticeDescriptorV1 {
     new Set(value.unitIds).size !== value.unitIds.length ||
     !isIsoDate(value.createdAt)
   ) {
-    throw new Error('B-1セッション情報が正しくありません。');
+    throw new Error('科目Bセッション情報が正しくありません。');
   }
   const caseItem = getB1Case(value.caseId);
   const expectedUnitIds = caseItem?.questionUnits.map((unit) => unit.questionId);
@@ -587,7 +587,7 @@ function parseDescriptor(value: unknown): B1PracticeDescriptorV1 {
     expectedUnitIds === undefined ||
     JSON.stringify(value.unitIds) !== JSON.stringify(expectedUnitIds)
   ) {
-    throw new Error('B-1セッションの問題構成が正しくありません。');
+    throw new Error('科目Bセッションの問題構成が正しくありません。');
   }
   return {
     id: value.id,
@@ -601,14 +601,14 @@ function parseDescriptor(value: unknown): B1PracticeDescriptorV1 {
 }
 
 function parseAnswers(value: unknown, questionId: string): B1AnswerValues {
-  if (!isRecord(value)) throw new Error('B-1回答欄の形式が正しくありません。');
+  if (!isRecord(value)) throw new Error('科目B回答欄の形式が正しくありません。');
   const unit = getB1QuestionUnit(questionId);
-  if (unit === undefined) throw new Error('B-1設問が見つかりません。');
+  if (unit === undefined) throw new Error('科目B設問が見つかりません。');
   const allowedFields = new Set(unit.answerFields.map((field) => field.fieldId));
   const answers: B1AnswerValues = {};
   for (const [fieldId, answer] of Object.entries(value)) {
     if (!allowedFields.has(fieldId) || typeof answer !== 'string') {
-      throw new Error('B-1回答欄の形式が正しくありません。');
+      throw new Error('科目B回答欄の形式が正しくありません。');
     }
     answers[fieldId] = answer;
   }
@@ -618,15 +618,15 @@ function parseAnswers(value: unknown, questionId: string): B1AnswerValues {
 function parseConfirmation(value: unknown, questionId: string) {
   if (value === undefined) return undefined;
   if (!isRecord(value) || !isIsoDate(value.confirmedAt)) {
-    throw new Error('B-1回答確定データの形式が正しくありません。');
+    throw new Error('科目B回答確定データの形式が正しくありません。');
   }
   return { answers: parseAnswers(value.answers, questionId), confirmedAt: value.confirmedAt };
 }
 
 function validateTombstoneKey(scope: B1CloudSyncScope, itemKey: string): void {
-  if (scope === 'b1.reset') throw new Error('B-1リセット境界は削除できません。');
+  if (scope === 'b1.reset') throw new Error('科目Bリセット境界は削除できません。');
   if (scope === 'b1.progress') {
-    if (!isNonEmptyString(itemKey)) throw new Error('B-1進捗のitem_keyが正しくありません。');
+    if (!isNonEmptyString(itemKey)) throw new Error('科目B進捗のitem_keyが正しくありません。');
     return;
   }
   parseAnswerItemKey(itemKey);
@@ -641,7 +641,7 @@ function parseAnswerItemKey(itemKey: string): { sessionId: string; questionId: s
     !isNonEmptyString(sessionId) ||
     getB1QuestionUnit(questionId) === undefined
   ) {
-    throw new Error('B-1回答のitem_keyが正しくありません。');
+    throw new Error('科目B回答のitem_keyが正しくありません。');
   }
   return { sessionId, questionId };
 }

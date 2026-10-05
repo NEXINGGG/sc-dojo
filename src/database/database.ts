@@ -1,4 +1,5 @@
 import Dexie, { type EntityTable, type Table } from 'dexie';
+import { APP_ID } from '../app/appIdentity';
 import type {
   AnswerAttemptRow,
   B1MockSessionRow,
@@ -26,7 +27,8 @@ import type {
 } from './types';
 import type { SubjectId } from '../domain/subject';
 
-export const DATABASE_NAME = 'a1-dojo';
+// A new database is opened for SC; the NW database is never migrated or deleted.
+export const DATABASE_NAME = APP_ID;
 export const DATABASE_VERSION = 12;
 
 export class A1DojoDatabase extends Dexie {

@@ -34,18 +34,31 @@ test('表示設定を保存し、バックアップ・全消去・復元を安�
   const download = page.waitForEvent('download');
   await page.getByRole('button', { name: 'バックアップを作成' }).click();
   const backupDownload = await download;
-  await expect(backupDownload.suggestedFilename()).toMatch(/^nw-a1-dojo-backup-\d{8}-\d{6}\.json$/);
+  await expect(backupDownload.suggestedFilename()).toMatch(/^sc-dojo-backup-\d{8}-\d{6}\.json$/);
   const backupPath = await backupDownload.path();
   if (backupPath === null) {
     throw new Error('バックアップファイルを確認できませんでした。');
   }
   const backupJson = await readFile(backupPath, 'utf8');
   const backup = JSON.parse(backupJson) as {
+    format: string;
     data: { answerHistory: unknown[]; favorites: unknown[] };
   };
+  expect(backup.format).toBe('sc-dojo-backup');
   expect(backup.data.answerHistory).toHaveLength(1);
   expect(backup.data.favorites).toHaveLength(1);
   expect(backupJson).not.toContain('問題文');
+
+  await page.locator('#backup-file-input').setInputFiles({
+    name: 'nw-a1-dojo-backup.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({ ...backup, format: 'nw-a1-dojo-backup' })),
+  });
+  await expect(
+    page.getByText('このアプリのバックアップ形式ではありません。別のファイルを選んでください。'),
+  ).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'バックアップを復元しますか？' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'データ管理' })).toContainText('回答履歴1件');
 
   await page.locator('#backup-file-input').setInputFiles(backupPath);
   const preview = page.getByRole('dialog', { name: 'バックアップを復元しますか？' });

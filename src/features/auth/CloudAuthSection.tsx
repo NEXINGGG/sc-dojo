@@ -124,7 +124,7 @@ export function CloudAuthSection() {
       {syncStatus === 'success' && (
         <div className="inline-notice inline-notice-success cloud-auth-error" role="status">
           <strong>同期完了</strong>
-          <p>対象: A-1 / A-2 / B-1</p>
+          <p>対象: 科目A-1 / 科目A-2 / 科目B</p>
           {lastSyncCounts !== undefined ? (
             <p>
               アップロード: {lastSyncCounts.uploaded}件 / ダウンロード: {lastSyncCounts.downloaded}
@@ -196,7 +196,7 @@ function CloudSubjectCounts({
     <dl className="cloud-scope-summary">
       {(['A1', 'A2', 'B1'] as const).map((subject) => (
         <div key={subject}>
-          <dt>{subject}</dt>
+          <dt>{{ A1: '科目A-1', A2: '科目A-2', B1: '科目B' }[subject]}</dt>
           <dd>
             {formatSubjectSyncCounts(
               counts[subject].uploaded,

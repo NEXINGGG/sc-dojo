@@ -149,11 +149,11 @@ describe('Supabase認証', () => {
       expect(supabaseMocks.from).toHaveBeenCalledWith('learning_sync_items');
       expect(supabaseMocks.query.eq).toHaveBeenCalledWith('user_id', 'test-user-id');
       expect(supabaseMocks.query.in).toHaveBeenCalledWith('scope', [
-        'a1.question',
-        'a2.question',
-        'b1.answer',
-        'b1.progress',
-        'b1.reset',
+        'sc:a1.question',
+        'sc:a2.question',
+        'sc:b1.answer',
+        'sc:b1.progress',
+        'sc:b1.reset',
       ]);
     });
   });
@@ -336,6 +336,7 @@ describe('Supabase認証', () => {
     await user.click(signOutButton);
 
     await waitFor(() => expect(supabaseMocks.auth.signOut).toHaveBeenCalledTimes(1));
+    expect(supabaseMocks.auth.signOut).toHaveBeenCalledWith({ scope: 'local' });
     expect(deleteDatabase).not.toHaveBeenCalled();
     resolveInitialSync?.({ data: [], error: null });
   });

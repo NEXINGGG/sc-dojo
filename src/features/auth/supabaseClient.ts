@@ -5,6 +5,7 @@ interface AuthConfiguration {
 }
 
 export const supabaseAuthOptions = {
+  storageKey: 'sc-dojo:auth-session',
   flowType: 'pkce',
   detectSessionInUrl: true,
   persistSession: true,

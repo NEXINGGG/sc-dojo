@@ -131,7 +131,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setIsActionInProgress(true);
     setError(undefined);
     try {
-      const { error: signOutError } = await supabaseClient.auth.signOut();
+      // Signing out of SC must not revoke sessions belonging to the NW app.
+      const { error: signOutError } = await supabaseClient.auth.signOut({ scope: 'local' });
       if (signOutError !== null) {
         setError('ログアウトできませんでした。接続を確認して、もう一度お試しください。');
       }

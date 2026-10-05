@@ -29,7 +29,7 @@ const checks = [
   ['src/features/b1/b1Repository.ts', 'createSubmittedMockConfirmations', '提出時の回答確定'],
   ['src/features/b1/b1Repository.ts', 'discardInProgressMock', '途中模試の破棄'],
   ['src/features/b1/b1Repository.ts', 'deleteCompletedMock', '確定済み模試履歴の削除'],
-  ['src/pages/B1MockSelectionPage.tsx', 'この内容でB-1模試を開始しますか？', '開始前確認画面'],
+  ['src/pages/B1MockSelectionPage.tsx', 'この内容で科目B模試を開始しますか？', '開始前確認画面'],
   ['src/pages/B1SessionPage.tsx', '提出結果の概要', '提出後の結果概要'],
   ['src/pages/B1SessionPage.tsx', '答案はこの端末に自動保存されています。', '自動保存状態の表示'],
   ['src/pages/B1ProgressPage.tsx', 'この模試履歴を削除する', '模試履歴の削除確認'],

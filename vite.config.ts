@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath, URL } from 'node:url';
 import { createPwaManifest, normalizeAppBase } from './src/features/pwa/manifest';
+import { APP_ID } from './src/app/appIdentity';
 
 const appBase = normalizeAppBase(process.env.VITE_APP_BASE);
 
@@ -31,7 +32,10 @@ export default defineConfig({
       ],
       manifest: createPwaManifest(appBase),
       workbox: {
-        cleanupOutdatedCaches: true,
+        cacheId: APP_ID,
+        // Workbox's global cleanup can also delete NW caches on the same origin.
+        // Normal precache activation still removes obsolete entries from the SC cache.
+        cleanupOutdatedCaches: false,
         navigateFallback: 'index.html',
         globPatterns: ['**/*.{html,js,css,png,svg,webmanifest}'],
       },

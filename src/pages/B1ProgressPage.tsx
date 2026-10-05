@@ -43,7 +43,7 @@ export function B1ProgressPage() {
       setPractices(nextPractices);
       setAnalytics(nextAnalytics);
     } catch {
-      setMockMessage('B-1の履歴を読み込めませんでした。ページを再読み込みしてください。');
+      setMockMessage('科目Bの履歴を読み込めませんでした。ページを再読み込みしてください。');
     }
   }, []);
 
@@ -81,13 +81,13 @@ export function B1ProgressPage() {
       setDeleteTarget(undefined);
       await load();
       setMockMessage(
-        'B-1模試履歴を削除しました。通常演習やA-1/A-2の学習データは削除していません。',
+        '科目B模試履歴を削除しました。通常演習やA-1/A-2の学習データは削除していません。',
       );
     } catch (error) {
       setMockMessage(
         error instanceof B1DataError
           ? error.message
-          : 'B-1模試履歴を削除できませんでした。もう一度お試しください。',
+          : '科目B模試履歴を削除できませんでした。もう一度お試しください。',
       );
     } finally {
       setIsDeletingMock(false);
@@ -97,10 +97,10 @@ export function B1ProgressPage() {
   return (
     <>
       <PageHeader
-        description="B-1の参考判定・自己採点だけを表示します。A-1/A-2の正答率や合否には混ぜません。"
-        title="B-1成績"
+        description="科目Bの参考判定・自己採点だけを表示します。A-1/A-2の正答率や合否には混ぜません。"
+        title="科目B成績"
       />
-      <section aria-label="B-1自己採点の集計" className="study-summary-grid">
+      <section aria-label="科目B自己採点の集計" className="study-summary-grid">
         <article className="metric-card">
           <span>総ユニット数</span>
           <strong>{summary?.totalUnitCount ?? 0}件</strong>
@@ -150,7 +150,7 @@ export function B1ProgressPage() {
             </p>
             {inProgressPractice !== undefined ? (
               <Link className="primary-button" to={`/b1/practice/${inProgressPractice.id}`}>
-                途中のB-1演習を再開する
+                途中の科目B演習を再開する
               </Link>
             ) : (
               <button
@@ -229,9 +229,9 @@ export function B1ProgressPage() {
         </ul>
       </section>
       <section className="surface-card exam-history-card">
-        <h2>B-1通常演習履歴</h2>
+        <h2>科目B通常演習履歴</h2>
         {practices.length === 0 ? (
-          <p>まだB-1通常演習の履歴はありません。</p>
+          <p>まだ科目B通常演習の履歴はありません。</p>
         ) : (
           <ol className="exam-history-list">
             {practices.map((session) => (
@@ -248,9 +248,9 @@ export function B1ProgressPage() {
         )}
       </section>
       <section className="surface-card exam-history-card">
-        <h2>B-1模試履歴</h2>
+        <h2>科目B模試履歴</h2>
         {history.length === 0 ? (
-          <p>まだB-1模試の履歴はありません。</p>
+          <p>まだ科目B模試の履歴はありません。</p>
         ) : (
           <ol className="exam-history-list">
             {history.map((session) => {
@@ -303,7 +303,7 @@ export function B1ProgressPage() {
       {deleteTarget !== undefined ? (
         <ConfirmDialog
           description="この模試の答案、自己評価、振り返り記録を削除します。通常演習とA-1/A-2の学習データは削除されません。"
-          title="確定済みのB-1模試履歴を削除しますか？"
+          title="確定済みの科目B模試履歴を削除しますか？"
         >
           <button
             className="danger-button"
@@ -366,7 +366,7 @@ function mockCaseLabel(session: B1MockSessionRow): string {
     ? selectedCases
         .map((caseItem) => `${caseItem.year}年度 問${caseItem.questionNumber}`)
         .join('・')
-    : `${session.year}年度・B-1模試`;
+    : `${session.year}年度・科目B模試`;
 }
 
 function formatB1DateTime(value: string): string {

@@ -84,7 +84,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       sessionRef.current = loaded;
       setSession(loaded);
     } catch {
-      setError('保存したB-1答案を読み込めませんでした。端末の保存領域を確認してください。');
+      setError('保存した科目B答案を読み込めませんでした。端末の保存領域を確認してください。');
     }
   }, [kind, navigate, sessionId]);
 
@@ -107,8 +107,8 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
         setIsSubmitConfirming(false);
       } catch {
         timeoutSubmitting.current = false;
-        reportPersistenceFailure('B-1模試の提出状態を保存できませんでした。');
-        setError('B-1模試を提出できませんでした。再読み込みして、もう一度お試しください。');
+        reportPersistenceFailure('科目B模試の提出状態を保存できませんでした。');
+        setError('科目B模試を提出できませんでした。再読み込みして、もう一度お試しください。');
       } finally {
         submitInFlight.current = false;
         setIsSaving(false);
@@ -195,7 +195,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
           sessionRef.current = previous;
           setSession(previous);
         }
-        reportPersistenceFailure('B-1答案を端末へ保存できませんでした。');
+        reportPersistenceFailure('科目B答案を端末へ保存できませんでした。');
         setError('答案を保存できませんでした。端末の保存領域を確認してください。');
       })
       .finally(() => {
@@ -397,7 +397,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       currentUnit.questionId,
     );
     if (remediation === undefined) {
-      setError('A2推薦情報を読み込めませんでした。元のB-1設問を見直してください。');
+      setError('A2推薦情報を読み込めませんでした。元の科目B設問を見直してください。');
       return;
     }
     const recommendation = recommendB1A2Questions({ remediation, failureCauseIds });
@@ -479,7 +479,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       confirmPersistenceSaved();
       setIsSubmitConfirming(false);
     } catch {
-      setError('B-1演習を完了できませんでした。');
+      setError('科目B演習を完了できませんでした。');
     } finally {
       setIsSaving(false);
     }
@@ -495,7 +495,9 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       setSession(completed);
       confirmPersistenceSaved();
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'B-1模試の結果を確定できませんでした。');
+      setError(
+        caught instanceof Error ? caught.message : '科目B模試の結果を確定できませんでした。',
+      );
     } finally {
       setIsSaving(false);
     }
@@ -515,12 +517,12 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
   if (session !== undefined && (currentUnit === undefined || caseItem === undefined)) {
     return (
       <section className="surface-card recovery-card">
-        <h1>B-1模試の保存内容を確認してください</h1>
+        <h1>科目B模試の保存内容を確認してください</h1>
         <p>
           保存した問題構成を読み込めませんでした。模試一覧へ戻り、途中模試を破棄してから新しく開始できます。
         </p>
         <Link className="primary-button" to={kind === 'mock' ? '/exam' : '/practice'}>
-          {kind === 'mock' ? 'B-1模試一覧へ戻る' : 'B-1演習一覧へ戻る'}
+          {kind === 'mock' ? '科目B模試一覧へ戻る' : '科目B演習一覧へ戻る'}
         </Link>
       </section>
     );
@@ -528,7 +530,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
   if (session === undefined || currentUnit === undefined || caseItem === undefined) {
     return (
       <section aria-busy="true" aria-live="polite" className="surface-card loading-card">
-        <h1>B-1答案を読み込んでいます</h1>
+        <h1>科目B答案を読み込んでいます</h1>
         <p>保存した答案と公式PDFの参照位置を確認しています。</p>
       </section>
     );
@@ -567,7 +569,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       <header className="b1-session-header">
         <div>
           <p className="eyebrow">
-            {isMock ? 'B-1模試' : 'B-1演習'}・{caseItem.year}年度 問{caseItem.questionNumber}
+            {isMock ? '科目B模試' : '科目B演習'}・{caseItem.year}年度 問{caseItem.questionNumber}
           </p>
           <h1>{currentUnit.label}</h1>
           <p>
@@ -597,7 +599,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       <p aria-live="polite" className="b1-autosave-status" role="status">
         {isSaving ? '答案をこの端末に保存中です。' : '答案はこの端末に自動保存されています。'}
       </p>
-      <div className="b1-mobile-tabs" role="tablist" aria-label="B-1表示を切り替え">
+      <div className="b1-mobile-tabs" role="tablist" aria-label="科目B表示を切り替え">
         <button
           aria-selected={tab === 'pdf'}
           onClick={() => setTab('pdf')}
@@ -726,7 +728,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       mockAnswerProgress !== undefined &&
       mockElapsedSeconds !== undefined ? (
         <section
-          aria-label="B-1模試の提出結果"
+          aria-label="科目B模試の提出結果"
           className="surface-card b1-finalize-card b1-mock-result-summary"
         >
           <h2>提出結果の概要</h2>
@@ -835,9 +837,9 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       {isMock && session.status === 'completed' ? (
         <section className="surface-card b1-finalize-card">
           <h2>結果を確定しました</h2>
-          <p>参考判定と自己採点はB-1専用の成績へ保存しました。</p>
+          <p>参考判定と自己採点は科目B専用の成績へ保存しました。</p>
           <Link className="primary-button" to="/progress">
-            B-1成績を見る
+            科目B成績を見る
           </Link>
         </section>
       ) : null}
@@ -857,7 +859,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
               ? `解答欄 ${mockAnswerProgress?.answeredAnswerFieldCount ?? 0} / ${mockAnswerProgress?.totalAnswerFieldCount ?? 0}件を入力済みです。未回答は${mockAnswerProgress?.unansweredAnswerFieldCount ?? 0}件、見直し指定は${mockAnswerProgress?.reviewUnitCount ?? 0}件です。経過時間は${formatB1MockElapsedTime(mockElapsedSeconds ?? 0)}です。提出後に参考判定と自己採点を表示します。`
               : `未回答は${unanswered}件です。完了後に参考判定と自己採点を表示します。`
           }
-          title={isMock ? 'B-1模試を提出しますか？' : 'B-1演習を完了しますか？'}
+          title={isMock ? '科目B模試を提出しますか？' : '科目B演習を完了しますか？'}
         >
           <button
             className="primary-button"

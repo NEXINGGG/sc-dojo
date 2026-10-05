@@ -19,8 +19,8 @@ export interface SubjectConfig {
 export const subjectConfigs: Readonly<Record<SubjectId, SubjectConfig>> = {
   a1: {
     id: 'a1',
-    label: 'A-1 基礎・共通知識',
-    shortLabel: 'A-1',
+    label: '科目A-1 基礎・共通知識',
+    shortLabel: '科目A-1',
     description: '基礎・共通知識を学習します。',
     questionCount: 240,
     exam: {
@@ -32,9 +32,9 @@ export const subjectConfigs: Readonly<Record<SubjectId, SubjectConfig>> = {
   },
   a2: {
     id: 'a2',
-    label: 'A-2 ネットワーク専門',
-    shortLabel: 'A-2',
-    description: 'ネットワーク専門知識を学習します。',
+    label: '科目A-2 セキュリティ専門',
+    shortLabel: '科目A-2',
+    description: 'セキュリティ専門知識を学習します。',
     questionCount: 240,
     exam: {
       questionCount: 25,
@@ -45,8 +45,8 @@ export const subjectConfigs: Readonly<Record<SubjectId, SubjectConfig>> = {
   },
   b1: {
     id: 'b1',
-    label: 'B-1 ネットワーク記述式',
-    shortLabel: 'B-1',
+    label: '科目B 記述式',
+    shortLabel: '科目B',
     description: '公式PDFを参照して、記述式の答案を練習します。',
     questionCount: 83,
     exam: {

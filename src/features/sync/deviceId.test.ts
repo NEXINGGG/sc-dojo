@@ -3,7 +3,7 @@ import { DEVICE_ID_STORAGE_KEY, getDeviceId } from './deviceId';
 
 describe('同期device_id', () => {
   it('初回だけ生成してlocalStorageの値を再利用する', () => {
-    const values = new Map<string, string>();
+    const values = new Map<string, string>([['nw-a1-dojo-device-id', 'nw-device']]);
     const storage = {
       getItem: (key: string) => values.get(key) ?? null,
       setItem: (key: string, value: string) => values.set(key, value),
@@ -13,6 +13,8 @@ describe('同期device_id', () => {
     expect(getDeviceId(storage, createId)).toBe('device-generated');
     expect(getDeviceId(storage, createId)).toBe('device-generated');
     expect(values.get(DEVICE_ID_STORAGE_KEY)).toBe('device-generated');
+    expect(DEVICE_ID_STORAGE_KEY).toBe('sc-dojo-device-id');
+    expect(values.get('nw-a1-dojo-device-id')).toBe('nw-device');
     expect(createId).toHaveBeenCalledTimes(1);
   });
 });

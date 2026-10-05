@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('B-1 starts a 90-minute two-case mock and keeps the official PDF route usable offline', async ({
+test('科目B starts a 90-minute two-case mock and keeps the official PDF route usable offline', async ({
   context,
   page,
 }) => {
@@ -10,7 +10,7 @@ test('B-1 starts a 90-minute two-case mock and keeps the official PDF route usab
     return navigator.serviceWorker?.controller !== null;
   });
 
-  await page.getByRole('radio', { name: /B-1/ }).click();
+  await page.getByRole('radio', { name: /科目B/ }).click();
   await page.getByRole('navigation').getByRole('link', { name: '模試' }).click();
   await expect(page.getByText(/2大問・90分/)).toBeVisible();
 
@@ -18,7 +18,7 @@ test('B-1 starts a 90-minute two-case mock and keeps the official PDF route usab
   await page.getByRole('checkbox').nth(1).check();
   await page.getByRole('button', { name: '開始内容を確認する' }).click();
   await expect(
-    page.getByRole('heading', { name: 'この内容でB-1模試を開始しますか？' }),
+    page.getByRole('heading', { name: 'この内容で科目B模試を開始しますか？' }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'この内容で開始する' }).click();
   await expect(page.getByRole('link', { name: '公式PDFを開く' })).toBeVisible();
@@ -33,11 +33,11 @@ test('B-1 starts a 90-minute two-case mock and keeps the official PDF route usab
   await expect(page.getByText(/問題本文を表示できません/)).toBeVisible();
 });
 
-test('B-1 training records evidence and reveals reflection after confirmed completion', async ({
+test('科目B training records evidence and reveals reflection after confirmed completion', async ({
   page,
 }) => {
   await page.goto('/#/');
-  await page.getByRole('radio', { name: /B-1/ }).click();
+  await page.getByRole('radio', { name: /科目B/ }).click();
   await page.getByRole('navigation').getByRole('link', { name: '演習' }).click();
   await page.getByRole('button', { name: 'この大問を練習する' }).first().click();
 
@@ -60,11 +60,11 @@ test('B-1 training records evidence and reveals reflection after confirmed compl
   await expect(page.getByText('A2連動復習')).toBeVisible();
 });
 
-test('B-1 practical hides requirement breakdown until the learner asks to view it', async ({
+test('科目B practical hides requirement breakdown until the learner asks to view it', async ({
   page,
 }) => {
   await page.goto('/#/');
-  await page.getByRole('radio', { name: /B-1/ }).click();
+  await page.getByRole('radio', { name: /科目B/ }).click();
   await page.getByRole('navigation').getByRole('link', { name: '演習' }).click();
   await page.getByRole('radio', { name: /実践/ }).check();
   await page.getByRole('button', { name: 'この大問を練習する' }).first().click();

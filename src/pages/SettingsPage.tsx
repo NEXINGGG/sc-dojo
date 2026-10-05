@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { APP_SHORT_NAME } from '../app/appIdentity';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { PageHeader } from '../components/PageHeader';
 import { database } from '../database/database';
@@ -350,7 +351,7 @@ export function SettingsPage() {
         <dl className="settings-summary-list">
           <div>
             <dt>アプリ名</dt>
-            <dd>NW道場</dd>
+            <dd>{APP_SHORT_NAME}</dd>
           </div>
           <div>
             <dt>アプリバージョン</dt>
@@ -410,7 +411,7 @@ export function SettingsPage() {
 
       {dialog === 'clear-learning-data' && (
         <ConfirmDialog
-          description="回答履歴、お気に入り、途中セッション、演習結果、模試結果、学習日記録と、端末へ登録したB-1公式PDFを削除します。元に戻せません。表示設定は残ります。"
+          description="回答履歴、お気に入り、途中セッション、演習結果、模試結果、学習日記録と、端末へ登録した科目B公式PDFを削除します。元に戻せません。表示設定は残ります。"
           title="学習データを全消去しますか？"
         >
           <p className="dialog-inline-help">必要なら、先にバックアップを作成できます。</p>
@@ -516,15 +517,15 @@ function DataSummary({ summary }: { summary: StoredDataSummary | undefined }) {
           <dd>v{summary.databaseSchemaVersion}</dd>
         </div>
         <div>
-          <dt>B-1登録PDF</dt>
+          <dt>科目B登録PDF</dt>
           <dd>{summary.b1RegisteredPdfCount}年度分</dd>
         </div>
         <div>
-          <dt>未完了B-1演習</dt>
+          <dt>未完了科目B演習</dt>
           <dd>{summary.b1InProgressPractice ? 'あり' : 'なし'}</dd>
         </div>
         <div>
-          <dt>未完了B-1模試</dt>
+          <dt>未完了科目B模試</dt>
           <dd>{summary.b1InProgressMock ? 'あり' : 'なし'}</dd>
         </div>
       </dl>
@@ -587,15 +588,15 @@ function RestoreDialog({
           <dd>{preview.mockExamSessionCount > 0 ? 'あり' : 'なし'}</dd>
         </div>
         <div>
-          <dt>未完了B-1演習</dt>
+          <dt>未完了科目B演習</dt>
           <dd>{preview.b1PracticeSessionCount > 0 ? 'あり' : 'なし'}</dd>
         </div>
         <div>
-          <dt>B-1模試</dt>
+          <dt>科目B模試</dt>
           <dd>{preview.b1MockSessionCount}件</dd>
         </div>
         <div>
-          <dt>B-1登録PDFの情報</dt>
+          <dt>科目B登録PDFの情報</dt>
           <dd>{preview.b1PdfRegistrationCount}年度分（PDF本体は復元しません）</dd>
         </div>
         <div>

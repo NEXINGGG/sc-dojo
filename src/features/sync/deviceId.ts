@@ -1,4 +1,4 @@
-export const DEVICE_ID_STORAGE_KEY = 'nw-a1-dojo-device-id';
+export const DEVICE_ID_STORAGE_KEY = 'sc-dojo-device-id';
 
 let inMemoryDeviceId: string | undefined;
 

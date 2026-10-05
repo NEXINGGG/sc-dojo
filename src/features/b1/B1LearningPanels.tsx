@@ -443,7 +443,7 @@ export function B1PostSubmissionPanel({
           <>
             <p>{recommendation.notApplicableReason}</p>
             {failureCauseIds.includes('time_management') ? (
-              <p>時間を計りながら、同じB-1設問をもう一度解くことをおすすめします。</p>
+              <p>時間を計りながら、同じ科目B設問をもう一度解くことをおすすめします。</p>
             ) : null}
           </>
         )}

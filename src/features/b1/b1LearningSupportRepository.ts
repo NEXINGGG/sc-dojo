@@ -297,7 +297,7 @@ export class B1LearningSupportRepository {
       .sortBy('updatedAt');
   }
 
-  /** Call this when a B-1 practice or mock session is explicitly deleted. */
+  /** Call this when a 科目B practice or mock session is explicitly deleted. */
   async clearLearningSupportForSession(sessionId: string): Promise<void> {
     validateSession(sessionId);
     await this.database.open();
@@ -339,7 +339,7 @@ function validateQuestionAndSession(questionId: string, sessionId: string): void
 
 function validateQuestion(questionId: string): void {
   if (getB1QuestionUnit(questionId) === undefined) {
-    throw new B1LearningSupportDataError('存在しないB-1設問です。');
+    throw new B1LearningSupportDataError('存在しない科目B設問です。');
   }
 }
 

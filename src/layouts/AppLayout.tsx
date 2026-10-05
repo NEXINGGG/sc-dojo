@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { APP_SHORT_NAME } from '../app/appIdentity';
 import { Icon } from '../components/Icon';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { PwaNotifications } from '../features/pwa/PwaNotifications';
@@ -15,7 +16,7 @@ export function AppLayout() {
   return (
     <div className="app-shell">
       <header className="app-bar">
-        <span className="app-brand">NW道場</span>
+        <span className="app-brand">{APP_SHORT_NAME}</span>
         <ThemeToggle />
       </header>
       <PwaNotifications />

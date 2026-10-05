@@ -36,7 +36,7 @@ const explanationPattern = /理由|問題|説明|目的|動作|効果|対応|対
 const calculationPattern = /計算|帯域|時間|秒|速度|個数|数値|アドレス|CIDR|プレフィックス/;
 
 /**
- * A2 candidates are selected only from terms explicitly recorded for the B-1 case.
+ * A2 candidates are selected only from terms explicitly recorded for the 科目B case.
  * A missing direct match remains not_applicable instead of falling back to a broad category.
  */
 const a2TopicAliases = topicAliasesPayload.aliases as Readonly<Record<string, readonly string[]>>;
@@ -60,12 +60,12 @@ function buildCatalog(): B1LearningSupportCatalog {
   );
   const guidance = b1QuestionUnits.map((unit) => {
     const caseItem = caseByQuestionId.get(unit.questionId);
-    if (caseItem === undefined) throw new Error(`B-1ケースが見つかりません: ${unit.questionId}`);
+    if (caseItem === undefined) throw new Error(`科目Bケースが見つかりません: ${unit.questionId}`);
     return createGuidance(unit, getB1QuestionOfficialReview(unit, caseItem));
   });
   const a2Remediations = b1QuestionUnits.map((unit) => {
     const caseItem = caseByQuestionId.get(unit.questionId);
-    if (caseItem === undefined) throw new Error(`B-1ケースが見つかりません: ${unit.questionId}`);
+    if (caseItem === undefined) throw new Error(`科目Bケースが見つかりません: ${unit.questionId}`);
     return createA2Remediation(unit, caseItem, getB1QuestionOfficialReview(unit, caseItem));
   });
   return {
@@ -246,7 +246,7 @@ function createA2Remediation(
     status: 'linked',
     a2QuestionIds: selected.map((question) => question.code),
     a2CategoryIds: [...new Set(selected.map((question) => question.categoryId))],
-    reason: 'ケースで扱う基礎概念をA2の四肢択一で確認してから、元のB-1設問へ戻るため。',
+    reason: 'ケースで扱う基礎概念をA2の四肢択一で確認してから、元の科目B設問へ戻るため。',
     prerequisiteTopics: caseItem.topics.filter((topic) => a2TopicAliases[topic] !== undefined).slice(0, 3),
     recommendedCount: selected.length,
     triggerFailureCauseIds,

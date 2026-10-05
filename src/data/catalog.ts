@@ -168,7 +168,7 @@ const allQuestionByCode = new Map(
 
 export function getSubjectCatalog(subjectId: SubjectId): SubjectCatalog {
   if (subjectId === 'b1') {
-    throw new Error('B-1は公式PDF参照方式のため、四肢択一の問題カタログを使用しません。');
+    throw new Error('科目Bは公式PDF参照方式のため、四肢択一の問題カタログを使用しません。');
   }
   return catalogs[subjectId];
 }

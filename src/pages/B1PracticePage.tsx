@@ -44,7 +44,7 @@ export function B1PracticePage() {
       navigate(`/b1/practice/${session.id}`);
     } catch (error) {
       if (error instanceof B1DataError) setMessage(error.message);
-      else setMessage('B-1演習を開始できませんでした。端末の保存領域を確認してください。');
+      else setMessage('科目B演習を開始できませんでした。端末の保存領域を確認してください。');
     } finally {
       setIsStarting(undefined);
     }
@@ -75,7 +75,7 @@ export function B1PracticePage() {
     <>
       <PageHeader
         description="大問を1つ選び、設問掲載ページを案内しながら答案を入力します。"
-        title="B-1演習"
+        title="科目B演習"
       />
       <fieldset className="settings-fieldset" disabled={inProgressId !== undefined}>
         <legend>演習モード</legend>
@@ -134,7 +134,7 @@ export function B1PracticePage() {
         </section>
       ) : null}
       {b1AvailableYears.map((year) => (
-        <section aria-label={`${year}年度のB-1演習`} className="b1-case-list" key={year}>
+        <section aria-label={`${year}年度の科目B演習`} className="b1-case-list" key={year}>
           <h2>{year}年度</h2>
           {getB1CasesForYear(year)
             .filter(

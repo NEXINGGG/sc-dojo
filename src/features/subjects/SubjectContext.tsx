@@ -37,7 +37,7 @@ export function SubjectProvider({ children }: PropsWithChildren) {
       })
       .catch(() => {
         if (active) {
-          setError('科目設定を読み込めませんでした。A-1を表示しています。');
+          setError('科目設定を読み込めませんでした。科目A-1を表示しています。');
         }
       })
       .finally(() => {

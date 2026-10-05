@@ -66,7 +66,7 @@ class InMemoryCloudSyncGateway implements CloudSyncGateway {
 afterEach(async () => {
   for (const database of openDatabases.splice(0)) database.close();
   await Promise.all(databaseNames.splice(0).map((name) => indexedDB.deleteDatabase(name)));
-  window.localStorage.removeItem('nw-a1-dojo-device-id');
+  window.localStorage.removeItem('sc-dojo-device-id');
 });
 
 describe('A-1・A-2クラウド同期', () => {

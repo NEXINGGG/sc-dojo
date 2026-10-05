@@ -132,7 +132,7 @@ export class B1Repository {
     const now = mode === modeOrNow ? suppliedNow : modeOrNow;
     const existing = await this.getInProgressPractice();
     if (existing !== undefined) {
-      throw new B1DataError('途中のB-1演習があります。再開するか、先に完了してください。');
+      throw new B1DataError('途中の科目B演習があります。再開するか、先に完了してください。');
     }
     const session: B1PracticeSessionRow = {
       id: createB1SessionId('practice'),
@@ -185,7 +185,7 @@ export class B1Repository {
     completedAt = new Date().toISOString(),
   ): Promise<B1PracticeSessionRow> {
     const session = await this.getPractice(id);
-    if (session === undefined) throw new B1DataError('B-1演習が見つかりません。');
+    if (session === undefined) throw new B1DataError('科目B演習が見つかりません。');
     const completed: B1PracticeSessionRow = {
       ...session,
       status: 'completed',
@@ -204,7 +204,9 @@ export class B1Repository {
       item.questionUnits.some((unit) => unit.questionId === questionId),
     );
     if (caseItem === undefined) {
-      throw new B1DataError('復習するB-1設問が見つかりません。進捗画面を再読み込みしてください。');
+      throw new B1DataError(
+        '復習する科目B設問が見つかりません。進捗画面を再読み込みしてください。',
+      );
     }
     const created = await this.createPractice(caseItem, 'training', now);
     const currentIndex = created.unitIds.indexOf(questionId);
@@ -251,7 +253,7 @@ export class B1Repository {
     const now = usesLegacySignature ? mockTypeOrNow : suppliedNow;
     const existing = await this.getInProgressMock();
     if (existing !== undefined) {
-      throw new B1DataError('途中のB-1模試があります。再開するか、先に提出してください。');
+      throw new B1DataError('途中の科目B模試があります。再開するか、先に提出してください。');
     }
     const candidates = caseIds.map((caseId) => getB1Case(caseId));
     if (
@@ -271,7 +273,7 @@ export class B1Repository {
     const unitIds = getB1UnitIds(caseIds);
     if (unitIds.length === 0 || new Set(unitIds).size !== unitIds.length) {
       throw new B1DataError(
-        'B-1模試の問題構成に重複または不足があります。選択をやり直してください。',
+        '科目B模試の問題構成に重複または不足があります。選択をやり直してください。',
       );
     }
     const session: B1MockSessionRow = {
@@ -312,7 +314,7 @@ export class B1Repository {
     submittedAt = new Date().toISOString(),
   ): Promise<B1MockSessionRow> {
     const session = await this.getMock(id);
-    if (session === undefined) throw new B1DataError('B-1模試が見つかりません。');
+    if (session === undefined) throw new B1DataError('科目B模試が見つかりません。');
     if (session.status !== 'in_progress') return session;
     validateMock(session);
     const submitted: B1MockSessionRow = {
@@ -332,7 +334,7 @@ export class B1Repository {
     completedAt = new Date().toISOString(),
   ): Promise<B1MockSessionRow> {
     const session = await this.getMock(id);
-    if (session === undefined) throw new B1DataError('B-1模試が見つかりません。');
+    if (session === undefined) throw new B1DataError('科目B模試が見つかりません。');
     if (session.status !== 'submitted') {
       throw new B1DataError('提出後に自己採点を完了してください。');
     }
@@ -354,11 +356,15 @@ export class B1Repository {
   }
 
   async discardInProgressMock(id: string): Promise<void> {
-    await this.deleteMockSession(id, 'in_progress', '途中のB-1模試だけを破棄できます。');
+    await this.deleteMockSession(id, 'in_progress', '途中の科目B模試だけを破棄できます。');
   }
 
   async deleteCompletedMock(id: string): Promise<void> {
-    await this.deleteMockSession(id, 'completed', '確定済みのB-1模試だけを履歴から削除できます。');
+    await this.deleteMockSession(
+      id,
+      'completed',
+      '確定済みの科目B模試だけを履歴から削除できます。',
+    );
   }
 
   async getProgressSummary(): Promise<B1ProgressSummary> {
@@ -483,7 +489,7 @@ export class B1Repository {
     now?: string;
   }): Promise<B1AnswerAttemptRow> {
     if (getB1QuestionUnit(input.questionId) === undefined) {
-      throw new B1DataError('答案を書き直す対象のB-1設問が見つかりません。');
+      throw new B1DataError('答案を書き直す対象の科目B設問が見つかりません。');
     }
     if (!input.sessionId.trim()) throw new B1DataError('答案の学習セッションが見つかりません。');
     const now = input.now ?? new Date().toISOString();
@@ -743,7 +749,7 @@ function validatePractice(session: B1PracticeSessionRow): void {
       caseItem.questionUnits.some((unit) => unit.questionId === unitId),
     )
   ) {
-    throw new B1DataError('B-1演習の問題構成が正しくありません。');
+    throw new B1DataError('科目B演習の問題構成が正しくありません。');
   }
   validateB1UnitState(session);
 }
@@ -760,7 +766,7 @@ function validateMock(session: B1MockSessionRow): void {
     (session.mockType === 'official_year' &&
       session.caseIds.some((caseId) => getB1Case(caseId)?.year !== session.year))
   ) {
-    throw new B1DataError('B-1模試の保存データが正しくありません。');
+    throw new B1DataError('科目B模試の保存データが正しくありません。');
   }
   validateB1UnitState(session);
 }
@@ -799,14 +805,14 @@ function validateB1UnitState(
       )
     ) {
       throw new B1DataError(
-        'B-1の回答確定データに不正な内容があります。入力内容を確認してください。',
+        '科目Bの回答確定データに不正な内容があります。入力内容を確認してください。',
       );
     }
   }
   for (const [questionId, updatedAt] of Object.entries(session.selfGradeUpdatedAt ?? {})) {
     if (session.selfGrades[questionId] === undefined || !isIsoDate(updatedAt)) {
       throw new B1DataError(
-        'B-1の自己評価データに不正な内容があります。もう一度評価してください。',
+        '科目Bの自己評価データに不正な内容があります。もう一度評価してください。',
       );
     }
   }
