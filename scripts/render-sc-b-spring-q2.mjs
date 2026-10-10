@@ -1,0 +1,14 @@
+import { writeFileSync } from 'node:fs';
+const b=(x,y,w,h,t)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}"/><text x="${x+w/2}" y="${y+h/2+8}" text-anchor="middle" stroke="none" fill="#111">${t}</text>`;
+const l=(x,y,x2,y2)=>`<path d="M${x} ${y} L${x2} ${y2}"/>`;
+let s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750"><rect width="1200" height="750" fill="white"/><g fill="none" stroke="#111" stroke-width="2" font-family="sans-serif" font-size="24">';
+s+=b(50,150,1100,520,'')+'<text x="1100" y="700" fill="#111" stroke="none">H社</text>';
+s+='<rect x="70" y="175" width="500" height="470" stroke-dasharray="9 6"/><rect x="820" y="175" width="300" height="180" stroke-dasharray="9 6"/><rect x="820" y="415" width="300" height="230" stroke-dasharray="9 6"/>';
+s+='<text x="95" y="208" stroke="none" fill="#111">DMZ</text><text x="830" y="211" stroke="none" fill="#111">内部サーバセグメント</text><text x="920" y="615" stroke="none" fill="#111">PCセグメント</text>';
+s+=b(95,235,310,48,'取引先向けWebサーバ')+b(95,307,270,48,'公開Webサーバ')+b(95,379,270,48,'DNSサーバ ¹')+b(95,451,270,48,'プロキシサーバ ²')+b(95,523,270,48,'メールサーバ')+b(430,583,115,48,'VPN-H')+b(430,380,115,60,'L2SW');
+for(const y of [259,331,403,475,547]) s+=l(y===259?405:365,y,430,410);
+s+=l(488,440,488,583)+l(545,410,620,410)+b(620,380,115,60,'UTM')+l(735,410,850,285)+l(735,410,850,510);
+s+=b(850,480,110,60,'L2SW')+b(1000,480,95,60,'H-PC')+l(960,510,1000,510);
+s+='<ellipse cx="678" cy="85" rx="155" ry="50"/><text x="678" y="93" fill="#111" stroke="none" text-anchor="middle">インターネット</text>'+l(678,135,678,380)+b(310,50,115,60,'R-PC')+l(425,80,523,85);
+writeFileSync('public/questions/sc/b/2024-spring/q2-figure-1.svg',s+'</g></svg>');
+console.log('2024春問2のH社構成を再構成（注記は構造化本文に保持）');

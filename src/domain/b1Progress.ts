@@ -64,7 +64,7 @@ export function getB1UnansweredFieldIds(
   answers: B1AnswerValues,
 ): readonly string[] {
   return unit.answerFields
-    .filter((field) => (answers[field.fieldId] ?? '').trim().length === 0)
+    .filter((field) => !field.gradingExcluded && (answers[field.fieldId] ?? '').trim().length === 0)
     .map((field) => field.fieldId);
 }
 

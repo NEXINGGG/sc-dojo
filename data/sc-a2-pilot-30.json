@@ -1,0 +1,2269 @@
+{
+  "schema_version": 1,
+  "metadata": {
+    "dataset_version": "sc-a2-pilot-v1",
+    "subject_id": "a2",
+    "title": "SC A-2 30問教材試作",
+    "question_count": 30,
+    "production_enabled": false,
+    "source_inventory": "data/sc-a2-past-question-inventory.json",
+    "category_reference": "data/sc-a2-categories-draft.json",
+    "created_on": "2026-10-07",
+    "notice": "開発専用教材。正式A2コード未割当。本番A-2教材は置き換えない。"
+  },
+  "questions": [
+    {
+      "id": 3001,
+      "code": "A2-PILOT-SC-2017-SPRING-Q05",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_threats",
+      "subcategory_id": "sc_security_threats__attack_mechanisms",
+      "subcategory": "攻撃の仕組み",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "セッションIDの固定化（Session Fixation）攻撃の手口はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "HTTPS通信でSecure属性がないCookieにセッションIDを格納するWebサイトにおいて，HTTP通信で送信されるセッションIDを悪意のある者が盗聴する。"
+        },
+        {
+          "id": "B",
+          "text": "URLパラメタにセッションIDを格納するWebサイトにおいて，Refererによってリンク先のWebサイトに送信されるセッションIDが含まれたURLを，悪意のある者が盗用する。"
+        },
+        {
+          "id": "C",
+          "text": "悪意のある者が正規のWebサイトから取得したセッションIDを，利用者のWebブラウザに送り込み，利用者がそのセッションIDでログインして，セッションがログイン状態に変わった後，利用者になりすます。"
+        },
+        {
+          "id": "D",
+          "text": "推測が容易なセッションIDを生成するWebサイトにおいて，悪意のある者がセッションIDを推測し，ログインを試みる。"
+        }
+      ],
+      "correct_choice": "C",
+      "explanation": "問われているのは，攻撃者がいつセッションIDを知るかです。固定化攻撃では，攻撃者が用意したIDを被害者に使わせ，そのIDのままログインさせます。認証後もIDが変わらないと，攻撃者も同じログイン状態を利用できます。ログイン時にIDを再生成し，古いIDを無効にする対策が有効です。",
+      "choice_explanations": {
+        "A": "通信から既存のIDを盗む手口です。ログイン前にIDを被害者へ与える固定化とは異なります。",
+        "B": "Refererから漏れたIDを盗用する手口です。IDを先に固定する手順がありません。",
+        "C": "攻撃者が既知のIDを使わせ，認証後に共有する手順が固定化攻撃に当たります。",
+        "D": "IDの予測によるなりすましです。既知のIDを被害者に使わせる固定化とは異なります。"
+      },
+      "memory_point": "セッション固定化は，攻撃者が先に知っているIDで被害者をログインさせる攻撃。認証の前後でIDを更新する。",
+      "exam_tip": "「盗む」「推測する」「先に使わせる」のどれかを確認し，固定化とセッション乗っ取りの手口を区別する。",
+      "related_terms": [
+        "セッションID",
+        "セッションハイジャック",
+        "Cookie"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2017年度 春期 午前II 問5（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2017-SPRING-Q05",
+        "exam": "SC",
+        "year": 2017,
+        "term": "spring",
+        "question_number": 5,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fzx1-att/2017h29h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fzx1-att/2017h29h_sc_am2_ans.pdf",
+        "official_answer": "ウ",
+        "official_answer_choice_id": "C"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:d131bf31817013910d60ce8b525a873e7abe8c3cc0e9a968fe23d8168fe60a55"
+    },
+    {
+      "id": 3002,
+      "code": "A2-PILOT-SC-2017-SPRING-Q08",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_implementation",
+      "subcategory_id": "sc_security_implementation__access_configuration",
+      "subcategory": "アクセス制御・設定",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "NISTの定義によるクラウドコンピューティングのサービスモデルにおいて，パブリッククラウドサービスの利用企業のシステム管理者が，仮想サーバのゲストOSに対するセキュリティパッチの管理と適用を実施可か実施不可かの組合せのうち，適切なものはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "組合せ",
+          "stimulus": [
+            {
+              "type": "table",
+              "headers": [
+                "IaaS",
+                "PaaS",
+                "SaaS"
+              ],
+              "rows": [
+                [
+                  "実施可",
+                  "実施可",
+                  "実施不可"
+                ]
+              ],
+              "caption": "ゲストOSのパッチ管理・適用"
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "text": "組合せ",
+          "stimulus": [
+            {
+              "type": "table",
+              "headers": [
+                "IaaS",
+                "PaaS",
+                "SaaS"
+              ],
+              "rows": [
+                [
+                  "実施可",
+                  "実施不可",
+                  "実施不可"
+                ]
+              ],
+              "caption": "ゲストOSのパッチ管理・適用"
+            }
+          ]
+        },
+        {
+          "id": "C",
+          "text": "組合せ",
+          "stimulus": [
+            {
+              "type": "table",
+              "headers": [
+                "IaaS",
+                "PaaS",
+                "SaaS"
+              ],
+              "rows": [
+                [
+                  "実施不可",
+                  "実施可",
+                  "実施不可"
+                ]
+              ],
+              "caption": "ゲストOSのパッチ管理・適用"
+            }
+          ]
+        },
+        {
+          "id": "D",
+          "text": "組合せ",
+          "stimulus": [
+            {
+              "type": "table",
+              "headers": [
+                "IaaS",
+                "PaaS",
+                "SaaS"
+              ],
+              "rows": [
+                [
+                  "実施不可",
+                  "実施不可",
+                  "実施可"
+                ]
+              ],
+              "caption": "ゲストOSのパッチ管理・適用"
+            }
+          ]
+        }
+      ],
+      "correct_choice": "B",
+      "explanation": "ゲストOSを利用者が管理できるサービスモデルを問う問題です。IaaSでは，提供された仮想マシンのOSやアプリケーションを利用者が管理します。PaaSでは実行基盤，SaaSではアプリケーションまで提供者が管理するため，利用者がゲストOSへ直接パッチを適用するモデルではありません。",
+      "choice_explanations": {
+        "A": "PaaSのゲストOSも利用者が管理できるとしている点が誤りです。",
+        "B": "IaaSだけが実施可となり，OSの管理範囲と一致します。",
+        "C": "IaaSとPaaSの管理範囲が逆になっています。",
+        "D": "SaaSで利用者がゲストOSへパッチを適用できるとしている点が誤りです。"
+      },
+      "memory_point": "IaaSはOSから上を利用者が管理し，PaaS・SaaSのOSは提供者が管理する。",
+      "exam_tip": "「何のパッチか」を確認する。ゲストOSと，自分で開発したアプリケーションの管理は別。",
+      "related_terms": [
+        "IaaS",
+        "PaaS",
+        "SaaS",
+        "責任共有モデル"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2017年度 春期 午前II 問8（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": false,
+        "source_id": "SC-2017-SPRING-Q08",
+        "exam": "SC",
+        "year": 2017,
+        "term": "spring",
+        "question_number": 8,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fzx1-att/2017h29h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fzx1-att/2017h29h_sc_am2_ans.pdf",
+        "official_answer": "イ",
+        "official_answer_choice_id": "B"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:59e8fbad276a13a7cd85228939825143253c9f1a94f3c4f8a1395956bb5479b3"
+    },
+    {
+      "id": 3003,
+      "code": "A2-PILOT-SC-2017-SPRING-Q13",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_assessment_controls",
+      "subcategory_id": "sc_security_assessment_controls__assessment",
+      "subcategory": "セキュリティ技術評価",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "ウイルス対策ソフトの，フォールスネガティブに該当するものはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "ウイルスに感染していないファイルを，ウイルスに感染していないと判断する。"
+        },
+        {
+          "id": "B",
+          "text": "ウイルスに感染していないファイルを，ウイルスに感染していると判断する。"
+        },
+        {
+          "id": "C",
+          "text": "ウイルスに感染しているファイルを，ウイルスに感染していないと判断する。"
+        },
+        {
+          "id": "D",
+          "text": "ウイルスに感染しているファイルを，ウイルスに感染していると判断する。"
+        }
+      ],
+      "correct_choice": "C",
+      "explanation": "実際の感染状態と検出結果の組合せを問います。ネガティブは「検出しない」という判定，フォールスは「誤った」という意味です。感染しているのに検出しない見逃しがフォールスネガティブ（偽陰性）です。感染していないものを検出する誤警報は偽陽性です。",
+      "choice_explanations": {
+        "A": "感染していないものを正しく陰性と判定した真陰性です。",
+        "B": "感染していないのに陽性と判定した偽陽性です。",
+        "C": "感染しているのに陰性と判定した偽陰性です。",
+        "D": "感染しているものを正しく陽性と判定した真陽性です。"
+      },
+      "memory_point": "偽陰性は見逃し，偽陽性は誤警報。陽性・陰性は実際の状態ではなく検出結果を指す。",
+      "exam_tip": "まず「感染あり／なし」，次に「検出あり／なし」を分けて読む。",
+      "related_terms": [
+        "偽陰性",
+        "偽陽性"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2017年度 春期 午前II 問13（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2017-SPRING-Q13",
+        "exam": "SC",
+        "year": 2017,
+        "term": "spring",
+        "question_number": 13,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fzx1-att/2017h29h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fzx1-att/2017h29h_sc_am2_ans.pdf",
+        "official_answer": "ウ",
+        "official_answer_choice_id": "C"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:34cef1a01f567a40abb543a4af579baf1cc83c885943a539514f82eff8fba12f"
+    },
+    {
+      "id": 3004,
+      "code": "A2-PILOT-SC-2018-SPRING-Q07",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_crypto_auth_pki",
+      "subcategory_id": "sc_crypto_auth_pki__hash_signature",
+      "subcategory": "ハッシュ・署名",
+      "difficulty": "標準",
+      "priority": "S",
+      "question": "発信者がメッセージのハッシュ値からディジタル署名を生成するのに使う鍵はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "受信者の公開鍵"
+        },
+        {
+          "id": "B",
+          "text": "受信者の秘密鍵"
+        },
+        {
+          "id": "C",
+          "text": "発信者の公開鍵"
+        },
+        {
+          "id": "D",
+          "text": "発信者の秘密鍵"
+        }
+      ],
+      "correct_choice": "D",
+      "explanation": "署名を作る主体と使う鍵を問う問題です。発信者は自分の秘密鍵で署名を生成し，受信者は発信者の公開鍵で検証します。これにより，対応する秘密鍵を持つ者が署名したことと，署名対象の改ざんの有無を確認できます。受信者の公開鍵を使う機密性のための暗号化とは，目的が異なります。",
+      "choice_explanations": {
+        "A": "受信者だけが復号できるように暗号化する場合の鍵です。署名生成の鍵ではありません。",
+        "B": "受信者本人しか持たない鍵なので，発信者は署名生成に使えません。",
+        "C": "発信者の署名を検証する鍵です。公開される鍵で署名を生成すると本人だけの操作になりません。",
+        "D": "発信者だけが管理する秘密鍵で署名を生成します。"
+      },
+      "memory_point": "署名は発信者の秘密鍵で作り，発信者の公開鍵で検証する。",
+      "exam_tip": "目的が「署名」か「暗号化」かを先に決め，誰の秘密鍵かを確認する。",
+      "related_terms": [
+        "ディジタル署名",
+        "公開鍵暗号",
+        "ハッシュ"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2018年度 春期 午前II 問7（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2018-SPRING-Q07",
+        "exam": "SC",
+        "year": 2018,
+        "term": "spring",
+        "question_number": 7,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fabr-att/2018h30h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fabr-att/2018h30h_sc_am2_ans.pdf",
+        "official_answer": "エ",
+        "official_answer_choice_id": "D"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:e7036d9475c4bc6eb1b9f588251e1b124a2e2e4b102c77015c46c426344bd37f"
+    },
+    {
+      "id": 3005,
+      "code": "A2-PILOT-SC-2018-FALL-Q18",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_networks",
+      "subcategory_id": "sc_networks__protocols",
+      "subcategory": "通信プロトコル",
+      "difficulty": "応用",
+      "priority": "A",
+      "question": "TCPのコネクション確立方式である3ウェイハンドシェイクを表す図はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "通信手順の図",
+          "stimulus": [
+            {
+              "type": "image",
+              "src": "questions/sc/a2/SC-2018-FALL-Q18-A.svg",
+              "alt": "要求元→要求先へSYN，要求先→要求元へSYN＋ACK，要求元→要求先へACKの3通信。",
+              "caption": "IPA原図の通信順序を再構成",
+              "asset_sha256": "3b7055695d0750627b32ab4883f2f90c8d0154801afce7acb3568524e5309d64"
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "text": "通信手順の図",
+          "stimulus": [
+            {
+              "type": "image",
+              "src": "questions/sc/a2/SC-2018-FALL-Q18-B.svg",
+              "alt": "要求元→要求先へSYN，要求先→要求元へACK，要求先→要求元へSYN，要求元→要求先へACK，要求元→要求先へSYN，要求先→要求元へACKの6通信。",
+              "caption": "IPA原図の通信順序を再構成",
+              "asset_sha256": "1fc744409c5908808338ed9aa8be3ba89c82e65c04defd849ede039d422a785c"
+            }
+          ]
+        },
+        {
+          "id": "C",
+          "text": "通信手順の図",
+          "stimulus": [
+            {
+              "type": "image",
+              "src": "questions/sc/a2/SC-2018-FALL-Q18-C.svg",
+              "alt": "要求元→要求先へSYNを3回送信し，要求先→要求元へACKを1回返す4通信。",
+              "caption": "IPA原図の通信順序を再構成",
+              "asset_sha256": "e63dead4437a421143d26dc90a3989917718cca210a1abf4bd9cd89644a4d570"
+            }
+          ]
+        },
+        {
+          "id": "D",
+          "text": "通信手順の図",
+          "stimulus": [
+            {
+              "type": "image",
+              "src": "questions/sc/a2/SC-2018-FALL-Q18-D.svg",
+              "alt": "要求元→要求先へSYN，要求先→要求元へACKを3回繰り返す6通信。",
+              "caption": "IPA原図の通信順序を再構成",
+              "asset_sha256": "3158297d8b95408208af48537ad1e1f0105a4214a5bfab8200abcbfc6c22a877"
+            }
+          ]
+        }
+      ],
+      "correct_choice": "A",
+      "explanation": "TCP接続開始時の送受信順序を問います。要求元がSYNを送り，要求先は自分のSYNと確認応答のACKを一つのセグメントで返します。要求元が最後にACKを返すので，通信は計3回です。データ転送前に双方の初期シーケンス番号を確認するための手順です。",
+      "choice_explanations": {
+        "A": "SYN，SYN＋ACK，ACKの順に双方が確認し合う3回の通信です。",
+        "B": "SYNとACKを分けて計6回送っており，3ウェイハンドシェイクではありません。",
+        "C": "要求元のSYNの繰返しだけで，要求先のSYNがありません。",
+        "D": "SYNとACKの組を繰り返しており，中央のSYN＋ACKがありません。"
+      },
+      "memory_point": "TCP接続開始はSYN → SYN＋ACK → ACK。中央の応答は二つのフラグを同時に持つ。",
+      "exam_tip": "矢印の数だけでなく，中央が要求先からの「SYN＋ACK」かを見る。",
+      "related_terms": [
+        "TCP",
+        "SYN",
+        "ACK",
+        "シーケンス番号"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2018年度 秋期 午前II 問18（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": false,
+        "source_id": "SC-2018-FALL-Q18",
+        "exam": "SC",
+        "year": 2018,
+        "term": "fall",
+        "question_number": 18,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_sc_am2_ans.pdf",
+        "official_answer": "ア",
+        "official_answer_choice_id": "A"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:e44d358e0fe9ac028b596a9d490285d106f7ee46b13759f5f252a5b989b7cf2f"
+    },
+    {
+      "id": 3006,
+      "code": "A2-PILOT-SC-2018-FALL-Q25",
+      "subject_id": "a2",
+      "domain_id": "management",
+      "category_id": "sc_system_audit",
+      "subcategory_id": "sc_system_audit__audit",
+      "subcategory": "システム監査",
+      "difficulty": "基礎",
+      "priority": "A",
+      "question": "ある企業が，自社が提供するWebシステムのセキュリティについて，外部監査人による保証を受ける場合において，次の表のA～Dのうち，ITに係る保証業務の“三当事者”のそれぞれに該当する者の適切な組合せはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "A"
+        },
+        {
+          "id": "B",
+          "text": "B"
+        },
+        {
+          "id": "C",
+          "text": "C"
+        },
+        {
+          "id": "D",
+          "text": "D"
+        }
+      ],
+      "correct_choice": "C",
+      "explanation": "保証業務で，誰が評価し，誰が責任を負い，誰が報告を利用するかを問います。この例では外部監査人が保証業務を実施し，企業の経営者がWebシステムのセキュリティに責任を負います。報告の想定利用者は，そのシステムを使う利用者です。実施者と対象の責任者を分けて考えます。",
+      "choice_explanations": {
+        "A": "利用者を保証業務の実施者にしており，外部監査人と責任者の役割も合いません。",
+        "B": "外部監査人は実施者ですが，利用者をセキュリティ責任者としている点が誤りです。",
+        "C": "外部監査人・経営者・利用者を，実施者・責任者・想定利用者に正しく対応させています。",
+        "D": "経営者を実施者，外部監査人を責任者にしており，保証対象と評価側が逆です。"
+      },
+      "memory_point": "保証業務の三当事者は，業務の実施者，対象に責任を負う者，報告の想定利用者。",
+      "exam_tip": "「監査を行う人」と「システムに責任を負う人」を先に分け，残る報告利用者を確認する。",
+      "related_terms": [
+        "保証業務",
+        "外部監査",
+        "三当事者"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2018年度 秋期 午前II 問25（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": false,
+        "source_id": "SC-2018-FALL-Q25",
+        "exam": "SC",
+        "year": 2018,
+        "term": "fall",
+        "question_number": 25,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_sc_am2_ans.pdf",
+        "official_answer": "ウ",
+        "official_answer_choice_id": "C"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "stimulus": [
+        {
+          "type": "table",
+          "headers": [
+            "表の行",
+            "保証業務の実施者",
+            "Webシステムのセキュリティに責任を負う者",
+            "保証報告書の想定利用者"
+          ],
+          "rows": [
+            [
+              "A",
+              "Webシステム利用者",
+              "外部監査人",
+              "当該企業の経営者"
+            ],
+            [
+              "B",
+              "外部監査人",
+              "Webシステム利用者",
+              "当該企業の経営者"
+            ],
+            [
+              "C",
+              "外部監査人",
+              "当該企業の経営者",
+              "Webシステム利用者"
+            ],
+            [
+              "D",
+              "当該企業の経営者",
+              "外部監査人",
+              "Webシステム利用者"
+            ]
+          ],
+          "caption": "ITに係る保証業務の“三当事者”"
+        }
+      ],
+      "content_hash": "sha256:e57482f82d3dc17cdf9a63757f088062a68f31024cbb34e08339e01f5dbeede0"
+    },
+    {
+      "id": 3007,
+      "code": "A2-PILOT-SC-2019-SPRING-Q22",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_system_development",
+      "subcategory_id": "sc_system_development__implementation_testing",
+      "subcategory": "実装工程・統合・テスト",
+      "difficulty": "基礎",
+      "priority": "A",
+      "question": "問題を引き起こす可能性があるデータを大量に入力し，そのときの応答や挙動を監視することによって，ソフトウェアの脆弱性を検出するテスト手法はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "限界値分析"
+        },
+        {
+          "id": "B",
+          "text": "実験計画法"
+        },
+        {
+          "id": "C",
+          "text": "ファジング"
+        },
+        {
+          "id": "D",
+          "text": "ロードテスト"
+        }
+      ],
+      "correct_choice": "C",
+      "explanation": "異常な入力に対するソフトウェアの挙動から，脆弱性を探す方法を問います。ファジングでは，壊れた形式や想定外の値などを多数入力し，クラッシュや異常動作を監視します。大量という語だけで負荷試験と判断せず，入力の内容と検出したい問題に注目します。",
+      "choice_explanations": {
+        "A": "値の境界付近を選んで調べる方法です。想定外のデータを大量に投入する説明とは異なります。",
+        "B": "要因の組合せと影響を効率よく調べるために実験を設計する方法です。",
+        "C": "異常な入力を多数試し，応答や挙動から脆弱性を探す方法です。",
+        "D": "多数の処理や接続による負荷への耐性を調べます。入力の異常さによる脆弱性検出とは目的が異なります。"
+      },
+      "memory_point": "ファジングは，想定外の入力で異常動作や脆弱性を探すテスト。",
+      "exam_tip": "大量の「異常なデータ」か，大量の「正常な処理負荷」かを区別する。",
+      "related_terms": [
+        "ファジング",
+        "負荷試験",
+        "境界値分析"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2019年度 春期 午前II 問22（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2019-SPRING-Q22",
+        "exam": "SC",
+        "year": 2019,
+        "term": "spring",
+        "question_number": 22,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000ddiw-att/2019h31h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000ddiw-att/2019h31h_sc_am2_ans.pdf",
+        "official_answer": "ウ",
+        "official_answer_choice_id": "C"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:cca198bc35320196d2d5e7e5666558c2232446d21fab508aa126f1deb5651337"
+    },
+    {
+      "id": 3008,
+      "code": "A2-PILOT-SC-2019-FALL-Q02",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_threats",
+      "subcategory_id": "sc_security_threats__attack_mechanisms",
+      "subcategory": "攻撃の仕組み",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "暗号機能を実装したIoT機器において脅威となるサイドチャネル攻撃に該当するものはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "暗号化関数を線形近似する式を導き，その線形近似式から秘密情報の取得を試みる。"
+        },
+        {
+          "id": "B",
+          "text": "機器が発する電磁波を測定することによって秘密情報の取得を試みる。"
+        },
+        {
+          "id": "C",
+          "text": "二つの平文の差とそれぞれの暗号文の差の関係から，秘密情報の取得を試みる。"
+        },
+        {
+          "id": "D",
+          "text": "理論的にあり得る復号鍵の全てを機器に入力して秘密情報の取得を試みる。"
+        }
+      ],
+      "correct_choice": "B",
+      "explanation": "暗号の数式への攻撃と，実装から漏れる情報への攻撃を区別する問題です。サイドチャネル攻撃は，電磁波・消費電力・処理時間などを観測して秘密情報を推定します。暗号方式そのものが強固でも，機器の実装が情報を漏らすと攻撃が成立し得ます。",
+      "choice_explanations": {
+        "A": "暗号の数学的性質を使う線形解読法です。機器からの物理的な漏えいを観測する方法ではありません。",
+        "B": "電磁波という暗号処理の副次的な情報を測定するサイドチャネル攻撃です。",
+        "C": "平文と暗号文の差を利用する差分解読法です。",
+        "D": "鍵候補を全て試す総当たり攻撃です。"
+      },
+      "memory_point": "サイドチャネル攻撃は，電力・時間・電磁波など実装の漏えいから秘密を推定する。",
+      "exam_tip": "暗号文の計算関係を分析するのか，機器の動作を観測するのかを見る。",
+      "related_terms": [
+        "サイドチャネル攻撃",
+        "線形解読法",
+        "差分解読法"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2019年度 秋期 午前II 問2（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2019-FALL-Q02",
+        "exam": "SC",
+        "year": 2019,
+        "term": "fall",
+        "question_number": 2,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_sc_am2_ans.pdf",
+        "official_answer": "イ",
+        "official_answer_choice_id": "B"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:4d6723719bea4af050d8339f0bc024e444b737b4df0e19a7b2e61ee2f831cfcc"
+    },
+    {
+      "id": 3009,
+      "code": "A2-PILOT-SC-2019-FALL-Q21",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_databases",
+      "subcategory_id": "sc_databases__applications",
+      "subcategory": "データベース応用",
+      "difficulty": "基礎",
+      "priority": "A",
+      "question": "JSON形式で表現される図1，図2のような商品データを複数のWebサービスから取得し，商品データベースとして蓄積する際のデータの格納方法に関する記述のうち，適切なものはどれか。ここで，商品データの取得元となるWebサービスは随時変更され，項目数や内容は予測できない。したがって，商品データベースの検索時に使用するキーにはあらかじめ制限を設けない。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "階層型データベースを使用し，項目名を上位階層とし，値を下位階層とした2階層でデータを格納する。"
+        },
+        {
+          "id": "B",
+          "text": "グラフ型データベースを使用し，商品データの項目名の集合から成るノードと値の集合から成るノードを作り，二つのノードを関係づけたグラフとしてデータを格納する。"
+        },
+        {
+          "id": "C",
+          "text": "ドキュメント型データベースを使用し，項目構成の違いを区別せず，商品データ単位にデータを格納する。"
+        },
+        {
+          "id": "D",
+          "text": "リレーショナルデータベースを使用し，商品データの各項目名を個別の列名とした表を定義してデータを格納する。"
+        }
+      ],
+      "correct_choice": "C",
+      "explanation": "項目構成が予測できないJSONを，商品ごとに保存する方法を問います。ドキュメント型データベースなら，異なる項目や配列を含む文書を商品単位で格納できます。固定した列を事前定義する方式より，設問の可変な構造に適しています。関係DBでもJSON対応は可能ですが，選択肢Dの方式は各項目を固定列にするものです。",
+      "choice_explanations": {
+        "A": "一律の2階層では，関連商品idの配列など可変な商品文書の構造をそのまま扱いにくくなります。",
+        "B": "項目名と値を二つの集合に分けるこの方式では，商品文書を自然に保持する説明になっていません。",
+        "C": "異なる構造のJSONを商品単位の文書として格納でき，設問の条件に合います。",
+        "D": "予測できない全項目を事前に個別の列として定義する方式は，設問の条件に合いません。"
+      },
+      "memory_point": "構造が商品ごとに異なるJSONは，文書単位で保存するドキュメント型DBと相性がよい。",
+      "exam_tip": "DB名だけで決めず，「各項目を固定列にする」など，選択肢が指定した格納方法を読む。",
+      "related_terms": [
+        "JSON",
+        "ドキュメント型DB",
+        "リレーショナルDB"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2019年度 秋期 午前II 問21（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": false,
+        "source_id": "SC-2019-FALL-Q21",
+        "exam": "SC",
+        "year": 2019,
+        "term": "fall",
+        "question_number": 21,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_sc_am2_ans.pdf",
+        "official_answer": "ウ",
+        "official_answer_choice_id": "C"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "stimulus": [
+        {
+          "type": "code",
+          "content": "{\n  \"_id\":\"AA09\",\n  \"品名\":\"47 型テレビ\",\n  \"価格\":\"オープンプライス\",\n  \"関連商品 id\": [\n    \"AA101\",\n    \"BC06\"\n  ]\n}",
+          "caption": "図1 A社Webサービスの商品データ",
+          "language": "json"
+        },
+        {
+          "type": "code",
+          "content": "{\n  \"_id\":\"AA10\",\n  \"商品名\":\"りんご\",\n  \"生産地\":\"青森\",\n  \"価格\":100,\n  \"画像 URL\":\"http://www.example.com/apple.jpg\"\n}",
+          "caption": "図2 B社Webサービスの商品データ",
+          "language": "json"
+        }
+      ],
+      "content_hash": "sha256:102863cb5e56c652cd6b8f83e381e0d67de57828f73ccec2f22780c4971f4197"
+    },
+    {
+      "id": 3010,
+      "code": "A2-PILOT-SC-2020-OCTOBER-Q13",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_assessment_controls",
+      "subcategory_id": "sc_security_assessment_controls__controls",
+      "subcategory": "情報セキュリティ対策",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "ディジタルフォレンジックスに該当するものはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "画像や音楽などのディジタルコンテンツに著作者などの情報を埋め込む。"
+        },
+        {
+          "id": "B",
+          "text": "コンピュータやネットワークのセキュリティ上の弱点を発見するテスト手法の一つであり，システムを実際に攻撃して侵入を試みる。"
+        },
+        {
+          "id": "C",
+          "text": "巧みな話術や盗み聞き，盗み見などの手段によって，ネットワークの管理者や利用者などから，パスワードなどのセキュリティ上重要な情報を入手する。"
+        },
+        {
+          "id": "D",
+          "text": "犯罪に関する証拠となり得るデータを保全し，調査，分析，その後の訴訟などに備える。"
+        }
+      ],
+      "correct_choice": "D",
+      "explanation": "ディジタルフォレンジックスは，電子データを証拠として扱うための保全・調査・分析です。元のデータを不用意に変えず，取得方法や取り扱いを記録します。侵入できるかを試すペネトレーションテストとは，調査の目的が異なります。",
+      "choice_explanations": {
+        "A": "著作権者などの情報を埋め込む電子透かしの説明です。",
+        "B": "実際の攻撃を試すペネトレーションテストの説明です。",
+        "C": "人の心理や行動を利用するソーシャルエンジニアリングの説明です。",
+        "D": "証拠となる電子データの保全・調査・分析を行うフォレンジックスの説明です。"
+      },
+      "memory_point": "フォレンジックスは，電子データを証拠として保全し，事実を調査・分析する。",
+      "exam_tip": "目的が「証拠を保つ」か「侵入可能性を調べる」かを確認する。",
+      "related_terms": [
+        "ディジタルフォレンジックス",
+        "証拠保全",
+        "ペネトレーションテスト"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2020年度 10月試験 午前II 問13（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2020-OCTOBER-Q13",
+        "exam": "SC",
+        "year": 2020,
+        "term": "october",
+        "question_number": 13,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d05l-att/2020r02o_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d05l-att/2020r02o_sc_am2_ans.pdf",
+        "official_answer": "エ",
+        "official_answer_choice_id": "D"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:c11e4636dbbf983f439344830a4ed0b2d514cc32e721264ad6b5dd4ea6f48485"
+    },
+    {
+      "id": 3011,
+      "code": "A2-PILOT-SC-2020-OCTOBER-Q19",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_networks",
+      "subcategory_id": "sc_networks__protocols",
+      "subcategory": "通信プロトコル",
+      "difficulty": "基礎",
+      "priority": "A",
+      "question": "リモートアクセス環境において，認証情報やアカウンティング情報をやり取りするプロトコルはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "CHAP"
+        },
+        {
+          "id": "B",
+          "text": "PAP"
+        },
+        {
+          "id": "C",
+          "text": "PPTP"
+        },
+        {
+          "id": "D",
+          "text": "RADIUS"
+        }
+      ],
+      "correct_choice": "D",
+      "explanation": "利用者の認証や利用記録を，ネットワーク装置とサーバの間でやり取りするプロトコルを問います。RADIUSは，アクセス要求の認証・認可や，接続時間などのアカウンティングに使われます。CHAP・PAPは認証方式，PPTPはトンネルを作るプロトコルです。",
+      "choice_explanations": {
+        "A": "チャレンジと応答で認証する方式です。認証と利用記録をまとめて扱うサーバ連携プロトコルではありません。",
+        "B": "利用者名とパスワードを用いる認証方式です。アカウンティングの仕組みではありません。",
+        "C": "PPPをトンネル化するプロトコルです。認証・アカウンティング情報のサーバ連携を問う答えではありません。",
+        "D": "認証要求とアカウンティング情報をサーバとやり取りするプロトコルです。"
+      },
+      "memory_point": "RADIUSはネットワークアクセスの認証・認可と利用記録を扱う。",
+      "exam_tip": "「アカウンティング」があれば，単なるパスワード認証方式ではなく利用記録を扱う仕組みを見る。",
+      "related_terms": [
+        "RADIUS",
+        "AAA",
+        "CHAP",
+        "PAP"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2020年度 10月試験 午前II 問19（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2020-OCTOBER-Q19",
+        "exam": "SC",
+        "year": 2020,
+        "term": "october",
+        "question_number": 19,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d05l-att/2020r02o_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d05l-att/2020r02o_sc_am2_ans.pdf",
+        "official_answer": "エ",
+        "official_answer_choice_id": "D"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:3f0b8b6ee9ab43c872ab5ead82ee1a123d00fb1999bf16f358e4f5903ee7543e"
+    },
+    {
+      "id": 3012,
+      "code": "A2-PILOT-SC-2021-SPRING-Q02",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_crypto_auth_pki",
+      "subcategory_id": "sc_crypto_auth_pki__pki",
+      "subcategory": "PKI・証明書",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "PKIを構成するOCSPを利用する目的はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "誤って破棄してしまった秘密鍵の再発行処理の進捗状況を問い合わせる。"
+        },
+        {
+          "id": "B",
+          "text": "ディジタル証明書から生成した鍵情報の交換がOCSPクライアントとOCSPレスポンダの間で失敗した際，認証状態を確認する。"
+        },
+        {
+          "id": "C",
+          "text": "ディジタル証明書の失効情報を問い合わせる。"
+        },
+        {
+          "id": "D",
+          "text": "有効期限が切れたディジタル証明書の更新処理の進捗状況を確認する。"
+        }
+      ],
+      "correct_choice": "C",
+      "explanation": "証明書の失効状態を確認する仕組みを問います。OCSPは，対象の証明書についてレスポンダへ問い合わせ，署名された状態情報を受け取ります。CRLが失効した証明書の一覧を配布するのに対し，OCSPは個別の問い合わせです。期限確認や証明書の署名検証まで不要になるわけではありません。",
+      "choice_explanations": {
+        "A": "OCSPは秘密鍵の再発行サービスではありません。",
+        "B": "OCSPは鍵交換を行うプロトコルではありません。",
+        "C": "証明書の失効状態をオンラインで問い合わせる用途です。",
+        "D": "期限切れ証明書の更新進捗を管理する仕組みではありません。"
+      },
+      "memory_point": "OCSPは証明書の失効状態を個別に問い合わせる。CRLは失効証明書の一覧。",
+      "exam_tip": "「有効期限」「失効」「更新処理」を混同しない。期限内でも失効している証明書がある。",
+      "related_terms": [
+        "OCSP",
+        "CRL",
+        "PKI"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2021年度 春期 午前II 問2（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2021-SPRING-Q02",
+        "exam": "SC",
+        "year": 2021,
+        "term": "spring",
+        "question_number": 2,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_sc_am2_ans.pdf",
+        "official_answer": "ウ",
+        "official_answer_choice_id": "C"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:64a2ccd62170437003cd55a17bb2648a439406e5dd938ee094607078f7ca64c9"
+    },
+    {
+      "id": 3013,
+      "code": "A2-PILOT-SC-2021-SPRING-Q15",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_implementation",
+      "subcategory_id": "sc_security_implementation__secure_communications",
+      "subcategory": "安全な通信の実装",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "HSTS（HTTP Strict Transport Security）の説明はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "HSTSを利用するWebサイトにWebブラウザがHTTPでアクセスした場合，Webブラウザから当該サイトへのその後のアクセスを強制的にHTTP over TLS（HTTPS）にする。"
+        },
+        {
+          "id": "B",
+          "text": "HSTSを利用するWebサイトにWebブラウザがHTTPでアクセスした場合，Webページの文書やスクリプトについて，あるオリジンから読み込まれたリソースから他のオリジンのリソースにアクセスできないように制限する。"
+        },
+        {
+          "id": "C",
+          "text": "HTTPSで通信が保護されている場合にだけ，cookieの属性によらず強制的にcookieを送信する。"
+        },
+        {
+          "id": "D",
+          "text": "信頼性が高いサーバ証明書を有するWebサイトとのHTTPS通信では，Webブラウザに鍵マークを表示する。"
+        }
+      ],
+      "correct_choice": "A",
+      "explanation": "HSTSは，ブラウザに対象サイトへのHTTPS接続を強制させる仕組みです。正解Aはその効果を述べています。ただし実際には，ブラウザが安全なHTTPS応答からHSTSを学習するか，事前登録のpreloadを持つ必要があります。未登録の初回HTTP接続そのものが自動的に保護されるとは限りません。",
+      "choice_explanations": {
+        "A": "対象サイトへの接続をHTTPSに強制するHSTSの効果です。学習済みかpreload済みかという前提も押さえます。",
+        "B": "同一オリジンポリシーの説明です。HSTSは接続方式を制御します。",
+        "C": "Cookieの送信はSecure・Domain・Pathなどの条件に従います。HSTSが属性を無視させることはありません。",
+        "D": "ブラウザの表示の説明で，HTTPS接続を強制するHSTSの仕組みではありません。"
+      },
+      "memory_point": "HSTSはブラウザにHTTPS接続を強制する。未登録の初回接続まで必ず保護できるとは限らない。",
+      "exam_tip": "接続方式を強制するHSTSと，CookieのSecure属性，同一オリジンポリシーを分けて読む。",
+      "related_terms": [
+        "HSTS",
+        "HTTPS",
+        "preload",
+        "Secure属性"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2021年度 春期 午前II 問15（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2021-SPRING-Q15",
+        "exam": "SC",
+        "year": 2021,
+        "term": "spring",
+        "question_number": 15,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_sc_am2_ans.pdf",
+        "official_answer": "ア",
+        "official_answer_choice_id": "A"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:f89a4ea654c63c3688027f51d0b8f3944fe7a68af279ef77904b03b6813f392d"
+    },
+    {
+      "id": 3014,
+      "code": "A2-PILOT-SC-2022-SPRING-Q01",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_threats",
+      "subcategory_id": "sc_security_threats__attack_mechanisms",
+      "subcategory": "攻撃の仕組み",
+      "difficulty": "応用",
+      "priority": "S",
+      "question": "Webサーバのログを分析したところ，Webサーバへの攻撃と思われるHTTPリクエストヘッダが記録されていた。次のHTTPリクエストヘッダから推測できる，攻撃者が悪用しようとしていた可能性が高い脆弱性はどれか。ここで，HTTPリクエストヘッダ中の“%20”は空白を意味する。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "HTTPヘッダインジェクション（HTTP Response Splitting）"
+        },
+        {
+          "id": "B",
+          "text": "OSコマンドインジェクション"
+        },
+        {
+          "id": "C",
+          "text": "SQLインジェクション"
+        },
+        {
+          "id": "D",
+          "text": "クロスサイトスクリプティング"
+        }
+      ],
+      "correct_choice": "B",
+      "explanation": "ログ中の入力が何の命令として解釈されるかを問います。「;cat%20/etc/passwd」は，空白を戻すと「;cat /etc/passwd」です。セミコロンでコマンドを区切り，OS上のファイルを読むcatを実行させようとしています。入力をそのままシェルの命令に組み込む実装なら，OSコマンドインジェクションにつながります。",
+      "choice_explanations": {
+        "A": "HTTPヘッダを改行などで分割・追加する攻撃です。ここにはcatというOSコマンドが見えます。",
+        "B": "区切り記号とOSコマンドを入力に混ぜ，サーバで実行させようとする手口です。",
+        "C": "SQL文の構造を変える攻撃です。この入力はSQLではなくシェルのコマンドを含みます。",
+        "D": "ブラウザでスクリプトを実行させる攻撃です。ここで狙われるのはサーバ上のOS処理です。"
+      },
+      "memory_point": "入力がOSコマンドとして実行されるのがOSコマンドインジェクション。URLエンコードを戻して命令を読む。",
+      "exam_tip": "記号だけで判断せず，デコード後の命令と，実行する場所（OS・DB・ブラウザ）を見る。",
+      "related_terms": [
+        "OSコマンドインジェクション",
+        "URLエンコード",
+        "シェル"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2022年度 春期 午前II 問1（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": false,
+        "source_id": "SC-2022-SPRING-Q01",
+        "exam": "SC",
+        "year": 2022,
+        "term": "spring",
+        "question_number": 1,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_sc_am2_ans.pdf",
+        "official_answer": "イ",
+        "official_answer_choice_id": "B"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "stimulus": [
+        {
+          "type": "code",
+          "content": "GET /cgi-bin/submit.cgi?user=;cat%20/etc/passwd HTTP/1.1\nAccept: */*\nAccept-Language: ja\nUA-CPU: x86\nAccept-Encoding: gzip, deflate\nUser-Agent: （省略）\nHost: test.example.com\nConnection: Keep-Alive",
+          "caption": "HTTPリクエストヘッダの一部",
+          "language": "http"
+        }
+      ],
+      "content_hash": "sha256:4a5d17e8a05c370e8990392c4bd59a1d39612a570633dfc20eab004aab7cba3e"
+    },
+    {
+      "id": 3015,
+      "code": "A2-PILOT-SC-2022-FALL-Q15",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_implementation",
+      "subcategory_id": "sc_security_implementation__secure_communications",
+      "subcategory": "安全な通信の実装",
+      "difficulty": "標準",
+      "priority": "S",
+      "question": "SPFによるドメイン認証を実施する場合，SPFの導入時に，電子メール送信元アドレスのドメイン所有者側で行う必要がある設定はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "DNSサーバにSPFレコードを登録する。"
+        },
+        {
+          "id": "B",
+          "text": "DNSの問合せを受け付けるポート番号を変更する。"
+        },
+        {
+          "id": "C",
+          "text": "メールサーバにディジタル証明書を導入する。"
+        },
+        {
+          "id": "D",
+          "text": "メールサーバのTCPポート25番を利用不可にする。"
+        }
+      ],
+      "correct_choice": "A",
+      "explanation": "SPFの判定材料をどこに公開するかを問います。ドメイン所有者は，送信を許可するサーバなどをDNSのTXTレコードにSPFポリシーとして公開します。受信側はそれを参照し，接続元IPアドレスを確認します。SPFは通常エンベロープ送信者などのドメインを対象とし，本文への署名を使うDKIMとは異なります。",
+      "choice_explanations": {
+        "A": "DNSにSPFポリシーを公開する設定です。現在はTXTレコードを使います。",
+        "B": "DNSのポート番号を変えても送信許可の情報は公開できません。",
+        "C": "証明書はTLSなどに使います。SPFの検証はDNSの送信許可情報を参照します。",
+        "D": "25番ポートの遮断は通信制限で，SPFポリシーを公開する設定ではありません。"
+      },
+      "memory_point": "SPFはDNSに公開した送信許可ポリシーと接続元IPを照合する。DKIMは署名を検証する。",
+      "exam_tip": "送信元IPの許可ならSPF，メールへの署名ならDKIM，両者とFromの整合や扱いの方針ならDMARC。",
+      "related_terms": [
+        "SPF",
+        "DNS TXT",
+        "DKIM",
+        "DMARC"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2022年度 秋期 午前II 問15（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2022-FALL-Q15",
+        "exam": "SC",
+        "year": 2022,
+        "term": "fall",
+        "question_number": 15,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000008smf-att/2022r04a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000008smf-att/2022r04a_sc_am2_ans.pdf",
+        "official_answer": "ア",
+        "official_answer_choice_id": "A"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:0e8508b53486745145c689a08219ad858bd9dff6be9bdfae8fd648eb2c4e7cfd"
+    },
+    {
+      "id": 3016,
+      "code": "A2-PILOT-SC-2022-FALL-Q20",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_networks",
+      "subcategory_id": "sc_networks__protocols",
+      "subcategory": "通信プロトコル",
+      "difficulty": "基礎",
+      "priority": "A",
+      "question": "IPネットワークにおいて，クライアントの設定を変えることなくデフォルトゲートウェイの障害を回避するために用いられるプロトコルはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "RARP"
+        },
+        {
+          "id": "B",
+          "text": "RSTP"
+        },
+        {
+          "id": "C",
+          "text": "RTSP"
+        },
+        {
+          "id": "D",
+          "text": "VRRP"
+        }
+      ],
+      "correct_choice": "D",
+      "explanation": "端末のゲートウェイ設定を固定したまま，ルータを切り替える仕組みを問います。VRRPでは複数のルータが仮想ルータを構成し，端末はその仮想IPアドレスを使います。稼働側が故障しても別のルータが引き継ぐため，端末側の設定変更を避けられます。LANのループ防止を行うRSTPとは役割が異なります。",
+      "choice_explanations": {
+        "A": "MACアドレスからIPアドレスを取得するためのプロトコルです。ゲートウェイ冗長化ではありません。",
+        "B": "スイッチ間のループを防ぐプロトコルです。デフォルトゲートウェイの仮想化とは異なります。",
+        "C": "ストリーミングの再生などを制御するプロトコルです。",
+        "D": "仮想IPを持つルータ群でゲートウェイを冗長化するプロトコルです。"
+      },
+      "memory_point": "VRRPは仮想IPを使ってデフォルトゲートウェイを冗長化する。",
+      "exam_tip": "ルータの冗長化か，L2のループ防止か，メディア制御かを，似た略語に惑わされず確認する。",
+      "related_terms": [
+        "VRRP",
+        "仮想IPアドレス",
+        "RSTP"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2022年度 秋期 午前II 問20（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2022-FALL-Q20",
+        "exam": "SC",
+        "year": 2022,
+        "term": "fall",
+        "question_number": 20,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000008smf-att/2022r04a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000008smf-att/2022r04a_sc_am2_ans.pdf",
+        "official_answer": "エ",
+        "official_answer_choice_id": "D"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:8c7b9f80e3816bbc4665001736b4cff1d2da4cf427cc95b81a51b932a7b97554"
+    },
+    {
+      "id": 3017,
+      "code": "A2-PILOT-SC-2023-SPRING-Q12",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_assessment_controls",
+      "subcategory_id": "sc_security_assessment_controls__controls",
+      "subcategory": "情報セキュリティ対策",
+      "difficulty": "標準",
+      "priority": "S",
+      "question": "インラインモードで動作するシグネチャ型IPSの特徴はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "IPSが監視対象の通信経路を流れる全ての通信パケットを経路外からキャプチャできるように通信経路上のスイッチのミラーポートに接続され，通常時の通信から外れた通信を不正と判断して遮断する。"
+        },
+        {
+          "id": "B",
+          "text": "IPSが監視対象の通信経路を流れる全ての通信パケットを経路外からキャプチャできるように通信経路上のスイッチのミラーポートに接続され，定義した異常な通信と合致する通信を不正と判断して遮断する。"
+        },
+        {
+          "id": "C",
+          "text": "IPSが監視対象の通信を通過させるように通信経路上に設置され，通常時の通信から外れた通信を不正と判断して遮断する。"
+        },
+        {
+          "id": "D",
+          "text": "IPSが監視対象の通信を通過させるように通信経路上に設置され，定義した異常な通信と合致する通信を不正と判断して遮断する。"
+        }
+      ],
+      "correct_choice": "D",
+      "explanation": "設置場所と検出方式という二つの条件を問います。インラインは通信がIPSを通過する配置なので，その場で遮断できます。シグネチャ型は登録済みの攻撃パターンに合致する通信を検出します。「通常から外れる」を検出するのはアノマリ型です。",
+      "choice_explanations": {
+        "A": "経路外のミラーポート接続であり，検出方式もアノマリ型です。両方の条件が違います。",
+        "B": "検出方式はシグネチャ型ですが，設置場所が経路外でインラインではありません。",
+        "C": "設置場所はインラインですが，検出方式がアノマリ型です。",
+        "D": "通信経路上への設置と，登録した異常パターンとの照合の両方が一致します。"
+      },
+      "memory_point": "インラインは通信経路上，シグネチャ型は既知の攻撃パターンとの照合。",
+      "exam_tip": "「配置」と「検出方法」を別々に判定する。片方だけ合う選択肢を除く。",
+      "related_terms": [
+        "IPS",
+        "インライン",
+        "シグネチャ型",
+        "アノマリ型"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2023年度 春期 午前II 問12（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2023-SPRING-Q12",
+        "exam": "SC",
+        "year": 2023,
+        "term": "spring",
+        "question_number": 12,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_sc_am2_ans.pdf",
+        "official_answer": "エ",
+        "official_answer_choice_id": "D"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:9c495164422457e2ec97a906a6188cf7e01b9d762a2324640778ff6a5152027c"
+    },
+    {
+      "id": 3018,
+      "code": "A2-PILOT-SC-2023-FALL-Q02",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_implementation",
+      "subcategory_id": "sc_security_implementation__secure_communications",
+      "subcategory": "安全な通信の実装",
+      "difficulty": "標準",
+      "priority": "S",
+      "question": "TLS 1.3の暗号スイートに関する説明のうち，適切なものはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "AEAD（Authenticated Encryption with Associated Data）とハッシュアルゴリズムの組みで構成されている。"
+        },
+        {
+          "id": "B",
+          "text": "TLS 1.2で規定されている共通鍵暗号AES-CBCをサポート必須の暗号アルゴリズムとして継続利用できるようにしている。"
+        },
+        {
+          "id": "C",
+          "text": "Wi-Fiアライアンスにおいて規格化されている。"
+        },
+        {
+          "id": "D",
+          "text": "サーバとクライアントのそれぞれがお互いに別の暗号アルゴリズムを選択できる。"
+        }
+      ],
+      "correct_choice": "A",
+      "explanation": "TLS 1.3で暗号スイートが指定する範囲を問います。AEADは暗号化と改ざん検出をまとめて行う方式で，TLS 1.3のスイートはAEADと鍵導出などに使うハッシュの組です。鍵交換や署名方式は別に選びます。TLS 1.2のスイートに含まれていた指定範囲との違いを押さえます。",
+      "choice_explanations": {
+        "A": "TLS 1.3のスイートはAEADとハッシュの組合せを指定します。",
+        "B": "TLS 1.3はCBC方式のスイートを採用せず，AEADを使用します。",
+        "C": "TLSはIETFで標準化されます。Wi-Fiアライアンスの規格ではありません。",
+        "D": "ハンドシェイクで双方が合意したスイートを使います。各自が別々に選ぶ方式ではありません。"
+      },
+      "memory_point": "TLS 1.3の暗号スイートはAEAD＋ハッシュ。鍵交換と署名方式は別に選ぶ。",
+      "exam_tip": "TLSの版を確認する。1.2のスイート構成をそのまま1.3へ当てはめない。",
+      "related_terms": [
+        "TLS 1.3",
+        "AEAD",
+        "暗号スイート",
+        "HKDF"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2023年度 秋期 午前II 問2（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2023-FALL-Q02",
+        "exam": "SC",
+        "year": 2023,
+        "term": "fall",
+        "question_number": 2,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_sc_am2_ans.pdf",
+        "official_answer": "ア",
+        "official_answer_choice_id": "A"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:eec85f480e2acfdc2a9b1ed1622b42d256ae51fbfde19e0c4bfafb658966972f"
+    },
+    {
+      "id": 3019,
+      "code": "A2-PILOT-SC-2023-FALL-Q23",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_development_service_management",
+      "subcategory_id": "sc_development_service_management__development_management",
+      "subcategory": "ソフトウェア開発管理技術",
+      "difficulty": "基礎",
+      "priority": "A",
+      "question": "アジャイル開発手法の説明のうち，スクラムのものはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "コミュニケーション，シンプル，フィードバック，勇気，尊重の五つの価値を基礎とし，テスト駆動型開発，ペアプログラミング，リファクタリングなどのプラクティスを推奨する。"
+        },
+        {
+          "id": "B",
+          "text": "推測（プロジェクト立上げ，適応的サイクル計画），協調（並行コンポーネント開発），学習（品質レビュー，最終QA／リリース）のライフサイクルをもつ。"
+        },
+        {
+          "id": "C",
+          "text": "プロダクトオーナーなどの役割，スプリントレビューなどのイベント，プロダクトバックログなどの作成物，及びルールから成る。"
+        },
+        {
+          "id": "D",
+          "text": "モデルの全体像を作成した上で，優先度を付けた詳細なフィーチャリストを作成し，フィーチャを単位として計画し，フィーチャごとの設計と構築を繰り返す。"
+        }
+      ],
+      "correct_choice": "C",
+      "explanation": "アジャイル手法ごとの特徴を見分ける問題です。スクラムではプロダクトオーナー，スクラムマスター，開発者が，スプリントという区切りで成果を検査し，適応します。プロダクトバックログやスプリントレビューはスクラムの用語です。ペアプログラミングなどの実践を前面に出すXPとは説明の焦点が異なります。",
+      "choice_explanations": {
+        "A": "五つの価値とペアプログラミングなどはXPの説明です。",
+        "B": "推測・協調・学習のライフサイクルは適応的ソフトウェア開発（ASD）の説明です。",
+        "C": "役割・イベント・作成物の組合せがスクラムに対応します。現在のガイドでは役割を責任と表現します。",
+        "D": "フィーチャ単位で設計・構築を行うFDDの説明です。"
+      },
+      "memory_point": "スクラムはスプリントで検査と適応を繰り返す。バックログ・プロダクトオーナー・レビューが手掛かり。",
+      "exam_tip": "アジャイルという共通点だけで選ばず，手法固有の作成物やイベント名を探す。",
+      "related_terms": [
+        "スクラム",
+        "スプリント",
+        "プロダクトバックログ",
+        "XP",
+        "FDD"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2023年度 秋期 午前II 問23（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2023-FALL-Q23",
+        "exam": "SC",
+        "year": 2023,
+        "term": "fall",
+        "question_number": 23,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_sc_am2_ans.pdf",
+        "official_answer": "ウ",
+        "official_answer_choice_id": "C"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:4fabf7de0467d1612fe13049b1d2c79d30cdd0ffb1a3493fe124fde8bb381c23"
+    },
+    {
+      "id": 3020,
+      "code": "A2-PILOT-SC-2024-SPRING-Q02",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_crypto_auth_pki",
+      "subcategory_id": "sc_crypto_auth_pki__hash_signature",
+      "subcategory": "ハッシュ・署名",
+      "difficulty": "標準",
+      "priority": "S",
+      "question": "送信者から受信者にメッセージ認証符号（MAC：Message Authentication Code）を付与したメッセージを送り，次に受信者が第三者に転送した。そのときのMACに関する記述のうち，適切なものはどれか。ここで，共通鍵は送信者と受信者だけが知っており，送信者と受信者のそれぞれの公開鍵は第三者を含める3名が知っているものとする。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "MACは，送信者がメッセージと共通鍵を用いて生成する。MACを用いると，受信者がメッセージの完全性を確認できる。"
+        },
+        {
+          "id": "B",
+          "text": "MACは，送信者がメッセージと共通鍵を用いて生成する。MACを用いると，第三者が送信者の真正性を確認できる。"
+        },
+        {
+          "id": "C",
+          "text": "MACは，送信者がメッセージと受信者の公開鍵を用いて生成する。MACを用いると，第三者がメッセージの完全性を確認できる。"
+        },
+        {
+          "id": "D",
+          "text": "MACは，送信者がメッセージと送信者の公開鍵を用いて生成する。MACを用いると，受信者が送信者の真正性を確認できる。"
+        }
+      ],
+      "correct_choice": "A",
+      "explanation": "共通鍵を使うMACで，誰が何を検証できるかを問います。受信者は同じ鍵でMACを計算して比べ，改ざんの有無を確認できます。第三者は鍵を知らないため検証できず，受信者自身もMACを作れるので送信者だけが作った証明にはなりません。第三者へ発信者を証明する署名とは区別します。",
+      "choice_explanations": {
+        "A": "メッセージと共通鍵でMACを作り，鍵を持つ受信者が完全性を確認できます。",
+        "B": "第三者は共通鍵を持たず，検証できません。MACは第三者に送信者だけの作成を証明する方式でもありません。",
+        "C": "MACは受信者の公開鍵で作るものではありません。第三者による検証の説明も条件に合いません。",
+        "D": "MACは送信者の公開鍵ではなく共通鍵を使います。"
+      },
+      "memory_point": "MACは共通鍵で完全性を検証する。鍵を共有する相手も作成できるため，第三者への発信者証明とは別。",
+      "exam_tip": "鍵を誰が知るかを確認する。第三者への証明が必要ならMACとディジタル署名の違いを見る。",
+      "related_terms": [
+        "MAC",
+        "共通鍵",
+        "完全性",
+        "ディジタル署名"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2024年度 春期 午前II 問2（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2024-SPRING-Q02",
+        "exam": "SC",
+        "year": 2024,
+        "term": "spring",
+        "question_number": 2,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_am2_ans.pdf",
+        "official_answer": "ア",
+        "official_answer_choice_id": "A"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:65e7173558e64187b5a381edff3340deac918d3f292900650f9bebdcd36935f0"
+    },
+    {
+      "id": 3021,
+      "code": "A2-PILOT-SC-2024-SPRING-Q17",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_assessment_controls",
+      "subcategory_id": "sc_security_assessment_controls__controls",
+      "subcategory": "情報セキュリティ対策",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "ソフトウェアの脆弱性管理のためのツールとしても利用されるSBOM（Software Bill of Materials）はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "ソフトウェアの脆弱性に対する，ベンダーに依存しないオープンで汎用的な深刻度の評価方法"
+        },
+        {
+          "id": "B",
+          "text": "ソフトウェアのセキュリティアップデートを行うときに推奨される管理プロセス，組織体制などをまとめたガイドライン"
+        },
+        {
+          "id": "C",
+          "text": "ソフトウェアを構成するコンポーネント，互いの依存関係などのリスト"
+        },
+        {
+          "id": "D",
+          "text": "米国の非営利団体MITREによって策定された，ソフトウェアにおけるセキュリティ上の弱点の種類を識別するための基準"
+        }
+      ],
+      "correct_choice": "C",
+      "explanation": "SBOMはソフトウェアの部品表です。構成するコンポーネントやバージョン，依存関係を把握し，ある部品の脆弱性が自分の製品に影響するかを調べる材料になります。SBOM自体が脆弱性の深刻度を採点したり，安全性を保証したりするものではありません。",
+      "choice_explanations": {
+        "A": "脆弱性の深刻度を評価するCVSSの説明です。",
+        "B": "アップデートの管理プロセスを示す文書で，構成部品の一覧ではありません。",
+        "C": "構成する部品と依存関係などを列挙するSBOMの説明です。",
+        "D": "ソフトウェアの弱点の種類を分類するCWEの説明です。"
+      },
+      "memory_point": "SBOMはソフトウェアの部品表。脆弱性情報と照合して，影響する製品を探す材料になる。",
+      "exam_tip": "「部品一覧」はSBOM，「深刻度」はCVSS，「弱点の種類」はCWEと，情報の役割で区別する。",
+      "related_terms": [
+        "SBOM",
+        "依存関係",
+        "CVSS",
+        "CWE"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2024年度 春期 午前II 問17（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2024-SPRING-Q17",
+        "exam": "SC",
+        "year": 2024,
+        "term": "spring",
+        "question_number": 17,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_am2_ans.pdf",
+        "official_answer": "ウ",
+        "official_answer_choice_id": "C"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:fb860d2de0bf31889147146f9649ae7ee56c49b8788ee6a834704c92c7781607"
+    },
+    {
+      "id": 3022,
+      "code": "A2-PILOT-SC-2024-SPRING-Q20",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_networks",
+      "subcategory_id": "sc_networks__applications",
+      "subcategory": "ネットワーク応用",
+      "difficulty": "基礎",
+      "priority": "A",
+      "question": "Webサーバから送信されるHTTPヘッダーのうち，Webサーバからの応答の内容を，Webブラウザやプロキシサーバなどのキャッシュに保持させないようにするものはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "Cache-Control: no-cache"
+        },
+        {
+          "id": "B",
+          "text": "Cache-Control: no-store"
+        },
+        {
+          "id": "C",
+          "text": "Cache-Control: private"
+        },
+        {
+          "id": "D",
+          "text": "Cache-Control: public"
+        }
+      ],
+      "correct_choice": "B",
+      "explanation": "応答を保存させない指定を問います。no-storeはキャッシュに応答を保存させない指示です。no-cacheは名前が似ていますが，保存自体を禁止せず，再利用前にサーバで検証することを要求します。privateとpublicは，共有キャッシュで扱えるかに関わる指定です。",
+      "choice_explanations": {
+        "A": "保存は可能ですが，再利用前の検証が必要です。保存禁止とは異なります。",
+        "B": "ブラウザや共有キャッシュに応答を保存させない指定です。",
+        "C": "共有キャッシュによる保存を禁止しますが，利用者専用のキャッシュでは保存できます。",
+        "D": "共有キャッシュでの保存を許可する指定で，保存禁止とは逆です。"
+      },
+      "memory_point": "no-storeは保存禁止，no-cacheは再利用前に検証。privateでもブラウザの保存は可能。",
+      "exam_tip": "「保存しない」と「確認してから再利用する」を分ける。cacheという名前だけで判断しない。",
+      "related_terms": [
+        "Cache-Control",
+        "no-store",
+        "no-cache",
+        "共有キャッシュ"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2024年度 春期 午前II 問20（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2024-SPRING-Q20",
+        "exam": "SC",
+        "year": 2024,
+        "term": "spring",
+        "question_number": 20,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_am2_ans.pdf",
+        "official_answer": "イ",
+        "official_answer_choice_id": "B"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:f2258308f2dc98605cef54b5b4029864762f236c7d5a28365066140ad74a2c0c"
+    },
+    {
+      "id": 3023,
+      "code": "A2-PILOT-SC-2024-SPRING-Q21",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_databases",
+      "subcategory_id": "sc_databases__operations",
+      "subcategory": "データ操作",
+      "difficulty": "応用",
+      "priority": "A",
+      "question": "“人事”表に対して次のSQL文を実行したとき，結果として得られる社員番号はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "1，2，5"
+        },
+        {
+          "id": "B",
+          "text": "1，3，4，5"
+        },
+        {
+          "id": "C",
+          "text": "1，3，5"
+        },
+        {
+          "id": "D",
+          "text": "1，5"
+        }
+      ],
+      "correct_choice": "D",
+      "explanation": "括弧でまとめたOR条件と，ANDで加えた所属条件の両方を満たす行を探します。総務部は社員1・2・5です。1は勤続13年，5は年齢29歳なので括弧内を満たします。2は勤続5年・年齢28歳で，どちらも満たしません。社員3・4は括弧内を満たしても総務部ではないので除きます。",
+      "choice_explanations": {
+        "A": "社員2は勤続年数＞10も年齢＞28も満たさないため含まれません。",
+        "B": "所属条件を無視した結果です。社員3・4は総務部ではありません。",
+        "C": "社員3は勤続年数の条件を満たしますが，所属条件を満たしません。",
+        "D": "総務部で，勤続年数又は年齢の条件を満たす社員1・5だけです。"
+      },
+      "memory_point": "括弧内のORを一つの条件として扱い，ANDで結ばれた条件も全て満たす行を選ぶ。",
+      "exam_tip": "先に必須の所属条件で候補を絞り，「＞」に境界値を含めないことを確認する。",
+      "related_terms": [
+        "SQL",
+        "WHERE",
+        "AND",
+        "OR"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2024年度 春期 午前II 問21（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": false,
+        "source_id": "SC-2024-SPRING-Q21",
+        "exam": "SC",
+        "year": 2024,
+        "term": "spring",
+        "question_number": 21,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_am2_ans.pdf",
+        "official_answer": "エ",
+        "official_answer_choice_id": "D"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "stimulus": [
+        {
+          "type": "table",
+          "headers": [
+            "社員番号",
+            "所属",
+            "勤続年数",
+            "年齢"
+          ],
+          "rows": [
+            [
+              "1",
+              "総務部",
+              "13",
+              "31"
+            ],
+            [
+              "2",
+              "総務部",
+              "5",
+              "28"
+            ],
+            [
+              "3",
+              "人事部",
+              "11",
+              "28"
+            ],
+            [
+              "4",
+              "営業部",
+              "8",
+              "30"
+            ],
+            [
+              "5",
+              "総務部",
+              "7",
+              "29"
+            ]
+          ],
+          "caption": "人事"
+        },
+        {
+          "type": "code",
+          "content": "SELECT 社員番号 FROM 人事\n    WHERE (勤続年数 > 10 OR 年齢 > 28)\n    AND 所属 = '総務部'",
+          "caption": "SQL文",
+          "language": "sql"
+        }
+      ],
+      "content_hash": "sha256:796f5ff5dd4a8c51d43e5eb82731f4429bf223c7c353c369c73333997af587bd"
+    },
+    {
+      "id": 3024,
+      "code": "A2-PILOT-SC-2024-FALL-Q14",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_implementation",
+      "subcategory_id": "sc_security_implementation__secure_coding",
+      "subcategory": "安全なコード・入力処理",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "クリックジャッキング攻撃に有効な対策はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "cookieに，HttpOnly属性を設定する。"
+        },
+        {
+          "id": "B",
+          "text": "cookieに，Secure属性を設定する。"
+        },
+        {
+          "id": "C",
+          "text": "HTTPレスポンスヘッダーに，Strict-Transport-Securityを設定する。"
+        },
+        {
+          "id": "D",
+          "text": "HTTPレスポンスヘッダーに，X-Frame-Optionsを設定する。"
+        }
+      ],
+      "correct_choice": "D",
+      "explanation": "別サイトの画面に自分のページを重ねられ，意図しない操作をさせられる攻撃への対策を問います。X-Frame-Optionsでフレームへの埋込みを制限すると，この手口を防げます。現在はCSPのframe-ancestorsでも埋込み元を制御できます。Cookieの読み取りや通信路の保護とは別の対策です。",
+      "choice_explanations": {
+        "A": "スクリプトからCookieを読み取ることを制限します。画面の埋込みは制限しません。",
+        "B": "Cookieを安全な通信で送るための属性です。画面の埋込み対策ではありません。",
+        "C": "HTTPS接続を強制するHSTSの指定です。フレームへの埋込みは制限しません。",
+        "D": "DENYやSAMEORIGINでフレームへの埋込みを制限し，クリックジャッキングを防ぎます。"
+      },
+      "memory_point": "クリックジャッキング対策はページの埋込み制限。X-Frame-OptionsやCSPのframe-ancestorsを使う。",
+      "exam_tip": "攻撃が画面の重ね合わせなら埋込み制御を探す。Cookie属性とHTTPS強制は別の役割。",
+      "related_terms": [
+        "クリックジャッキング",
+        "X-Frame-Options",
+        "CSP",
+        "frame-ancestors"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2024年度 秋期 午前II 問14（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2024-FALL-Q14",
+        "exam": "SC",
+        "year": 2024,
+        "term": "fall",
+        "question_number": 14,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_sc_am2_ans.pdf",
+        "official_answer": "エ",
+        "official_answer_choice_id": "D"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:1d60b7ea8d9dae194598486c94db0760b9d26cfec0955134617893aad94b0050"
+    },
+    {
+      "id": 3025,
+      "code": "A2-PILOT-SC-2024-FALL-Q24",
+      "subject_id": "a2",
+      "domain_id": "management",
+      "category_id": "sc_development_service_management",
+      "subcategory_id": "sc_development_service_management__service_management",
+      "subcategory": "サービスマネジメント",
+      "difficulty": "基礎",
+      "priority": "A",
+      "question": "JIS Q 20000-1:2020（サービスマネジメントシステム要求事項）によれば，サービスマネジメントシステム（SMS）における継続的改善の定義はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "意図した結果を得るためにインプットを使用する，相互に関連する又は相互に作用する一連の活動"
+        },
+        {
+          "id": "B",
+          "text": "価値を提供するため，サービスの計画立案，設計，移行，提供及び改善のための組織の活動及び資源を，指揮し，管理する，一連の能力及びプロセス"
+        },
+        {
+          "id": "C",
+          "text": "サービスを中断なしに，又は合意した可用性を一貫して提供する能力"
+        },
+        {
+          "id": "D",
+          "text": "パフォーマンスを向上するために繰り返し行われる活動"
+        }
+      ],
+      "correct_choice": "D",
+      "explanation": "継続的改善は，パフォーマンスを向上させるために繰り返す活動です。結果を確認し，次の改善へつなげる反復がポイントです。インプットから結果を作るプロセスの定義や，サービスを途切れずに提供する能力とは区別します。",
+      "choice_explanations": {
+        "A": "インプットを使って結果を得るプロセスの定義です。",
+        "B": "活動や資源を指揮・管理するサービスマネジメントの定義です。",
+        "C": "サービス継続の能力を述べています。改善活動そのものの定義ではありません。",
+        "D": "パフォーマンス向上を目的とする反復活動が継続的改善です。"
+      },
+      "memory_point": "継続的改善はパフォーマンス向上のための反復活動。無停止のサービス提供とは別の概念。",
+      "exam_tip": "「継続」が活動の反復を指すのか，サービスを止めない能力を指すのかを見る。",
+      "related_terms": [
+        "SMS",
+        "継続的改善",
+        "プロセス"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2024年度 秋期 午前II 問24（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2024-FALL-Q24",
+        "exam": "SC",
+        "year": 2024,
+        "term": "fall",
+        "question_number": 24,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_sc_am2_ans.pdf",
+        "official_answer": "エ",
+        "official_answer_choice_id": "D"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:06de7e3dda30ddc5afa164629cf0aa0302a535e53e78496f6bae82622730cb66"
+    },
+    {
+      "id": 3026,
+      "code": "A2-PILOT-SC-2025-SPRING-Q03",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_crypto_auth_pki",
+      "subcategory_id": "sc_crypto_auth_pki__hash_signature",
+      "subcategory": "ハッシュ・署名",
+      "difficulty": "標準",
+      "priority": "S",
+      "question": "SHA-512/256の説明はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "入力データにSHA-256に基づいたハッシュ関数を1回適用し，256ビットの値を出力した後，512ビットに拡張して出力する。"
+        },
+        {
+          "id": "B",
+          "text": "入力データにSHA-256に基づいたハッシュ関数を512回繰り返し適用し，256ビットの値を出力する。"
+        },
+        {
+          "id": "C",
+          "text": "入力データにSHA-512に基づいたハッシュ関数を1回適用し，512ビットの値を出力した後，256ビットに切り詰めて出力する。"
+        },
+        {
+          "id": "D",
+          "text": "入力データにSHA-512に基づいたハッシュ関数を256回繰り返し適用し，512ビットの値を出力する。"
+        }
+      ],
+      "correct_choice": "C",
+      "explanation": "方式名の512と256が何を表すかを問います。SHA-512/256はSHA-512の処理を基にし，結果を256ビットに切り詰める方式です。ただし初期値はSHA-512と異なります。普通のSHA-512の結果を単に半分にした値とも，SHA-256とも同じではありません。数字は適用回数を表しません。",
+      "choice_explanations": {
+        "A": "基になる処理も出力長も逆です。256ビットの値を512ビットへ拡張する方式ではありません。",
+        "B": "512は繰返し回数ではありません。SHA-256を512回使う方式ではありません。",
+        "C": "SHA-512を基に処理し，256ビットへ切り詰めて出力する説明です。専用の初期値を使う点も押さえます。",
+        "D": "256は出力長を表し，繰返し回数ではありません。出力も512ビットではありません。"
+      },
+      "memory_point": "SHA-512/256はSHA-512を基に，専用の初期値で計算して256ビットを出力する。",
+      "exam_tip": "基になる方式と最終出力長を分けて読む。「/256」を繰返し回数と解釈しない。",
+      "related_terms": [
+        "SHA-512/256",
+        "SHA-512",
+        "SHA-256",
+        "初期値"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2025年度 春期 午前II 問3（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2025-SPRING-Q03",
+        "exam": "SC",
+        "year": 2025,
+        "term": "spring",
+        "question_number": 3,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_am2_ans.pdf",
+        "official_answer": "ウ",
+        "official_answer_choice_id": "C"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:aac05edf3037e2989d7fc6c50518f3bb4268f5a495fa069a3438a04bb188db38"
+    },
+    {
+      "id": 3027,
+      "code": "A2-PILOT-SC-2025-SPRING-Q12",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_management",
+      "subcategory_id": "sc_security_management__isms_policy",
+      "subcategory": "ISMS・規程",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "NIST“サイバーセキュリティフレームワーク（CSF）2.0”のコアには，機能が六つある。IDENTIFY，PROTECT，DETECT，RESPOND，RECOVERと，あと一つはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "CONTROL"
+        },
+        {
+          "id": "B",
+          "text": "DIRECT"
+        },
+        {
+          "id": "C",
+          "text": "GOVERN"
+        },
+        {
+          "id": "D",
+          "text": "MANAGE"
+        }
+      ],
+      "correct_choice": "C",
+      "explanation": "CSF 2.0で追加された統治の機能を問います。GOVERNは，組織のリスク管理方針や責任，監督などを扱い，他の五つの機能に方向を与えます。技術的な防御だけでなく，経営としてどのリスクをどう扱うかを決める役割です。CSF 1.1の五機能とは区別します。",
+      "choice_explanations": {
+        "A": "管理策という意味はありますが，CSF 2.0のコア機能名ではありません。",
+        "B": "指示という意味はありますが，CSF 2.0のコア機能名ではありません。",
+        "C": "組織の方針・責任・監督などを扱う統治の機能です。",
+        "D": "管理という一般語ですが，CSF 2.0のコア機能名ではありません。"
+      },
+      "memory_point": "CSF 2.0は従来の五機能にGOVERN（統治）を加えた六機能。",
+      "exam_tip": "版が2.0かを確認する。経営方針・責任・監督はGOVERN，検知や復旧とは別。",
+      "related_terms": [
+        "NIST CSF 2.0",
+        "GOVERN",
+        "ガバナンス"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2025年度 春期 午前II 問12（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2025-SPRING-Q12",
+        "exam": "SC",
+        "year": 2025,
+        "term": "spring",
+        "question_number": 12,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_am2_ans.pdf",
+        "official_answer": "ウ",
+        "official_answer_choice_id": "C"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:0e8c238605db281bec61a9e8c1529095e11fb9378e8b70e74e44cd340d97a065"
+    },
+    {
+      "id": 3028,
+      "code": "A2-PILOT-SC-2025-SPRING-Q14",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_implementation",
+      "subcategory_id": "sc_security_implementation__secure_coding",
+      "subcategory": "安全なコード・入力処理",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "サイドチャネル攻撃の手法であるタイミング攻撃の対策として，最も適切なものはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "演算アルゴリズムに処理を追加して，秘密情報の違いによって演算の処理時間に差異が出ないようにする。"
+        },
+        {
+          "id": "B",
+          "text": "コンデンサを挿入して，電力消費量が時間的に均一になるようにする。"
+        },
+        {
+          "id": "C",
+          "text": "ハードウェアを自ら診断することによって故障を検出する機構，及び故障を検出したら秘密情報を破壊する機構を設ける。"
+        },
+        {
+          "id": "D",
+          "text": "保護層を備えて，内部のデータが不正に書き換えられないようにする。"
+        }
+      ],
+      "correct_choice": "A",
+      "explanation": "攻撃で観測する情報に合った対策を選ぶ問題です。タイミング攻撃は，秘密情報による処理時間の差から情報を推定します。秘密に応じて時間が変わらないようにする実装が対策になります。電力差や故障，書換えへの対策とは，抑える情報や攻撃方法が異なります。",
+      "choice_explanations": {
+        "A": "秘密情報による処理時間差をなくし，時間からの推定を抑える対策です。",
+        "B": "電力の変動を抑える対策で，処理時間差への直接の対策ではありません。",
+        "C": "故障の検出や秘密の破壊を行う対策です。処理時間の観測を防ぐ説明ではありません。",
+        "D": "内部データの書換えを防ぐ対策です。時間差による漏えいは別に対策します。"
+      },
+      "memory_point": "タイミング攻撃には，秘密情報によって処理時間が変わらない実装で対抗する。",
+      "exam_tip": "観測対象が時間・電力・電磁波のどれかを特定し，対策が同じ対象を抑えるか確認する。",
+      "related_terms": [
+        "タイミング攻撃",
+        "サイドチャネル攻撃",
+        "定数時間実装"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2025年度 春期 午前II 問14（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2025-SPRING-Q14",
+        "exam": "SC",
+        "year": 2025,
+        "term": "spring",
+        "question_number": 14,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_am2_ans.pdf",
+        "official_answer": "ア",
+        "official_answer_choice_id": "A"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:e1756195cec6c572c8600ee49c7fb8744c0b9a643539a7fbc2d5d9d226680d6d"
+    },
+    {
+      "id": 3029,
+      "code": "A2-PILOT-SC-2025-FALL-Q02",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_security_threats",
+      "subcategory_id": "sc_security_threats__attack_mechanisms",
+      "subcategory": "攻撃の仕組み",
+      "difficulty": "基礎",
+      "priority": "S",
+      "question": "Pass the Hash攻撃はどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "パスワードのハッシュ値から導出された平文パスワードを使ってログインする。"
+        },
+        {
+          "id": "B",
+          "text": "パスワードのハッシュ値だけでログインできる仕組みを悪用してログインする。"
+        },
+        {
+          "id": "C",
+          "text": "パスワードを固定し，利用者IDの文字列のハッシュ化を繰り返しながら様々な利用者IDを試してログインする。"
+        },
+        {
+          "id": "D",
+          "text": "ハッシュ化されずに保存されている平文パスワードを使ってログインする。"
+        }
+      ],
+      "correct_choice": "B",
+      "explanation": "盗まれた認証情報をどう利用するかを問います。Pass the Hashは，平文パスワードを解読せず，盗んだハッシュを認証に利用する攻撃です。代表例ではNTLM認証の応答生成にハッシュを使います。ハッシュ値をそのままHTTPログイン欄へ入れれば，どのサービスでも通るという意味ではありません。",
+      "choice_explanations": {
+        "A": "平文パスワードを解読して使う手口であり，解読せずハッシュを使うPass the Hashとは異なります。",
+        "B": "平文を知らなくてもハッシュを認証に利用できる仕組みを悪用します。",
+        "C": "一つのパスワードで多数の利用者を試す手口に近く，ハッシュによる認証の悪用ではありません。",
+        "D": "平文の認証情報を盗用する手口です。ハッシュを利用する条件がありません。"
+      },
+      "memory_point": "Pass the Hashは平文を解読せず，盗んだハッシュを認証に利用する攻撃。",
+      "exam_tip": "「ハッシュを解読する」のか「ハッシュで認証する」のかを区別する。",
+      "related_terms": [
+        "Pass the Hash",
+        "NTLM",
+        "認証情報"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2025年度 秋期 午前II 問2（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": true,
+        "source_id": "SC-2025-FALL-Q02",
+        "exam": "SC",
+        "year": 2025,
+        "term": "fall",
+        "question_number": 2,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_sc_am2_ans.pdf",
+        "official_answer": "イ",
+        "official_answer_choice_id": "B"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "content_hash": "sha256:fe3fa423dccb4acfcf19bdb078ebc81dcc5b3742932e38760916155a4b1fe3de"
+    },
+    {
+      "id": 3030,
+      "code": "A2-PILOT-SC-2025-FALL-Q22",
+      "subject_id": "a2",
+      "domain_id": "technology",
+      "category_id": "sc_system_development",
+      "subcategory_id": "sc_system_development__implementation_testing",
+      "subcategory": "実装工程・統合・テスト",
+      "difficulty": "応用",
+      "priority": "A",
+      "question": "図のような階層構造で設計された組込みシステムがある。このシステムの開発プロジェクトにおいて，デバイスドライバ層の単体テスト工程が未終了で，アプリケーション層及びミドルウェア層の単体テストが先に終了した。この段階で行えるソフトウェア結合テストの方式として，適切なものはどれか。",
+      "choices": [
+        {
+          "id": "A",
+          "text": "サンドイッチテスト"
+        },
+        {
+          "id": "B",
+          "text": "トップダウンテスト"
+        },
+        {
+          "id": "C",
+          "text": "ビッグバンテスト"
+        },
+        {
+          "id": "D",
+          "text": "ボトムアップテスト"
+        }
+      ],
+      "correct_choice": "B",
+      "explanation": "完成した上位層から結合できる方式を問います。トップダウンテストは，上位モジュールから下位へ段階的に結合します。未完成のデバイスドライバ層は，下位の動作を代用するスタブに置き換えられます。下位から始めるボトムアップでは，上位を呼ぶためのドライバを使います。",
+      "choice_explanations": {
+        "A": "上位と下位の両方から結合を進める方式です。下位層が未完了のこの段階には適しません。",
+        "B": "終了済みの上位層から開始し，未完成の下位層をスタブで代用できます。",
+        "C": "モジュールをまとめて一度に結合する方式で，下位層が未完成の条件に合いません。",
+        "D": "下位層から上位へ進める方式です。デバイスドライバ層が未完了なので開始しにくい条件です。"
+      },
+      "memory_point": "トップダウンは上から結合し，未完成の下位をスタブで代用。ボトムアップは下から結合し，ドライバで呼び出す。",
+      "exam_tip": "どの層が先に完成したかを見る。未完成の下位の代用品はスタブ，上位の呼出し役はドライバ。",
+      "related_terms": [
+        "結合テスト",
+        "トップダウン",
+        "ボトムアップ",
+        "スタブ",
+        "ドライバ"
+      ],
+      "question_set": {
+        "id": "category_drill",
+        "number": null,
+        "sequence": null
+      },
+      "source": {
+        "basis": "情報処理安全確保支援士試験 2025年度 秋期 午前II 問22（出典：IPA）",
+        "type": "official_past_question",
+        "verbatim_past_question": false,
+        "source_id": "SC-2025-FALL-Q22",
+        "exam": "SC",
+        "year": 2025,
+        "term": "fall",
+        "question_number": 22,
+        "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_sc_am2_qs.pdf",
+        "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_sc_am2_ans.pdf",
+        "official_answer": "イ",
+        "official_answer_choice_id": "B"
+      },
+      "status": "active",
+      "schema_version": 1,
+      "stimulus": [
+        {
+          "type": "image",
+          "src": "questions/sc/a2/SC-2025-FALL-Q22.svg",
+          "alt": "上からアプリケーション層，ミドルウェア層，デバイスドライバ層，ハードウェアの4階層。",
+          "caption": "IPA原図の階層と順序を再構成",
+          "asset_sha256": "25878ac18f152a700dcf21ca6af2d95529fea694e0a15e7afaf312bd39dc3028"
+        }
+      ],
+      "content_hash": "sha256:59ceb36d41f11664c347710d9326fb87b8fd6abea1c1c9499e8adb10f939310e"
+    }
+  ]
+}

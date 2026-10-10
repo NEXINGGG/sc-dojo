@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { isScA2Pilot } from '../../data/pilotMode';
 
 interface AuthConfiguration {
   isConfigured: boolean;
@@ -18,6 +19,7 @@ const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.tr
 let client: SupabaseClient | undefined;
 
 if (
+  !isScA2Pilot &&
   supabaseUrl !== undefined &&
   supabaseUrl !== '' &&
   supabasePublishableKey !== undefined &&

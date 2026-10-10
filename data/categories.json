@@ -65,6 +65,14 @@
         {
           "id": "foundation_theory__2d76a294",
           "name": "集合"
+        },
+        {
+          "id": "foundation_theory__8fdab85f",
+          "name": "M/M/1の平均待ち時間"
+        },
+        {
+          "id": "foundation_theory__f496ca6a",
+          "name": "機械学習"
         }
       ]
     },
@@ -115,6 +123,10 @@
         {
           "id": "algorithms_data_structures__572c78f2",
           "name": "計算量"
+        },
+        {
+          "id": "algorithms_data_structures__c1dc9111",
+          "name": "二分木の再帰処理の追跡"
         }
       ]
     },
@@ -161,6 +173,10 @@
         {
           "id": "computer_architecture__d0892ca5",
           "name": "記憶装置"
+        },
+        {
+          "id": "computer_architecture__3f2dce03",
+          "name": "タイムチャートと論理回路"
         }
       ]
     },
@@ -265,6 +281,18 @@
         {
           "id": "system_reliability__1de1f41d",
           "name": "負荷分散"
+        },
+        {
+          "id": "system_reliability__2c576e78",
+          "name": "サービスモデル"
+        },
+        {
+          "id": "system_reliability__13d9768b",
+          "name": "運用自動化"
+        },
+        {
+          "id": "system_reliability__17e4e1d6",
+          "name": "エッジAI"
         }
       ]
     },
@@ -307,6 +335,10 @@
         {
           "id": "databases__518fea7c",
           "name": "障害回復"
+        },
+        {
+          "id": "databases__13d58708",
+          "name": "BASEと結果整合性"
         }
       ]
     },
@@ -357,6 +389,10 @@
         {
           "id": "networks__3cd60854",
           "name": "運用管理"
+        },
+        {
+          "id": "networks__6797ca8d",
+          "name": "LANの送信時間とパケット数"
         }
       ]
     },
@@ -419,6 +455,18 @@
         {
           "id": "security__a67905a1",
           "name": "電子署名"
+        },
+        {
+          "id": "security__c81afd96",
+          "name": "情報セキュリティ"
+        },
+        {
+          "id": "security__0264ab9b",
+          "name": "ディープフェイクの悪用"
+        },
+        {
+          "id": "security__09e34694",
+          "name": "個人情報・電子署名"
         }
       ]
     },
@@ -589,6 +637,10 @@
         {
           "id": "it_service_management__7e65a8af",
           "name": "継続性"
+        },
+        {
+          "id": "it_service_management__0d81eb53",
+          "name": "サービス提供時間を考慮したSLA計算"
         }
       ]
     },
@@ -717,6 +769,26 @@
         {
           "id": "business_system_strategy__ce6f46d3",
           "name": "競争分析"
+        },
+        {
+          "id": "business_system_strategy__9a293629",
+          "name": "調達"
+        },
+        {
+          "id": "business_system_strategy__6eb59a19",
+          "name": "業務フローとUML図"
+        },
+        {
+          "id": "business_system_strategy__a34f3ad9",
+          "name": "投資回収期間法PBP"
+        },
+        {
+          "id": "business_system_strategy__7eaa0f32",
+          "name": "研究開発から産業化への障壁"
+        },
+        {
+          "id": "business_system_strategy__0cf3cfda",
+          "name": "コ・クリエーション戦略"
         }
       ]
     },
@@ -771,6 +843,10 @@
         {
           "id": "corporate_accounting__0cd462ee",
           "name": "財務諸表"
+        },
+        {
+          "id": "corporate_accounting__045f0085",
+          "name": "製造時間制約下の利益最大化"
         }
       ]
     },
@@ -833,6 +909,38 @@
         {
           "id": "law_standards_emerging__8d7be751",
           "name": "運用自動化"
+        },
+        {
+          "id": "law_standards_emerging__9b0064ec",
+          "name": "画像・GUIの意匠保護"
+        }
+      ]
+    },
+    {
+      "id": "user_interface",
+      "name": "ユーザーインタフェース",
+      "order": 16,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "使用性と利用者向けの操作設計",
+      "subcategories": [
+        {
+          "id": "user_interface__c7df7fe9",
+          "name": "使用性の評価指標"
+        }
+      ]
+    },
+    {
+      "id": "information_media",
+      "name": "情報メディア",
+      "order": 17,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "画像・動画像などの情報量と表現",
+      "subcategories": [
+        {
+          "id": "information_media__7029ce0e",
+          "name": "動画像の帯域幅"
         }
       ]
     }

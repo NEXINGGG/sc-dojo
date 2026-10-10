@@ -1,3 +1,4 @@
+import { isCompatibleB1RemoteItem } from './b1CloudSync';
 import type { A1DojoDatabase } from '../../database/database';
 import type {
   AnswerAttemptRow,
@@ -10,6 +11,8 @@ import type {
   QuestionProgressRow,
 } from '../../database/types';
 import { getQuestionByCode } from '../../data/catalog';
+import { initializeDatabase } from '../../database/database';
+import { a1LegacyManifest } from '../../domain/questionManifest';
 import { getAsiaTokyoDate } from '../../domain/learning';
 import type { SubjectId } from '../../domain/subject';
 import { getDeviceId } from './deviceId';
@@ -277,6 +280,7 @@ export class CloudSyncLocalRepository {
   ): Promise<CloudSyncMergeResult> {
     const normalizedRemote = normalizeRemoteItems(remoteItems, userId);
     await this.database.open();
+    await initializeDatabase(this.database);
 
     return this.database.transaction(
       'rw',
@@ -427,7 +431,11 @@ export class CloudSyncLocalRepository {
         scope,
         itemKey: progress.code,
         schemaVersion: CLOUD_SYNC_SCHEMA_VERSION,
-        payload: { progress: { ...progress }, answerAttempts },
+        payload: {
+          progress: { ...progress },
+          answerAttempts,
+          ...questionSyncIdentity(scope, progress.code),
+        },
         clientUpdatedAt: metadata.clientUpdatedAt,
         deviceId: metadata.deviceId,
         isDeleted: false,
@@ -638,6 +646,7 @@ function normalizeRemoteItems(
     keys.add(key);
 
     if (isB1CloudSyncScope(item.scope)) {
+      if (!isCompatibleB1RemoteItem(item)) continue;
       try {
         normalized.push(normalizeRemoteB1PracticeItem(item));
       } catch {
@@ -649,12 +658,28 @@ function normalizeRemoteItems(
       if (question === undefined) {
         throw new InvalidCloudSyncDataError();
       }
+      const expectedIdentity = questionSyncIdentity(item.scope, item.itemKey).questionIdentity;
+      if (
+        expectedIdentity &&
+        (!isRecord(item.payload) ||
+          !isRecord(item.payload.questionIdentity) ||
+          item.payload.questionIdentity.sourceId !== expectedIdentity.sourceId ||
+          item.payload.questionIdentity.contentHash !== expectedIdentity.contentHash) &&
+        !isCompatibleLegacyA1Item(item, expectedIdentity)
+      ) {
+        // Unknown or changed content must not be merged by code alone.
+        continue;
+      }
       normalized.push({
         scope: item.scope,
         itemKey: item.itemKey,
         schemaVersion: CLOUD_SYNC_SCHEMA_VERSION,
         payload: item.isDeleted
-          ? { progress: null, answerAttempts: [] }
+          ? {
+              progress: null,
+              answerAttempts: [],
+              ...questionSyncIdentity(item.scope, item.itemKey),
+            }
           : parsePayload(item.payload, subjectId, item.itemKey),
         clientUpdatedAt: item.clientUpdatedAt,
         deviceId: item.deviceId,
@@ -683,7 +708,11 @@ function parsePayload(value: unknown, subjectId: 'a1' | 'a2', code: string): Lea
   ) {
     throw new InvalidCloudSyncDataError();
   }
-  return { progress, answerAttempts: answerAttempts.sort(compareAttempts) };
+  return {
+    progress,
+    answerAttempts: answerAttempts.sort(compareAttempts),
+    ...questionSyncIdentity(`${subjectId}.question`, code),
+  };
 }
 
 function parseProgress(
@@ -773,11 +802,42 @@ function createTombstoneItem(metadata: CloudSyncMetadataRow): LearningSyncItem {
     scope: metadata.scope,
     itemKey: metadata.itemKey,
     schemaVersion: CLOUD_SYNC_SCHEMA_VERSION,
-    payload: { progress: null, answerAttempts: [] },
+    payload: {
+      progress: null,
+      answerAttempts: [],
+      ...questionSyncIdentity(metadata.scope, metadata.itemKey),
+    },
     clientUpdatedAt: metadata.clientUpdatedAt,
     deviceId: metadata.deviceId,
     isDeleted: true,
   };
+}
+
+function questionSyncIdentity(
+  scope: CloudSyncScope,
+  code: string,
+): Pick<LearningSyncPayloadV1, 'questionIdentity'> {
+  if (scope !== 'a1.question' && scope !== 'a2.question') return {};
+  const q = getQuestionByCode(code, scope === 'a1.question' ? 'a1' : 'a2');
+  return q?.sourceId &&
+    q.contentHash &&
+    (scope === 'a1.question' || /^sc-a2-v[0-9]+$/.test(q.datasetVersion ?? ''))
+    ? { questionIdentity: { sourceId: q.sourceId, contentHash: q.contentHash } }
+    : {};
+}
+
+function isCompatibleLegacyA1Item(
+  item: CloudLearningSyncItem,
+  expected: NonNullable<LearningSyncPayloadV1['questionIdentity']>,
+): boolean {
+  if (
+    item.scope !== 'a1.question' ||
+    !isRecord(item.payload) ||
+    item.payload.questionIdentity !== undefined
+  )
+    return false;
+  const legacy = a1LegacyManifest.entries.find((entry) => entry.code === item.itemKey);
+  return legacy?.sourceId === expected.sourceId && legacy.contentHash === expected.contentHash;
 }
 
 function syncKey(item: Pick<LearningSyncItem, 'scope' | 'itemKey'>): string {

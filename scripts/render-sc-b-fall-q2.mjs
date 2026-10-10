@@ -1,0 +1,14 @@
+import {writeFileSync} from 'node:fs';
+const b=(x,y,w,h,t)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'"/><text x="'+(x+w/2)+'" y="'+(y+h/2+8)+'" text-anchor="middle" fill="#111" stroke="none">'+t+'</text>';
+const l=(x,y,x2,y2)=>'<path d="M'+x+' '+y+' L'+x2+' '+y2+'"/>';
+let s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 650"><rect width="1100" height="650" fill="white"/><g fill="none" stroke="#111" stroke-width="2" font-family="sans-serif" font-size="24">';
+s+=b(40,265,1020,330,'')+'<text x="50" y="294" stroke="none" fill="#111">A社</text>';
+s+='<rect x="65" y="315" width="235" height="140" stroke-dasharray="10 6"/><rect x="415" y="485" width="245" height="80" stroke-dasharray="10 6"/><rect x="700" y="315" width="330" height="220" stroke-dasharray="10 6"/>';
+s+='<text x="80" y="345" stroke="none" fill="#111">DMZ</text><text x="425" y="520" stroke="none" fill="#111">PC-LAN</text><text x="710" y="345" stroke="none" fill="#111">サーバLAN</text>';
+s+=b(90,375,180,55,'メールサーバ')+b(405,375,240,55,'ファイアウォール')+b(720,375,210,55,'レイヤー2スイッチ');
+s+=l(270,402,405,402)+l(645,402,720,402)+l(525,430,525,485);
+s+='<path d="M930 402 H790 V488 H815"/><path d="M930 402 L1000 440"/>';
+s+=b(845,440,180,50,'')+'<rect x="815" y="463" width="180" height="50" fill="white"/><text x="905" y="496" text-anchor="middle" fill="#111" stroke="none">業務サーバ</text>';
+s+='<ellipse cx="525" cy="205" rx="170" ry="50"/><text x="525" y="213" text-anchor="middle" fill="#111" stroke="none">インターネット</text>';
+s+=l(525,255,525,375)+b(70,178,230,54,'Wサービス')+l(300,205,355,205)+b(800,170,230,54,'Sサービス')+b(760,60,300,62,'キャッシュDNSサービス')+l(695,205,800,205)+'<path d="M735 205 V91 H760"/>';
+writeFileSync('public/questions/sc/b/2024-fall/q2-figure-1.svg',s+'</g></svg>');

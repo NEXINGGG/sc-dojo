@@ -4,6 +4,7 @@ import { PageHeader } from '../components/PageHeader';
 import {
   b1AvailableYears,
   b1Cases,
+  b1Categories,
   getB1CasesForYear,
   getB1CategoryName,
   getEffectiveB1Relevance,
@@ -13,6 +14,7 @@ import { B1DataError, B1Repository } from '../features/b1/b1Repository';
 import { B1PreferencesRepository } from '../features/b1/b1PreferencesRepository';
 import { matchesB1RelevanceFilter, relevanceLabelText } from '../domain/b1LearningFlow';
 import type { B1LearningMode, B1RelevanceFilter } from '../domain/b1LearningSupport';
+import { filterScBPracticeCases, type ScBPracticeFilter } from '../domain/scBPractice';
 
 const repository = new B1Repository(database);
 const preferences = new B1PreferencesRepository(database);
@@ -21,15 +23,45 @@ export function B1PracticePage() {
   const navigate = useNavigate();
   const [inProgressId, setInProgressId] = useState<string>();
   const [isStarting, setIsStarting] = useState<string>();
+  const [studiedCases, setStudiedCases] = useState<Set<string>>(new Set());
+  const [weakCases, setWeakCases] = useState<Set<string>>(new Set());
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [filter, setFilter] = useState<ScBPracticeFilter>({
+    year: '',
+    term: '',
+    questionNumber: '',
+    categoryId: '',
+    state: 'all',
+  });
+  const isSc = b1Cases[0]?.examCode === 'SC';
+  const visibleCases = filterScBPracticeCases(b1Cases, filter, studiedCases, weakCases, favorites);
   const [message, setMessage] = useState<string>();
-  const [mode, setMode] = useState<Exclude<B1LearningMode, 'mock90'>>('training');
+  const [mode, setMode] = useState<Exclude<B1LearningMode, 'mock90' | 'mock150'>>('training');
   const [relevanceFilter, setRelevanceFilter] = useState<B1RelevanceFilter>();
 
   useEffect(() => {
+    void repository
+      .getProgressSummary()
+      .then((summary) => {
+        setWeakCases(
+          new Set(
+            summary.reviewTargets
+              .filter((t) => t.reasons.some((r) => r === 'partial' || r === 'incorrect'))
+              .map((t) => t.caseId),
+          ),
+        );
+        setStudiedCases(
+          new Set(
+            summary.byCase.filter((item) => item.confirmedUnitCount > 0).map((item) => item.id),
+          ),
+        );
+      })
+      .catch(() => undefined);
     void Promise.all([repository.getInProgressPractice(), preferences.get()]).then(
       ([session, saved]) => {
         setInProgressId(session?.id);
         setRelevanceFilter(saved.relevanceFilter);
+        setFavorites(new Set(saved.favoriteCaseIds ?? []));
       },
     );
   }, []);
@@ -47,6 +79,14 @@ export function B1PracticePage() {
       else setMessage('科目B演習を開始できませんでした。端末の保存領域を確認してください。');
     } finally {
       setIsStarting(undefined);
+    }
+  }
+
+  async function toggleFavorite(caseId: string) {
+    try {
+      setFavorites(new Set(await preferences.toggleFavorite(caseId)));
+    } catch {
+      setMessage('お気に入りを保存できませんでした。再試行してください。');
     }
   }
 
@@ -100,7 +140,82 @@ export function B1PracticePage() {
           </label>
         </div>
       </fieldset>
-      {relevanceFilter !== undefined ? (
+      {isSc ? (
+        <fieldset className="settings-fieldset">
+          <legend>学習する大問を絞り込む</legend>
+          <div className="settings-option-list">
+            <label className="setting-option">
+              年度
+              <select
+                value={filter.year}
+                onChange={(e) => setFilter({ ...filter, year: e.target.value })}
+              >
+                <option value="">全ての年度</option>
+                {b1AvailableYears.map((y) => (
+                  <option key={y} value={y}>
+                    {y}年度
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="setting-option">
+              期
+              <select
+                value={filter.term}
+                onChange={(e) => setFilter({ ...filter, term: e.target.value })}
+              >
+                <option value="">春期・秋期</option>
+                <option value="spring">春期</option>
+                <option value="fall">秋期</option>
+              </select>
+            </label>
+            <label className="setting-option">
+              大問
+              <select
+                value={filter.questionNumber}
+                onChange={(e) => setFilter({ ...filter, questionNumber: e.target.value })}
+              >
+                <option value="">全ての大問</option>
+                {[1, 2, 3, 4].map((q) => (
+                  <option key={q} value={q}>
+                    問{q}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="setting-option">
+              カテゴリ
+              <select
+                value={filter.categoryId}
+                onChange={(e) => setFilter({ ...filter, categoryId: e.target.value })}
+              >
+                <option value="">全てのカテゴリ</option>
+                {b1Categories.map((c) => (
+                  <option key={c.categoryId} value={c.categoryId}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="setting-option">
+              学習状況
+              <select
+                value={filter.state}
+                onChange={(e) =>
+                  setFilter({ ...filter, state: e.target.value as ScBPracticeFilter['state'] })
+                }
+              >
+                <option value="all">全て</option>
+                <option value="unstarted">未実施</option>
+                <option value="weak">苦手（惜しい・できなかった）</option>
+                <option value="favorite">お気に入り</option>
+              </select>
+            </label>
+          </div>
+          <p role="status">{visibleCases.length}大問が見つかりました。</p>
+        </fieldset>
+      ) : null}
+      {!isSc && relevanceFilter !== undefined ? (
         <fieldset className="settings-fieldset">
           <legend>現在性で絞り込む</legend>
           <div className="settings-option-list">
@@ -136,19 +251,27 @@ export function B1PracticePage() {
       {b1AvailableYears.map((year) => (
         <section aria-label={`${year}年度の科目B演習`} className="b1-case-list" key={year}>
           <h2>{year}年度</h2>
-          {getB1CasesForYear(year)
+          {(isSc ? visibleCases.filter((c) => c.year === year) : getB1CasesForYear(year))
             .filter(
               (caseItem) =>
+                isSc ||
                 relevanceFilter === undefined ||
                 matchesB1RelevanceFilter(caseItem, relevanceFilter),
             )
             .map((caseItem) => (
               <article className="surface-card b1-case-card" key={caseItem.caseId}>
                 <p className="eyebrow">
-                  問{caseItem.questionNumber}・約{caseItem.estimatedMinutes}分
+                  {isSc ? `${caseItem.term === 'spring' ? '春期' : '秋期'}・` : ''}問
+                  {caseItem.questionNumber}・約{caseItem.estimatedMinutes}分
                 </p>
                 <h3>{caseItem.title}</h3>
                 <p>{caseItem.purposeSummary}</p>
+                {caseItem.examCode === 'SC' ? (
+                  <p>
+                    {caseItem.difficulty ?? '難易度未設定'}・
+                    {studiedCases.has(caseItem.caseId) ? '学習済み' : '未着手'}
+                  </p>
+                ) : null}
                 <p className="muted-text">
                   {caseItem.questionUnits.length}解答単位・
                   {caseItem.categoryIds.map(getB1CategoryName).join('／')}
@@ -175,11 +298,23 @@ export function B1PracticePage() {
                 >
                   {isStarting === caseItem.caseId ? '開始準備中…' : 'この大問を練習する'}
                 </button>
+                {isSc ? (
+                  <button
+                    className="secondary-button"
+                    aria-pressed={favorites.has(caseItem.caseId)}
+                    onClick={() => void toggleFavorite(caseItem.caseId)}
+                    type="button"
+                  >
+                    {favorites.has(caseItem.caseId) ? 'お気に入りを外す' : 'お気に入りに追加'}
+                  </button>
+                ) : null}
               </article>
             ))}
-          {getB1CasesForYear(year).filter(
+          {(isSc ? visibleCases.filter((c) => c.year === year) : getB1CasesForYear(year)).filter(
             (caseItem) =>
-              relevanceFilter === undefined || matchesB1RelevanceFilter(caseItem, relevanceFilter),
+              isSc ||
+              relevanceFilter === undefined ||
+              matchesB1RelevanceFilter(caseItem, relevanceFilter),
           ).length === 0 ? (
             <p className="muted-text">この年度には現在のフィルターに一致する大問がありません。</p>
           ) : null}

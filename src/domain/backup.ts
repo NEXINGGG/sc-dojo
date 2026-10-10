@@ -1,3 +1,5 @@
+import type { B1DatasetArchive } from '../database/b1DatasetMigration';
+import type { B1ContentIdentity, B1DatasetManifest } from './b1Identity';
 import {
   type AnswerAttemptRow,
   type AnswerSource,
@@ -34,9 +36,13 @@ import { getPracticeModeForAnswerStatus } from './learning';
 import type { PracticeFilters, PracticeQuestionCount } from './practice';
 import type { ChoiceId, Difficulty, Question } from '../types/question';
 import { getSubjectConfig, isSubjectId, type SubjectId } from './subject';
+import { createQuestionFingerprint, type IdentityQuestion } from './questionDataIdentity';
+import { a1LegacyManifest } from './questionManifest';
+import { calculateQuestionContentHash } from './questionContent.mjs';
+import { changedQuestionCodes, type QuestionDatasetManifest } from './questionManifest';
 
 export const BACKUP_FORMAT = 'sc-dojo-backup';
-export const BACKUP_FORMAT_VERSION = 6;
+export const BACKUP_FORMAT_VERSION = 7;
 export const MAX_BACKUP_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 export interface FavoriteBackupEntry {
@@ -49,6 +55,8 @@ export interface BackupQuestionDataIdentity {
   questionCount: number;
   fingerprint: string;
   schemaVersion: number;
+  a2Manifest?: QuestionDatasetManifest;
+  a1Manifest?: QuestionDatasetManifest;
 }
 
 export interface BackupData {
@@ -64,6 +72,7 @@ export interface BackupData {
 }
 
 export interface B1BackupData {
+  datasetArchives?: readonly B1DatasetArchive[];
   practiceSessions: readonly B1PracticeSessionRow[];
   mockSessions: readonly B1MockSessionRow[];
   pdfRegistrations: readonly B1PdfRegistrationMetadata[];
@@ -173,18 +182,59 @@ const submissionReasons = new Set<ExamSubmissionReason>(['manual', 'timeout']);
 const practiceQuestionCounts = new Set<PracticeQuestionCount>([5, 10, 20, 30, 'all']);
 
 export function createQuestionDataIdentity(
-  questions: readonly Pick<Question, 'code'>[],
+  questions: readonly IdentityQuestion[],
   schemaVersion: number,
 ): BackupQuestionDataIdentity {
-  const codes = questions
-    .map((question) => question.code)
-    .slice()
-    .sort((left, right) => left.localeCompare(right));
-
+  const a1 = questions.filter((q) => q.subjectId === 'a1' && q.sourceId && q.contentHash);
+  const formalA2 = questions.filter(
+    (q) =>
+      q.subjectId === 'a2' &&
+      q.sourceId &&
+      q.contentHash &&
+      /^sc-a2-v[0-9]+$/.test(q.datasetVersion ?? ''),
+  );
   return {
-    questionCount: codes.length,
-    fingerprint: `fnv1a-32:${fnv1a(codes.join('\n'))}`,
+    questionCount: questions.length,
+    fingerprint: createQuestionFingerprint(questions),
     schemaVersion,
+    ...(a1.length
+      ? {
+          a1Manifest: {
+            key: 'a1' as const,
+            manifestVersion: 1 as const,
+            datasetVersion: a1[0].datasetVersion ?? 'legacy-sc-a1-v0',
+            entries: a1
+              .map((q) => ({
+                code: q.code,
+                sourceId: q.sourceId!,
+                contentHash:
+                  q.question !== undefined &&
+                  q.choices !== undefined &&
+                  q.correctChoice !== undefined
+                    ? calculateQuestionContentHash({
+                        question: q.question,
+                        choices: q.choices,
+                        correctChoice: q.correctChoice,
+                        stimulus: q.stimulus,
+                      })
+                    : q.contentHash!,
+              }))
+              .sort((a, b) => a.code.localeCompare(b.code)),
+          },
+        }
+      : {}),
+    ...(formalA2.length
+      ? {
+          a2Manifest: {
+            key: 'a2' as const,
+            manifestVersion: 1 as const,
+            datasetVersion: formalA2[0].datasetVersion!,
+            entries: formalA2
+              .map((q) => ({ code: q.code, sourceId: q.sourceId!, contentHash: q.contentHash! }))
+              .sort((a, b) => a.code.localeCompare(b.code)),
+          },
+        }
+      : {}),
   };
 }
 
@@ -288,11 +338,19 @@ export async function validateBackupDocumentWithB1(
   currentQuestionData: BackupQuestionDataIdentity,
 ): Promise<BackupValidationResult> {
   const b1 = await import('../data/b1');
+  const cases = new Map([...b1.nwB1Cases, ...b1.b1Cases].map((item) => [item.caseId, item]));
+  const units = new Map(
+    [...cases.values()].flatMap((item) =>
+      item.questionUnits.map((unit) => [unit.questionId, unit] as const),
+    ),
+  );
   return validateBackupDocumentInternal(source, questions, currentQuestionData, {
-    getCase: b1.getB1Case,
-    getUnitIds: b1.getB1UnitIds,
-    hasQuestion: (questionId) => b1.getB1QuestionUnit(questionId) !== undefined,
-    hasAnswerField: b1.hasB1AnswerField,
+    getCase: (id) => cases.get(id),
+    getUnitIds: (ids) =>
+      ids.flatMap((id) => cases.get(id)?.questionUnits.map((unit) => unit.questionId) ?? []),
+    hasQuestion: (id) => units.has(id),
+    hasAnswerField: (id, fieldId) =>
+      units.get(id)?.answerFields.some((field) => field.fieldId === fieldId) === true,
   });
 }
 
@@ -320,12 +378,14 @@ function validateBackupDocumentInternal(
       source.formatVersion !== 3 &&
       source.formatVersion !== 4 &&
       source.formatVersion !== 5 &&
+      source.formatVersion !== 6 &&
       source.formatVersion !== BACKUP_FORMAT_VERSION) ||
     (source.backupVersion !== 1 &&
       source.backupVersion !== 2 &&
       source.backupVersion !== 3 &&
       source.backupVersion !== 4 &&
       source.backupVersion !== 5 &&
+      source.backupVersion !== 6 &&
       source.backupVersion !== BACKUP_FORMAT_VERSION)
   ) {
     return failure('unsupported_version', 'このバックアップ形式のバージョンには対応していません。');
@@ -371,7 +431,52 @@ function validateBackupDocumentInternal(
     );
   }
 
-  const questionsByCode = new Map(questions.map((question) => [question.code, question]));
+  const backupManifestInput = source.questionData.a2Manifest;
+  let backupManifest: QuestionDatasetManifest | undefined;
+  if (backupManifestInput !== undefined) {
+    if (
+      !isRecord(backupManifestInput) ||
+      backupManifestInput.key !== 'a2' ||
+      backupManifestInput.manifestVersion !== 1 ||
+      !isNonEmptyString(backupManifestInput.datasetVersion) ||
+      !Array.isArray(backupManifestInput.entries) ||
+      backupManifestInput.entries.some(
+        (e) =>
+          !isRecord(e) ||
+          !isNonEmptyString(e.code) ||
+          !isNonEmptyString(e.sourceId) ||
+          typeof e.contentHash !== 'string' ||
+          !/^sha256:[a-f0-9]{64}$/.test(e.contentHash),
+      ) ||
+      new Set(backupManifestInput.entries.map((e) => (e as Record<string, unknown>).code)).size !==
+        backupManifestInput.entries.length
+    ) {
+      return failure(
+        'missing_required_field',
+        'A-2の教材識別情報が不正です。既存データは変更しません。',
+      );
+    }
+    backupManifest = backupManifestInput as unknown as QuestionDatasetManifest;
+  }
+  const changedA2 = currentQuestionData.a2Manifest
+    ? changedQuestionCodes(backupManifest, currentQuestionData.a2Manifest)
+    : new Set<string>();
+  const backupA1Input = source.questionData.a1Manifest;
+  if (backupA1Input !== undefined && !isValidA1Manifest(backupA1Input)) {
+    return failure(
+      'missing_required_field',
+      'A-1の教材識別情報が不正です。既存データは変更しません。',
+    );
+  }
+  const backupA1Manifest = backupA1Input as QuestionDatasetManifest | undefined;
+  const changedA1 = currentQuestionData.a1Manifest
+    ? changedQuestionCodes(backupA1Manifest ?? a1LegacyManifest, currentQuestionData.a1Manifest)
+    : new Set<string>();
+  const questionsByCode = new Map(
+    questions
+      .filter((q) => !changedA1.has(q.code) && !changedA2.has(q.code))
+      .map((question) => [question.code, question]),
+  );
   const collector: ValidationCollector = {
     questionsByCode,
     categoryIds: new Set(questions.map((question) => question.categoryId)),
@@ -381,6 +486,14 @@ function validateBackupDocumentInternal(
     warnings: [],
     fatalErrors: [],
   };
+  if (changedA2.size)
+    collector.warnings.push(
+      '教材の出典・内容を確認できない旧A-2データを復元対象から除外します。A-1・科目Bは通常どおり検証します。',
+    );
+  if (changedA1.size)
+    collector.warnings.push(
+      '内容が変わった旧A-1問題のデータを復元対象から除外します。変更のない問題の履歴は復元できます。元のバックアップを保管してください。',
+    );
 
   const answerHistory = parseAnswerHistory(answerHistoryInput, collector);
   const favorites = parseFavorites(favoritesInput, collector);
@@ -388,7 +501,11 @@ function validateBackupDocumentInternal(
   const normalPracticeResults = parsePracticeResults(normalPracticeResultsInput, collector);
   const mockExamSessions = parseExamSessions(mockExamSessionsInput, collector);
   const mockExamResults = parseExamResults(mockExamResultsInput, collector);
-  const learningDays = parseLearningDays(learningDaysInput, collector);
+  const learningDays = parseLearningDays(learningDaysInput, collector).filter(
+    (day) =>
+      (day.subjectId !== 'a2' || changedA2.size === 0) &&
+      (day.subjectId !== 'a1' || changedA1.size === 0),
+  );
   const settings = parseSettings(settingsInput, collector, source.exportedAt);
   const b1 = parseB1BackupData(data.b1, collector, b1Catalog);
 
@@ -411,6 +528,8 @@ function validateBackupDocumentInternal(
     questionCount: source.questionData.questionCount,
     fingerprint: source.questionData.fingerprint,
     schemaVersion: source.questionData.schemaVersion,
+    ...(backupManifest ? { a2Manifest: backupManifest } : {}),
+    ...(backupA1Manifest ? { a1Manifest: backupA1Manifest } : {}),
   };
   const document = createBackupDocument({
     exportedAt: source.exportedAt,
@@ -563,6 +682,17 @@ function parseB1BackupData(
     collector.excludedRecordCount += 1;
     return emptyB1BackupData();
   }
+  if (
+    value.practiceSessions.some(
+      (row) => isRecord(row) && row.identity !== undefined && !isB1ContentIdentity(row.identity),
+    ) ||
+    value.mockSessions.some(
+      (row) =>
+        isRecord(row) && row.caseIdentities !== undefined && !isB1IdentityMap(row.caseIdentities),
+    )
+  ) {
+    collector.fatalErrors.push('科目Bの教材識別情報が不正です。現在のデータは変更しません。');
+  }
   const practiceSessions = value.practiceSessions.flatMap((item) => {
     const parsed = parseB1PracticeSession(item, b1Catalog);
     if (parsed === undefined) {
@@ -603,7 +733,11 @@ function parseB1BackupData(
   return {
     practiceSessions: uniqueBy(practiceSessions, (session) => session.id),
     mockSessions: uniqueBy(mockSessions, (session) => session.id),
-    pdfRegistrations: uniqueBy(pdfRegistrations, (registration) => String(registration.year)),
+    pdfRegistrations: uniqueBy(
+      pdfRegistrations,
+      (registration) => registration.documentId ?? String(registration.year),
+    ),
+    datasetArchives: parseB1DatasetArchives(value.datasetArchives, collector),
     learnerEvidence: uniqueBy(learnerEvidence, (entry) => entry.id),
     learningReflections: uniqueBy(learningReflections, (entry) => entry.id),
     remediationProgress: uniqueBy(remediationProgress, (entry) => entry.id),
@@ -652,6 +786,7 @@ function parseB1LearnerEvidence(
       id: item.id,
       version: item.version,
       sessionId: item.sessionId,
+      ...(isB1ContentIdentity(item.identity) ? { identity: item.identity } : {}),
       questionId: item.questionId,
       ...(isB1EvidenceSourceType(item.sourceType) ? { sourceType: item.sourceType } : {}),
       ...(isPositiveInteger(item.printedPage) ? { printedPage: item.printedPage } : {}),
@@ -711,6 +846,7 @@ function parseB1LearningReflections(
       id: item.id,
       version: item.version,
       sessionId: item.sessionId,
+      ...(isB1ContentIdentity(item.identity) ? { identity: item.identity } : {}),
       questionId: item.questionId,
       failureCauseIds: [...new Set(item.failureCauseIds)] as B1FailureCauseId[],
       selfAssessment: item.selfAssessment as B1LearningReflectionRow['selfAssessment'],
@@ -783,6 +919,7 @@ function parseB1RemediationProgress(
     entries.push({
       id: item.id,
       version: item.version,
+      ...(isB1ContentIdentity(item.identity) ? { identity: item.identity } : {}),
       originQuestionId: item.originQuestionId,
       originSessionId: item.originSessionId,
       ...(isNonEmptyString(item.originCaseId) ? { originCaseId: item.originCaseId } : {}),
@@ -854,6 +991,7 @@ function parseB1AnswerAttempts(
       id: item.id,
       version: 1,
       sessionId: item.sessionId,
+      ...(isB1ContentIdentity(item.identity) ? { identity: item.identity } : {}),
       questionId: item.questionId,
       attemptNumber: item.attemptNumber,
       answers: { ...(item.answers as Record<string, string>) },
@@ -879,6 +1017,10 @@ function parseB1Preferences(value: unknown, collector: ValidationCollector): B1P
     return [];
   }
   const row = value.find(isB1PreferenceRecord);
+  if (value.some((entry) => !isB1PreferenceRecord(entry))) {
+    invalidB1SupportData(collector, '科目Bのお気に入り・設定の形式が正しくありません。');
+    return [];
+  }
   if (row === undefined) return [];
   return [
     {
@@ -891,6 +1033,7 @@ function parseB1Preferences(value: unknown, collector: ValidationCollector): B1P
         low_current_priority: row.relevanceFilter.low_current_priority,
       },
       updatedAt: row.updatedAt,
+      ...(row.favoriteCaseIds === undefined ? {} : { favoriteCaseIds: [...row.favoriteCaseIds] }),
     },
   ];
 }
@@ -900,13 +1043,15 @@ function isB1PreferenceRecord(value: unknown): value is {
   version: 1;
   relevanceFilter: B1PreferenceRow['relevanceFilter'];
   updatedAt: string;
+  favoriteCaseIds?: string[];
 } {
   if (
     !isRecord(value) ||
     value.key !== 'b1-learning-preferences' ||
     value.version !== 1 ||
     !isIsoDate(value.updatedAt) ||
-    !isRecord(value.relevanceFilter)
+    !isRecord(value.relevanceFilter) ||
+    (value.favoriteCaseIds !== undefined && !isStringArray(value.favoriteCaseIds))
   )
     return false;
   const relevanceFilter = value.relevanceFilter;
@@ -917,6 +1062,7 @@ function isB1PreferenceRecord(value: unknown): value is {
 
 function isB1EvidenceSourceType(value: unknown): value is B1LearnerEvidenceRow['sourceType'] {
   return [
+    'log',
     'paragraph',
     'figure',
     'table',
@@ -974,6 +1120,7 @@ function parseB1PracticeSession(
     version: value.version,
     status: value.status,
     ...(value.mode === 'training' || value.mode === 'practical' ? { mode: value.mode } : {}),
+    ...(isB1ContentIdentity(value.identity) ? { identity: value.identity } : {}),
     caseId: value.caseId,
     unitIds: [...value.unitIds],
     answers: copyB1Answers(value.answers),
@@ -1056,7 +1203,12 @@ function parseB1MockSession(
     version: value.version,
     status: value.status,
     year: value.year,
-    ...(value.mode === 'mock90' ? { mode: value.mode } : {}),
+    ...(value.mode === 'mock90' || value.mode === 'mock150' ? { mode: value.mode } : {}),
+    ...(isString(value.examRuleId) ? { examRuleId: value.examRuleId } : {}),
+    ...(isStringArray(value.presentedCaseIds)
+      ? { presentedCaseIds: [...value.presentedCaseIds] }
+      : {}),
+    ...(isB1IdentityMap(value.caseIdentities) ? { caseIdentities: value.caseIdentities } : {}),
     ...(isB1MockType(value.mockType) ? { mockType: value.mockType } : {}),
     caseIds: [...value.caseIds],
     unitIds: [...value.unitIds],
@@ -1101,6 +1253,7 @@ function parseB1PdfRegistration(value: unknown): B1PdfRegistrationMetadata | und
   return {
     subjectId: 'b1',
     year: value.year,
+    ...(isString(value.documentId) ? { documentId: value.documentId } : {}),
     fileName: value.fileName,
     mimeType: value.mimeType,
     size: value.size,
@@ -1792,6 +1945,26 @@ function unknown(collector: ValidationCollector, code: string): void {
   collector.excludedRecordCount += 1;
 }
 
+function isValidA1Manifest(value: unknown): value is QuestionDatasetManifest {
+  return (
+    isRecord(value) &&
+    value.key === 'a1' &&
+    value.manifestVersion === 1 &&
+    isNonEmptyString(value.datasetVersion) &&
+    Array.isArray(value.entries) &&
+    value.entries.every(
+      (entry) =>
+        isRecord(entry) &&
+        /^A1-\d{3}$/.test(String(entry.code)) &&
+        isNonEmptyString(entry.sourceId) &&
+        typeof entry.contentHash === 'string' &&
+        /^sha256:[a-f0-9]{64}$/.test(entry.contentHash),
+    ) &&
+    new Set(value.entries.map((entry) => (entry as Record<string, unknown>).code)).size ===
+      value.entries.length
+  );
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -1876,11 +2049,138 @@ function isTokyoDate(value: unknown): value is string {
   );
 }
 
-function fnv1a(value: string): string {
-  let hash = 0x811c9dc5;
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193);
+function isB1ContentIdentity(value: unknown): value is B1ContentIdentity {
+  return (
+    isRecord(value) &&
+    isNonEmptyString(value.datasetVersion) &&
+    isNonEmptyString(value.sourceId) &&
+    typeof value.contentHash === 'string' &&
+    /^sha256:v1:[a-f0-9]{64}$/.test(value.contentHash)
+  );
+}
+function isB1IdentityMap(value: unknown): value is Record<string, B1ContentIdentity> {
+  return isRecord(value) && Object.values(value).every(isB1ContentIdentity);
+}
+function isB1Manifest(value: unknown): value is B1DatasetManifest {
+  return (
+    isRecord(value) &&
+    value.key === 'b1' &&
+    value.manifestVersion === 1 &&
+    isNonEmptyString(value.datasetVersion) &&
+    isB1IdentityMap(value.cases)
+  );
+}
+function parseB1DatasetArchives(
+  value: unknown,
+  collector: ValidationCollector,
+): B1DatasetArchive[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    collector.fatalErrors.push('科目B退避履歴の形式が不正です。');
+    return [];
   }
-  return (hash >>> 0).toString(16).padStart(8, '0');
+  const result: B1DatasetArchive[] = [];
+  for (const archive of value) {
+    if (
+      !isRecord(archive) ||
+      archive.archiveVersion !== 1 ||
+      !isNonEmptyString(archive.id) ||
+      !isIsoDate(archive.archivedAt) ||
+      !isNonEmptyString(archive.previousDatasetVersion) ||
+      !isNonEmptyString(archive.nextDatasetVersion) ||
+      !isB1Manifest(archive.previousManifest) ||
+      !isRecord(archive.data)
+    ) {
+      collector.fatalErrors.push('科目B退避履歴の識別情報が不正です。');
+      continue;
+    }
+    const data = archive.data;
+    const required = [
+      'practiceSessions',
+      'mockSessions',
+      'learnerEvidence',
+      'learningReflections',
+      'remediationProgress',
+      'answerAttempts',
+      'preferences',
+      'syncMetadata',
+      'syncOutbox',
+    ] as const;
+    if (required.some((key) => !Array.isArray(data[key]))) {
+      collector.fatalErrors.push('科目B退避履歴が不足しています。');
+      continue;
+    }
+    const practices = (data.practiceSessions as unknown[]).flatMap((row) => {
+      const parsed = parseB1PracticeSession(row);
+      return parsed ? [parsed] : [];
+    });
+    const mocks = (data.mockSessions as unknown[]).flatMap((row) => {
+      const parsed = parseB1MockSession(row);
+      return parsed ? [parsed] : [];
+    });
+    if (
+      (data.practiceSessions as unknown[]).some(
+        (row) => isRecord(row) && row.identity !== undefined && !isB1ContentIdentity(row.identity),
+      ) ||
+      (data.mockSessions as unknown[]).some(
+        (row) =>
+          isRecord(row) && row.caseIdentities !== undefined && !isB1IdentityMap(row.caseIdentities),
+      )
+    ) {
+      collector.fatalErrors.push('科目B退避履歴の教材識別が不正です。');
+      continue;
+    }
+    const parsed = {
+      practiceSessions: practices,
+      mockSessions: mocks,
+      learnerEvidence: parseB1LearnerEvidence(data.learnerEvidence, collector),
+      learningReflections: parseB1LearningReflections(data.learningReflections, collector),
+      remediationProgress: parseB1RemediationProgress(data.remediationProgress, collector),
+      answerAttempts: parseB1AnswerAttempts(data.answerAttempts, collector),
+      preferences: parseB1Preferences(data.preferences, collector),
+      syncMetadata: (data.syncMetadata as unknown[]).filter(isB1ArchiveSyncMetadata),
+      syncOutbox: (data.syncOutbox as unknown[]).filter(isB1ArchiveSyncOutbox),
+    };
+    if (required.some((key) => parsed[key].length !== (data[key] as unknown[]).length)) {
+      collector.fatalErrors.push('科目B退避履歴の内容が不正です。');
+      continue;
+    }
+    result.push({
+      id: archive.id,
+      archiveVersion: 1,
+      archivedAt: archive.archivedAt,
+      previousDatasetVersion: archive.previousDatasetVersion,
+      nextDatasetVersion: archive.nextDatasetVersion,
+      previousManifest: archive.previousManifest,
+      data: parsed,
+    });
+  }
+  return result;
+}
+function isB1ArchiveSyncMetadata(
+  value: unknown,
+): value is import('../database/types').CloudSyncMetadataRow {
+  return (
+    isRecord(value) &&
+    ['b1.answer', 'b1.progress', 'b1.reset'].includes(String(value.scope)) &&
+    isNonEmptyString(value.itemKey) &&
+    isIsoDate(value.clientUpdatedAt) &&
+    isNonEmptyString(value.deviceId) &&
+    typeof value.isDeleted === 'boolean'
+  );
+}
+function isB1ArchiveSyncOutbox(
+  value: unknown,
+): value is import('../database/types').CloudSyncOutboxRow {
+  return (
+    isRecord(value) &&
+    ['b1.answer', 'b1.progress', 'b1.reset'].includes(String(value.scope)) &&
+    isNonEmptyString(value.itemKey) &&
+    isIsoDate(value.clientUpdatedAt) &&
+    isNonEmptyString(value.deviceId) &&
+    isNonEmptyString(value.userId) &&
+    isIsoDate(value.queuedAt) &&
+    isNonNegativeInteger(value.retryCount) &&
+    (value.nextRetryAt === undefined || isIsoDate(value.nextRetryAt))
+  );
 }

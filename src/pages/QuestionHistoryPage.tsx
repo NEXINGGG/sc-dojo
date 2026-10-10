@@ -1,3 +1,5 @@
+import { QuestionChoiceFigures, QuestionStimuli } from '../components/QuestionStimuli';
+import { QuestionExplanation } from '../components/QuestionExplanation';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
@@ -164,14 +166,13 @@ export function QuestionHistoryPage() {
       <section className="surface-card question-history-card">
         <h2>問題</h2>
         <p className="question-text">{question.question}</p>
+        <QuestionStimuli stimulus={question.stimulus} />
+        <QuestionChoiceFigures choices={question.choices} />
         {isAnswered ? (
           <details>
             <summary>正解と解説を表示する</summary>
             <p>正解: {question.correctChoice}</p>
-            <h3>解説</h3>
-            <p>{question.explanation}</p>
-            <h3>覚える一行</h3>
-            <p>{question.memoryPoint}</p>
+            <QuestionExplanation question={question} />
           </details>
         ) : (
           <p className="muted-text">未回答のため、正解と解説は表示していません。</p>

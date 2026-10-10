@@ -6,6 +6,7 @@ import type { B1AnswerAttemptRow } from '../../database/types';
 import { recommendB1A2Questions } from '../../domain/b1A2Recommendation';
 import type { B1SelfGrade } from '../../domain/b1';
 import {
+  type B1AnswerForm,
   type B1EvidenceSourceType,
   type B1FailureCauseId,
   type B1LearningMode,
@@ -14,14 +15,28 @@ import { B1LearningSupportRepository } from './b1LearningSupportRepository';
 
 const repository = new B1LearningSupportRepository(database);
 
+const answerFormLabels: Record<B1AnswerForm, string> = {
+  term: '用語',
+  number: '数値',
+  reason: '理由',
+  purpose: '目的',
+  behavior: '動作・処理',
+  setting: '設定内容',
+  calculation: '計算結果',
+  route: '経路',
+  selection: '選択肢から選ぶ',
+  other: '原本で指定された形式',
+};
+
 const evidenceTypeLabels: Record<B1EvidenceSourceType, string> = {
-  paragraph: '本文',
+  log: 'ログ根拠',
+  paragraph: '本文根拠',
   figure: '図',
   table: '表',
   calculation: '計算',
   configuration: '設定',
   sequence: 'シーケンス',
-  general_knowledge: '一般知識',
+  general_knowledge: '技術知識',
 };
 
 const catalog = getB1LearningSupportCatalog();
@@ -33,7 +48,7 @@ export function B1RequirementBreakdownPanel({
   onToggle,
 }: {
   unit: B1QuestionUnit;
-  mode: Exclude<B1LearningMode, 'mock90'>;
+  mode: Exclude<B1LearningMode, 'mock90' | 'mock150'>;
   expanded: boolean;
   onToggle: () => void;
 }) {
@@ -74,7 +89,7 @@ export function B1RequirementBreakdownPanel({
               value={`${breakdown.trafficDirection.from} → ${breakdown.trafficDirection.to}`}
             />
           ) : null}
-          <Requirement label="回答形式" value={breakdown.answerForm} />
+          <Requirement label="回答形式" value={answerFormLabels[breakdown.answerForm]} />
           <Requirement label="回答数" value={`${breakdown.requiredAnswerCount}件`} />
           <Requirement
             label="制約"
@@ -102,10 +117,12 @@ export function B1LearnerEvidencePanel({
   sessionId,
   unit,
   defaultPrintedPage,
+  caseItem,
 }: {
   sessionId: string;
   unit: B1QuestionUnit;
   defaultPrintedPage: number;
+  caseItem?: B1Case;
 }) {
   const [entries, setEntries] = useState<
     Awaited<ReturnType<typeof repository.listLearnerEvidenceBySession>>
@@ -117,6 +134,23 @@ export function B1LearnerEvidencePanel({
   const [editingId, setEditingId] = useState<string>();
   const [message, setMessage] = useState<string>();
   const [isSaving, setIsSaving] = useState(false);
+  const [evidenceId, setEvidenceId] = useState('');
+  const locations = [
+    ...(caseItem?.body.sections?.flatMap((s) =>
+      s.paragraphs.map((p) => ({
+        id: p.id,
+        label: `${p.id}：${p.text.slice(0, 30)}`,
+        page: p.printedPage,
+        type: 'paragraph' as const,
+      })),
+    ) ?? []),
+    ...(caseItem?.body.materials?.map((m) => ({
+      id: m.id,
+      label: m.caption,
+      page: m.printedPage,
+      type: m.kind === 'code' ? ('configuration' as const) : m.kind,
+    })) ?? []),
+  ];
 
   async function reload() {
     try {
@@ -132,6 +166,7 @@ export function B1LearnerEvidencePanel({
     setEditingId(undefined);
     setNote('');
     setLocation('');
+    setEvidenceId('');
     void reload();
     // reload is intentionally scoped to the persisted session/question pair.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,10 +184,12 @@ export function B1LearnerEvidencePanel({
         ...(printedPage.trim() ? { printedPage: Number(printedPage) } : {}),
         ...(location.trim() ? { location } : {}),
         note,
+        ...(evidenceId ? { evidenceId } : {}),
       });
       setEditingId(undefined);
       setNote('');
       setLocation('');
+      setEvidenceId('');
       await reload();
       setMessage('根拠を端末に保存しました。外部へ送信しません。');
     } catch (error) {
@@ -180,6 +217,7 @@ export function B1LearnerEvidencePanel({
     setPrintedPage(entry.printedPage === undefined ? '' : String(entry.printedPage));
     setLocation(entry.location ?? '');
     setNote(entry.note);
+    setEvidenceId(entry.evidenceId ?? '');
   }
 
   return (
@@ -191,6 +229,37 @@ export function B1LearnerEvidencePanel({
       <h2 id={`b1-evidence-${unit.questionId}`}>答案の根拠を記録</h2>
       <p className="muted-text">根拠がなくても提出できます。記録はこの端末内だけに保存します。</p>
       <div className="b1-evidence-fields">
+        {locations.length ? (
+          <label className="b1-evidence-note">
+            本文・図表から根拠を選ぶ
+            <select
+              value={evidenceId}
+              onChange={(event) => {
+                const id = event.currentTarget.value;
+                setEvidenceId(id);
+                const target = locations.find((l) => l.id === id);
+                if (target) {
+                  setLocation(target.id);
+                  setSourceType(
+                    target.type === 'image'
+                      ? 'figure'
+                      : target.type === 'text'
+                        ? 'paragraph'
+                        : target.type,
+                  );
+                  setPrintedPage(String(target.page ?? defaultPrintedPage));
+                }
+              }}
+            >
+              <option value="">参照位置を手入力する</option>
+              {locations.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
         <label>
           根拠種別
           <select
@@ -280,6 +349,7 @@ export function B1PostSubmissionPanel({
   onStartRewrite,
   onFinishRewrite,
   isRewriting,
+  rewriteInPractice = false,
   onStartA2,
   onFailureCauses,
 }: {
@@ -293,6 +363,7 @@ export function B1PostSubmissionPanel({
   onStartRewrite: () => void;
   onFinishRewrite: () => void;
   isRewriting: boolean;
+  rewriteInPractice?: boolean;
   onStartA2: (failureCauseIds: readonly B1FailureCauseId[]) => void;
   onFailureCauses: (failureCauseIds: readonly B1FailureCauseId[]) => void;
 }) {
@@ -346,8 +417,10 @@ export function B1PostSubmissionPanel({
   return (
     <section aria-label="提出後の振返り" className="b1-post-submission">
       <section className="surface-card b1-learning-panel">
-        <p className="eyebrow">公式根拠</p>
-        <h2>公式PDFで確認する位置</h2>
+        <p className="eyebrow">{caseItem.examCode === 'SC' ? '教材の根拠' : '公式根拠'}</p>
+        <h2>
+          {caseItem.examCode === 'SC' ? '本文・図表・ログで確認する位置' : '公式PDFで確認する位置'}
+        </h2>
         {guidance.officialEvidence.map((evidence) => (
           <article className="b1-official-evidence" key={evidence.evidenceId}>
             <strong>
@@ -366,7 +439,9 @@ export function B1PostSubmissionPanel({
           </article>
         ))}
         <p className="muted-text">
-          PDF未登録時は上の公式PDFを開くボタンから確認し、オフライン用に端末へ登録できます。
+          {caseItem.examCode === 'SC'
+            ? '本文の段落・セクション・図表の位置を確認して根拠を記録してください。'
+            : 'PDF未登録時は上の公式PDFを開くボタンから確認し、オフライン用に端末へ登録できます。'}
         </p>
       </section>
       <section className="surface-card b1-learning-panel">
@@ -395,10 +470,15 @@ export function B1PostSubmissionPanel({
           <fieldset className="b1-failure-causes">
             <legend>失点原因（複数選択）</legend>
             {catalog.failureCauses
-              .filter((cause) => guidance.applicableFailureCauseIds.includes(cause.id))
+              .filter(
+                (cause) =>
+                  caseItem.examCode === 'SC' ||
+                  guidance.applicableFailureCauseIds.includes(cause.id),
+              )
               .map((cause) => (
                 <label key={cause.id}>
                   <input
+                    aria-label={cause.displayName}
                     checked={failureCauseIds.includes(cause.id)}
                     onChange={(event) =>
                       void updateFailureCauses(
@@ -410,6 +490,10 @@ export function B1PostSubmissionPanel({
                     type="checkbox"
                   />
                   {cause.displayName}
+                  {caseItem.examCode === 'SC' &&
+                  guidance.applicableFailureCauseIds.includes(cause.id)
+                    ? '（この設問の推奨）'
+                    : ''}
                 </label>
               ))}
           </fieldset>
@@ -451,6 +535,11 @@ export function B1PostSubmissionPanel({
       <section className="surface-card b1-learning-panel">
         <p className="eyebrow">答案の書き直し</p>
         <h2>前の答案を残して書き直す</h2>
+        {rewriteInPractice ? (
+          <p>
+            提出した模試答案を残し、この設問から別の演習を開始します。書き直しも途中保存できます。
+          </p>
+        ) : null}
         <p>
           保存済みattempt: {attempts.length}件
           {attempts.length > 1
@@ -473,7 +562,7 @@ export function B1PostSubmissionPanel({
           </button>
         ) : (
           <button className="secondary-button" onClick={onStartRewrite} type="button">
-            答案を書き直す
+            {rewriteInPractice ? '演習で答案を書き直す' : '答案を書き直す'}
           </button>
         )}
       </section>

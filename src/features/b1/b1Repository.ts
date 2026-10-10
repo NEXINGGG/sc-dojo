@@ -1,3 +1,6 @@
+import { reconcileB1Dataset } from '../../database/b1DatasetMigration';
+import { b1Identity, b1DocumentId, sameB1Identity } from '../../domain/b1Identity';
+import { getB1ExamConfig } from '../../domain/b1ExamConfig';
 import type { B1Case } from '../../data/b1';
 import {
   b1Cases,
@@ -71,18 +74,30 @@ export interface B1PracticeSaveOptions {
 export class B1Repository {
   constructor(private readonly database: A1DojoDatabase) {}
 
-  async getPdf(year: number): Promise<B1PdfFileRow | undefined> {
-    await this.database.open();
-    return this.database.b1PdfFiles.get(year);
+  async getPdf(reference: number | B1Case): Promise<B1PdfFileRow | undefined> {
+    await reconcileB1Dataset(this.database);
+    if (typeof reference === 'number') return this.database.b1PdfFiles.get(reference);
+    const registered = await this.database.b1Documents.get(b1DocumentId(reference));
+    return (
+      registered ??
+      (isLegacyNwPdfReference(reference) ? this.database.b1PdfFiles.get(reference.year) : undefined)
+    );
   }
 
   async listPdfMetadata(): Promise<B1PdfRegistrationMetadata[]> {
-    await this.database.open();
-    const rows = await this.database.b1PdfFiles.toArray();
+    await reconcileB1Dataset(this.database);
+    const rows = [
+      ...(await this.database.b1PdfFiles.toArray()),
+      ...(await this.database.b1Documents.toArray()),
+    ];
     return rows.map(toPdfMetadata).sort((left, right) => right.year - left.year);
   }
 
-  async savePdf(year: number, file: File, updatedAt = new Date().toISOString()): Promise<void> {
+  async savePdf(
+    reference: number | B1Case,
+    file: File,
+    updatedAt = new Date().toISOString(),
+  ): Promise<void> {
     if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
       throw new B1DataError('PDF形式のファイルを選んでください。');
     }
@@ -91,31 +106,39 @@ export class B1Repository {
         '空のPDFは登録できません。IPAからダウンロードした問題PDFを選んでください。',
       );
     }
-    await this.database.open();
-    await this.database.b1PdfFiles.put({
-      subjectId: 'b1',
+    await reconcileB1Dataset(this.database);
+    const year = typeof reference === 'number' ? reference : reference.year;
+    const row = {
+      subjectId: 'b1' as const,
       year,
       fileName: file.name,
       mimeType: file.type || 'application/pdf',
       size: file.size,
       updatedAt,
       blob: file,
-    });
+    };
+    if (typeof reference !== 'number')
+      await this.database.b1Documents.put({ ...row, documentId: b1DocumentId(reference) });
+    else await this.database.b1PdfFiles.put(row);
   }
 
-  async removePdf(year: number): Promise<void> {
-    await this.database.open();
-    await this.database.b1PdfFiles.delete(year);
+  async removePdf(reference: number | B1Case): Promise<void> {
+    await reconcileB1Dataset(this.database);
+    if (typeof reference === 'number') await this.database.b1PdfFiles.delete(reference);
+    else if (await this.database.b1Documents.get(b1DocumentId(reference)))
+      await this.database.b1Documents.delete(b1DocumentId(reference));
+    else if (isLegacyNwPdfReference(reference))
+      await this.database.b1PdfFiles.delete(reference.year);
   }
 
   async getPractice(id: string): Promise<B1PracticeSessionRow | undefined> {
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     const session = await this.database.b1PracticeSessions.get(id);
     return session === undefined ? undefined : this.migratePracticeCatalog(session);
   }
 
   async getInProgressPractice(): Promise<B1PracticeSessionRow | undefined> {
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     const session = await this.database.b1PracticeSessions
       .where('status')
       .equals('in_progress')
@@ -125,7 +148,7 @@ export class B1Repository {
 
   async createPractice(
     caseItem: B1Case,
-    modeOrNow: Exclude<B1LearningMode, 'mock90'> | string = 'training',
+    modeOrNow: Exclude<B1LearningMode, 'mock90' | 'mock150'> | string = 'training',
     suppliedNow = new Date().toISOString(),
   ): Promise<B1PracticeSessionRow> {
     const mode = modeOrNow === 'training' || modeOrNow === 'practical' ? modeOrNow : 'training';
@@ -140,6 +163,7 @@ export class B1Repository {
       version: 3,
       status: 'in_progress',
       mode,
+      identity: b1Identity(caseItem),
       caseId: caseItem.caseId,
       unitIds: caseItem.questionUnits.map((unit) => unit.questionId),
       answers: {},
@@ -162,7 +186,12 @@ export class B1Repository {
     options: B1PracticeSaveOptions = {},
   ): Promise<void> {
     validatePractice(session);
-    await this.database.open();
+    if (
+      session.identity &&
+      !sameB1Identity(session.identity, b1Identity(getB1Case(session.caseId)!))
+    )
+      throw new B1DataError('教材が更新されました。演習一覧から再開してください。');
+    await reconcileB1Dataset(this.database);
     await this.database.transaction(
       'rw',
       [
@@ -216,22 +245,38 @@ export class B1Repository {
   }
 
   async getMock(id: string): Promise<B1MockSessionRow | undefined> {
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     const session = await this.database.b1MockSessions.get(id);
-    return session === undefined ? undefined : this.migrateMockCatalog(session);
+    if (session === undefined) return undefined;
+    const migrated = await this.migrateMockCatalog(session);
+    return migrated.mode === 'mock150' &&
+      migrated.status === 'in_progress' &&
+      Date.now() >= new Date(migrated.deadlineAt).getTime()
+      ? this.submitMock(migrated.id, 'timeout', migrated.deadlineAt)
+      : migrated;
   }
 
   async getInProgressMock(): Promise<B1MockSessionRow | undefined> {
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     const session = await this.database.b1MockSessions
       .where('status')
       .equals('in_progress')
       .first();
-    return session === undefined ? undefined : this.migrateMockCatalog(session);
+    if (session === undefined) return undefined;
+    const migrated = await this.migrateMockCatalog(session);
+    if (
+      migrated.mode === 'mock150' &&
+      migrated.status === 'in_progress' &&
+      Date.now() >= new Date(migrated.deadlineAt).getTime()
+    ) {
+      await this.submitMock(migrated.id, 'timeout', migrated.deadlineAt);
+      return undefined;
+    }
+    return migrated;
   }
 
   async listMocks(): Promise<B1MockSessionRow[]> {
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     const sessions = await this.database.b1MockSessions.orderBy('updatedAt').reverse().toArray();
     return Promise.all(sessions.map((session) => this.migrateMockCatalog(session)));
   }
@@ -256,6 +301,7 @@ export class B1Repository {
       throw new B1DataError('途中の科目B模試があります。再開するか、先に提出してください。');
     }
     const candidates = caseIds.map((caseId) => getB1Case(caseId));
+    const config = getB1ExamConfig(b1Cases);
     if (
       caseIds.length !== 2 ||
       new Set(caseIds).size !== 2 ||
@@ -266,9 +312,19 @@ export class B1Repository {
     ) {
       throw new B1DataError(
         mockType === 'official_year'
-          ? '同一年度の3大問から、異なる2大問を選んでください。'
+          ? `同一試験回の${config.presentedCount}大問から、異なる2大問を選んでください。`
           : '異なる2大問を選んでください。',
       );
+    }
+    const first = candidates[0];
+    const presented = b1Cases.filter((item) => item.examSetId === first?.examSetId);
+    if (
+      first?.examCode === 'SC' &&
+      (mockType !== 'official_year' ||
+        presented.length !== config.presentedCount ||
+        candidates.some((item) => item?.examSetId !== first.examSetId))
+    ) {
+      throw new B1DataError('同一試験回の4問から2問を選んでください。');
     }
     const unitIds = getB1UnitIds(caseIds);
     if (unitIds.length === 0 || new Set(unitIds).size !== unitIds.length) {
@@ -282,7 +338,14 @@ export class B1Repository {
       version: 3,
       status: 'in_progress',
       year,
-      mode: 'mock90',
+      mode: config.ruleId === 'sc-b-2026' ? 'mock150' : 'mock90',
+      examRuleId: config.ruleId,
+      presentedCaseIds: presented.map((item) => item.caseId),
+      caseIdentities: Object.fromEntries(
+        candidates
+          .filter((item): item is B1Case => item !== undefined)
+          .map((item) => [item.caseId, b1Identity(item)]),
+      ),
       mockType,
       caseIds: [...caseIds],
       unitIds,
@@ -295,7 +358,7 @@ export class B1Repository {
       attemptIdsByQuestion: {},
       currentIndex: 0,
       startedAt: now,
-      deadlineAt: new Date(new Date(now).getTime() + 90 * 60 * 1000).toISOString(),
+      deadlineAt: new Date(new Date(now).getTime() + config.durationSeconds * 1000).toISOString(),
       updatedAt: now,
     };
     await this.database.b1MockSessions.put(session);
@@ -304,8 +367,24 @@ export class B1Repository {
 
   async saveMock(session: B1MockSessionRow): Promise<void> {
     validateMock(session);
-    await this.database.open();
-    await this.database.b1MockSessions.put(session);
+    await reconcileB1Dataset(this.database);
+    await this.database.transaction('rw', this.database.b1MockSessions, async () => {
+      const previous = await this.database.b1MockSessions.get(session.id);
+      if (
+        previous?.mode === 'mock150' &&
+        (previous.status !== 'in_progress' || Date.now() >= new Date(previous.deadlineAt).getTime())
+      ) {
+        if (
+          JSON.stringify(previous.answers) !== JSON.stringify(session.answers) ||
+          (session.status === 'in_progress' && previous.status !== 'in_progress')
+        ) {
+          throw new B1DataError(
+            '提出済み又は時間切れの答案は変更できません。再読み込みしてください。',
+          );
+        }
+      }
+      await this.database.b1MockSessions.put(session);
+    });
   }
 
   async submitMock(
@@ -313,20 +392,30 @@ export class B1Repository {
     reason: ExamSubmissionReason,
     submittedAt = new Date().toISOString(),
   ): Promise<B1MockSessionRow> {
-    const session = await this.getMock(id);
-    if (session === undefined) throw new B1DataError('科目B模試が見つかりません。');
-    if (session.status !== 'in_progress') return session;
-    validateMock(session);
-    const submitted: B1MockSessionRow = {
-      ...session,
-      status: 'submitted',
-      unitConfirmations: createSubmittedMockConfirmations(session, submittedAt),
-      submittedAt,
-      submissionReason: reason,
-      updatedAt: submittedAt,
-    };
-    await this.database.b1MockSessions.put(submitted);
-    return submitted;
+    await reconcileB1Dataset(this.database);
+    return this.database.transaction('rw', this.database.b1MockSessions, async () => {
+      const session = await this.database.b1MockSessions.get(id);
+      if (session === undefined) throw new B1DataError('科目B模試が見つかりません。');
+      if (session.status !== 'in_progress') return session;
+      validateMock(session);
+      if (
+        session.mode === 'mock150' &&
+        new Date(submittedAt).getTime() >= new Date(session.deadlineAt).getTime()
+      ) {
+        reason = 'timeout';
+        submittedAt = session.deadlineAt;
+      }
+      const submitted: B1MockSessionRow = {
+        ...session,
+        status: 'submitted',
+        unitConfirmations: createSubmittedMockConfirmations(session, submittedAt),
+        submittedAt,
+        submissionReason: reason,
+        updatedAt: submittedAt,
+      };
+      await this.database.b1MockSessions.put(submitted);
+      return submitted;
+    });
   }
 
   async completeMock(
@@ -368,7 +457,7 @@ export class B1Repository {
   }
 
   async getProgressSummary(): Promise<B1ProgressSummary> {
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     const [practices, mocks, completedPracticeCount, learnerEvidenceCount, answerAttempts] =
       await Promise.all([
         this.listPractices(),
@@ -401,7 +490,7 @@ export class B1Repository {
   }
 
   async listPractices(): Promise<B1PracticeSessionRow[]> {
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     const sessions = await this.database.b1PracticeSessions
       .orderBy('updatedAt')
       .reverse()
@@ -410,7 +499,7 @@ export class B1Repository {
   }
 
   async getLearningAnalytics(): Promise<B1LearningAnalytics> {
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     const [evidence, reflections, attempts, practices, mocks] = await Promise.all([
       this.database.b1LearnerEvidence.toArray(),
       this.database.b1LearningReflections.toArray(),
@@ -493,7 +582,7 @@ export class B1Repository {
     }
     if (!input.sessionId.trim()) throw new B1DataError('答案の学習セッションが見つかりません。');
     const now = input.now ?? new Date().toISOString();
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     const existing = await this.database.b1AnswerAttempts
       .where('[sessionId+questionId]')
       .equals([input.sessionId, input.questionId])
@@ -502,6 +591,11 @@ export class B1Repository {
       id: `b1-attempt-${crypto.randomUUID()}`,
       version: 1,
       sessionId: input.sessionId,
+      identity: b1Identity(
+        b1Cases.find((item) =>
+          item.questionUnits.some((unit) => unit.questionId === input.questionId),
+        )!,
+      ),
       questionId: input.questionId,
       attemptNumber: existing.length + 1,
       answers: { ...input.answers },
@@ -522,7 +616,7 @@ export class B1Repository {
   }
 
   async listAnswerAttempts(sessionId: string, questionId: string): Promise<B1AnswerAttemptRow[]> {
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     return this.database.b1AnswerAttempts
       .where('[sessionId+questionId]')
       .equals([sessionId, questionId])
@@ -577,7 +671,7 @@ export class B1Repository {
     const migrated: B1MockSessionRow = {
       ...catalogMigrated,
       version: 3,
-      mode: 'mock90',
+      mode: catalogMigrated.mode ?? 'mock90',
       mockType: catalogMigrated.mockType ?? 'official_year',
       unitConfirmations,
       selfGradeUpdatedAt: catalogMigrated.selfGradeUpdatedAt ?? {},
@@ -593,7 +687,7 @@ export class B1Repository {
     expectedStatus: B1MockSessionRow['status'],
     invalidStatusMessage: string,
   ): Promise<void> {
-    await this.database.open();
+    await reconcileB1Dataset(this.database);
     const session = await this.database.b1MockSessions.get(id);
     if (session === undefined) return;
     if (session.status !== expectedStatus) throw new B1DataError(invalidStatusMessage);
@@ -755,6 +849,26 @@ function validatePractice(session: B1PracticeSessionRow): void {
 }
 
 function validateMock(session: B1MockSessionRow): void {
+  const cases = session.caseIds.map(getB1Case).filter((item): item is B1Case => item !== undefined);
+  if (cases[0]?.examCode === 'SC') {
+    const config = getB1ExamConfig(cases);
+    const presented = b1Cases
+      .filter((item) => item.examSetId === cases[0].examSetId)
+      .map((item) => item.caseId);
+    if (
+      session.mode !== 'mock150' ||
+      session.examRuleId !== config.ruleId ||
+      !sameStringArray(session.presentedCaseIds ?? [], presented) ||
+      presented.length !== config.presentedCount ||
+      cases.some(
+        (item) => !sameB1Identity(session.caseIdentities?.[item.caseId], b1Identity(item)),
+      ) ||
+      new Date(session.deadlineAt).getTime() - new Date(session.startedAt).getTime() !==
+        config.durationSeconds * 1000
+    ) {
+      throw new B1DataError('SC模試の教材識別又は試験設定が一致しません。再読み込みしてください。');
+    }
+  }
   const expectedUnitIds = getB1UnitIds(session.caseIds);
   if (
     session.caseIds.length !== 2 ||
@@ -826,6 +940,7 @@ function toPdfMetadata(row: B1PdfFileRow): B1PdfRegistrationMetadata {
   return {
     subjectId: row.subjectId,
     year: row.year,
+    documentId: row.documentId,
     fileName: row.fileName,
     mimeType: row.mimeType,
     size: row.size,
@@ -834,5 +949,16 @@ function toPdfMetadata(row: B1PdfFileRow): B1PdfRegistrationMetadata {
 }
 
 function createB1SessionId(prefix: 'practice' | 'mock'): string {
-  return `b1-${prefix}-${crypto.randomUUID()}`;
+  return b1Cases[0]?.examCode === 'SC'
+    ? `b1-${b1Cases[0].dataset_version}-${prefix}-${crypto.randomUUID()}`
+    : `b1-${prefix}-${crypto.randomUUID()}`;
+}
+
+function isLegacyNwPdfReference(item: B1Case): boolean {
+  return (
+    item.examCode === 'NW' &&
+    item.dataset_version === 'nw-b1-v4' &&
+    item.originalSection === 'pm1' &&
+    item.term === 'spring'
+  );
 }

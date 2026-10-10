@@ -72,6 +72,13 @@ describe('A1DojoDatabase', () => {
       'cloudSyncMetadata',
       'cloudSyncState',
       'cloudSyncOutbox',
+      'a2DatasetManifests',
+      'a2DatasetArchives',
+      'a1DatasetManifests',
+      'a1DatasetArchives',
+      'b1DatasetManifests',
+      'b1DatasetArchives',
+      'b1Documents',
     ]);
 
     database.close();

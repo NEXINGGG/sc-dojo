@@ -1,9 +1,14 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, sep } from 'node:path';
+import { validateQuestionPrecache } from './validate-question-precache.mjs';
+import { findUnexpectedLocalPaths } from './deployment-paths.mjs';
 
 const rootDirectory = process.cwd();
 const distDirectory = join(rootDirectory, 'dist');
 const errors = [];
+const scBAssetsEnabled =
+  JSON.parse(readFileSync(join(rootDirectory, 'data/sc-b-v1-release-gate.json'), 'utf8'))
+    .approved === true || process.env.VITE_SC_B_RELEASE_CANDIDATE === '1';
 const expectedBase = normalizeAppBase(process.env.VITE_APP_BASE);
 
 assert(existsSync(distDirectory), 'dist/ がありません。先に pnpm run build を実行してください。');
@@ -109,17 +114,28 @@ const inspectableFiles = distFiles.filter((file) =>
   /\.(?:html|js|css|webmanifest|txt)$/i.test(file),
 );
 const joinedSource = inspectableFiles.map((file) => readText(file)).join('\n');
+const officialA2 = JSON.parse(readFileSync(join(rootDirectory, 'data/a2-questions.json'), 'utf8'));
+if (officialA2.metadata?.dataset_version === 'sc-a2-v1') {
+  assert(joinedSource.includes('sc-a2-v1'), '正式SC A-2 v1が本番成果物にありません。');
+  assert(!joinedSource.includes('sc-a2-pilot-v1'), 'pilot教材が本番成果物へ混入しています。');
+  assert(!joinedSource.includes('教材試作・30問'), 'pilot表示が本番成果物へ混入しています。');
+}
 assert(
   !distFiles.some((file) => /\.pdf$/i.test(file)),
   'dist/ に公式PDFを含めないでください。利用者が登録したPDFはIndexedDBだけに保存します。',
 );
 const serviceWorkerSource = existsSync(join(distDirectory, 'sw.js')) ? readText('sw.js') : '';
+errors.push(
+  ...validateQuestionPrecache(join(rootDirectory, 'public'), distDirectory, serviceWorkerSource, {
+    includeScB: scBAssetsEnabled,
+  }),
+);
 assert(
   !/\.pdf(?:["'`?]|$)|ipa\.go\.jp/i.test(serviceWorkerSource),
   'Service Workerのprecacheに公式PDFまたはIPAのPDF URLを含めないでください。',
 );
 assert(
-  !/(?:[A-Za-z]:\\|file:\/\/|\/Users\/|\/home\/)/.test(joinedSource),
+  findUnexpectedLocalPaths(joinedSource).length === 0,
   'dist/に絶対ローカルパスが含まれています。',
 );
 

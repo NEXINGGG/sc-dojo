@@ -1,3 +1,5 @@
+import { b1Cases, b1QuestionUnits } from '../data/b1';
+import { getB1ExamConfig } from './b1ExamConfig';
 export const subjectIds = ['a1', 'a2', 'b1'] as const;
 
 export type SubjectId = (typeof subjectIds)[number];
@@ -32,7 +34,7 @@ export const subjectConfigs: Readonly<Record<SubjectId, SubjectConfig>> = {
   },
   a2: {
     id: 'a2',
-    label: '科目A-2 セキュリティ専門',
+    label: '科目A-2 専門知識',
     shortLabel: '科目A-2',
     description: 'セキュリティ専門知識を学習します。',
     questionCount: 240,
@@ -48,10 +50,10 @@ export const subjectConfigs: Readonly<Record<SubjectId, SubjectConfig>> = {
     label: '科目B 記述式',
     shortLabel: '科目B',
     description: '公式PDFを参照して、記述式の答案を練習します。',
-    questionCount: 83,
+    questionCount: b1QuestionUnits.length,
     exam: {
       questionCount: 2,
-      durationSeconds: 90 * 60,
+      durationSeconds: getB1ExamConfig(b1Cases).durationSeconds,
       passingCorrectCount: 0,
       passingScorePercent: 0,
     },

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createDatabase, initializeDatabase, type A1DojoDatabase } from '../../database/database';
+import { reconcileA2Dataset } from '../../database/a2DatasetMigration';
 import {
   allQuestions,
   getSubjectCatalog,
@@ -233,8 +234,21 @@ describe('DataManagementRepository', () => {
     await initializeDatabase(database);
     const repository = new DataManagementRepository(database);
     await repository.restore(createValidatedBackup());
+    await database.questionProgress.put({
+      subjectId: 'a2',
+      code: 'A2-001',
+      attemptCount: 0,
+      correctCount: 0,
+      incorrectCount: 0,
+      favorite: true,
+      updatedAt: exportedAt,
+    });
+    await database.a2DatasetManifests.delete('a2');
+    await reconcileA2Dataset(database);
+    expect(await database.a2DatasetArchives.count()).toBe(1);
 
     await repository.clearLearningData();
+    expect(await database.a2DatasetArchives.count()).toBe(0);
 
     expect(await repository.getSummary()).toMatchObject({
       answerHistoryCount: 0,

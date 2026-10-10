@@ -80,6 +80,11 @@ export function filterPracticeQuestions(
   return source.filter(
     (question) =>
       question.status === 'active' &&
+      // Preserve fixed SC mock sets for first attempts. Learned mock questions remain reviewable.
+      (!/^sc-a[12]-v[0-9]+$/.test(question.datasetVersion ?? '') ||
+        question.questionSet.id === 'category_drill' ||
+        filters.answerStatus === 'incorrect' ||
+        filters.answerStatus === 'favorite') &&
       (filters.domainId === 'all' || question.domainId === filters.domainId) &&
       (categoryIds.size === 0 || categoryIds.has(question.categoryId)) &&
       (filters.difficulty === 'all' || question.difficulty === filters.difficulty) &&

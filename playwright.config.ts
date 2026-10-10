@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const host = '127.0.0.1';
+const host = 'localhost';
 const port = 4174;
 const viteCliPath = fileURLToPath(new URL('./node_modules/vite/bin/vite.js', import.meta.url));
 const usesExternalPreview = process.env.PLAYWRIGHT_EXTERNAL_PREVIEW === '1';

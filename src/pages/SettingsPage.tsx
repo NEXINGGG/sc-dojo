@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { APP_SHORT_NAME } from '../app/appIdentity';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { PageHeader } from '../components/PageHeader';
@@ -48,11 +48,14 @@ export function SettingsPage() {
   const [notice, setNotice] = useState<Notice>();
   const [clearConfirmation, setClearConfirmation] = useState('');
   const [isBusy, setIsBusy] = useState(false);
+  const isMounted = useRef(false);
 
   const refreshSummary = useCallback(async () => {
     try {
-      setSummary(await dataManagementRepository.getSummary());
+      const nextSummary = await dataManagementRepository.getSummary();
+      if (isMounted.current) setSummary(nextSummary);
     } catch {
+      if (!isMounted.current) return;
       setNotice({
         kind: 'error',
         message: '保存データの概要を読み込めませんでした。再読み込みしてもう一度お試しください。',
@@ -61,7 +64,11 @@ export function SettingsPage() {
   }, []);
 
   useEffect(() => {
+    isMounted.current = true;
     void refreshSummary();
+    return () => {
+      isMounted.current = false;
+    };
   }, [refreshSummary]);
 
   function closeDialog() {

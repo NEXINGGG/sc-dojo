@@ -22,9 +22,11 @@ export type SyncedAnswerAttempt = Omit<AnswerAttemptRow, 'id'>;
 export interface LearningSyncPayloadV1 {
   progress: QuestionProgressRow | null;
   answerAttempts: SyncedAnswerAttempt[];
+  questionIdentity?: { sourceId: string; contentHash: string };
 }
 
 export interface B1PracticeDescriptorV1 {
+  identity?: import('../../domain/b1Identity').B1ContentIdentity;
   id: string;
   subjectId: 'b1';
   version: B1PracticeSessionRow['version'];

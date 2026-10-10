@@ -15,3 +15,14 @@ reference/b1-official/
 debug.log
 .env.local
 .env.*.local
+
+# Downloaded official pilot PDFs, review renders and local QA output
+tmp/pilot/
+tmp/sc-a2-v1/
+tmp/sc-b-2025-fall/
+tmp/sc-b-2025-fall-ui/
+
+# Authoring downloads, local review output and release audit evidence
+tmp/
+# Pinned SC B PDFs are required by the production editorial gate; keep them as build inputs.
+reference/sc-b-official/**/*.txt

@@ -9,6 +9,7 @@ import { getSubjectCatalog } from '../../data/catalog';
 import { waitForRouteLoadingToFinish } from '../../test/routeLoading';
 import { B1Repository } from '../b1/b1Repository';
 import { LearningRepository } from '../learning/learningRepository';
+import { CloudSyncService } from '../sync/cloudSyncService';
 
 const supabaseMocks = vi.hoisted(() => {
   const unsubscribe = vi.fn();
@@ -104,8 +105,9 @@ beforeEach(async () => {
   supabaseMocks.from.mockImplementation(() => supabaseMocks.query);
   supabaseMocks.query.select.mockReturnValue(supabaseMocks.query);
   supabaseMocks.query.eq.mockReturnValue(supabaseMocks.query);
-  supabaseMocks.query.in.mockResolvedValue({ data: [], error: null });
-  supabaseMocks.query.upsert.mockResolvedValue({ error: null });
+  // Discard unused one-shot responses from the preceding asynchronous sync test.
+  supabaseMocks.query.in.mockReset().mockResolvedValue({ data: [], error: null });
+  supabaseMocks.query.upsert.mockReset().mockResolvedValue({ error: null });
 });
 
 afterEach(() => {
@@ -164,11 +166,17 @@ describe('Supabase認証', () => {
       error: null,
     });
     renderAuthSection();
-    await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(1));
+    // Formal datasets reconcile 240 content identities through IndexedDB before
+    // synchronization starts; allow that asynchronous startup to finish.
+    await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(1), {
+      timeout: 5_000,
+    });
 
     window.dispatchEvent(new Event('online'));
 
-    await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(supabaseMocks.query.in).toHaveBeenCalledTimes(2), {
+      timeout: 5_000,
+    });
   });
 
   it('オフラインと未同期件数を表示し、オンライン復帰で自動送信する', async () => {
@@ -317,6 +325,7 @@ describe('Supabase認証', () => {
   it('ログアウト時にSupabaseのログアウトだけを呼び、IndexedDBを削除しない', async () => {
     const user = userEvent.setup();
     const deleteDatabase = vi.spyOn(database, 'delete');
+    const synchronization = vi.spyOn(CloudSyncService.prototype, 'synchronize');
     let resolveInitialSync: ((value: { data: []; error: null }) => void) | undefined;
     supabaseMocks.auth.getSession.mockResolvedValue({
       data: { session: signedInSession() },
@@ -339,10 +348,13 @@ describe('Supabase認証', () => {
     expect(supabaseMocks.auth.signOut).toHaveBeenCalledWith({ scope: 'local' });
     expect(deleteDatabase).not.toHaveBeenCalled();
     resolveInitialSync?.({ data: [], error: null });
+    // Finish the pending operation before the next test clears its IndexedDB stores.
+    await synchronization.mock.results[0]?.value;
   });
 
   it('クラウド同期中でもB-1回答と次への移動をブロックしない', async () => {
     const user = userEvent.setup();
+    const synchronization = vi.spyOn(CloudSyncService.prototype, 'synchronize');
     let resolveInitialSync: ((value: { data: []; error: null }) => void) | undefined;
     supabaseMocks.auth.getSession.mockResolvedValue({
       data: { session: signedInSession() },
@@ -376,6 +388,7 @@ describe('Supabase認証', () => {
       expect((await database.b1PracticeSessions.get(session.id))?.currentIndex).toBe(1);
     });
     resolveInitialSync?.({ data: [], error: null });
+    await synchronization.mock.results[0]?.value;
   });
 
   it('認証に失敗した場合は日本語のエラーを表示する', async () => {

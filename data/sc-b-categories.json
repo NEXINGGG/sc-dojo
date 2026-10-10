@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "dataset_version": "sc-b-v1",
+  "classificationPolicy": "大問に主分類を1件、副分類を複数付与。主分類は中心となる判断で決める。設問単位の分類は教材化時に別途校閲する。",
+  "categories": [
+    {
+      "id": "sc_b_auth_access",
+      "name": "認証・認可",
+      "order": 1,
+      "description": "主体、資格情報、セッション、本人確認、操作権限を区別する。",
+      "boundary_rule": "暗号の処理・鍵そのものは暗号・PKIへ。利用基盤だけで主分類にしない。",
+      "topic_examples": [
+        "MFA",
+        "セッション",
+        "トークン",
+        "アクセス制御"
+      ],
+      "modern_primary_case_count": 0,
+      "modern_related_case_count": 12,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_crypto_auth_pki",
+          "sc_security_implementation"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 0,
+      "relatedCaseCount": 12
+    },
+    {
+      "id": "sc_b_crypto_pki",
+      "name": "暗号・PKI",
+      "order": 2,
+      "description": "暗号化、署名、検証、鍵、ハッシュ、証明書の役割と管理を扱う。",
+      "boundary_rule": "本人確認・権限判断を主題にする場合は認証・認可へ。",
+      "topic_examples": [
+        "鍵管理",
+        "電子署名",
+        "証明書",
+        "ハッシュ"
+      ],
+      "modern_primary_case_count": 1,
+      "modern_related_case_count": 6,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_crypto_auth_pki",
+          "sc_security_implementation"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 1,
+      "relatedCaseCount": 6
+    },
+    {
+      "id": "sc_b_web_security",
+      "name": "Web・APIセキュリティ",
+      "order": 3,
+      "description": "HTTP、ブラウザ、Web APIの動作と、脆弱性・攻撃・防御を扱う。",
+      "boundary_rule": "コードや開発工程の改善判断が中心ならセキュア開発、診断の運用・優先度が中心なら脆弱性管理へ。",
+      "topic_examples": [
+        "Web",
+        "API",
+        "ブラウザ",
+        "入力検証"
+      ],
+      "modern_primary_case_count": 5,
+      "modern_related_case_count": 8,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_implementation",
+          "sc_security_threats",
+          "sc_system_development"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 5,
+      "relatedCaseCount": 8
+    },
+    {
+      "id": "sc_b_network_security",
+      "name": "ネットワーク・メールセキュリティ",
+      "order": 4,
+      "description": "FW、VPN、無線LAN、DNS、メール認証などの安全な通信・設定を扱う。",
+      "boundary_rule": "経路設計・帯域設計をSCの基本分類にしない。攻撃解析・リスク判断が中心なら該当分類へ。",
+      "topic_examples": [
+        "VPN",
+        "無線LAN",
+        "メール",
+        "DMARC",
+        "通信境界"
+      ],
+      "modern_primary_case_count": 4,
+      "modern_related_case_count": 6,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_implementation",
+          "sc_networks",
+          "sc_crypto_auth_pki"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 4,
+      "relatedCaseCount": 6
+    },
+    {
+      "id": "sc_b_attack_malware",
+      "name": "攻撃・マルウェア",
+      "order": 5,
+      "description": "攻撃の前提、成立条件、侵入、横展開、窃取、マルウェアの振る舞いを扱う。",
+      "boundary_rule": "脆弱性という原因、被害、攻撃手法を区別する。対応手順が主題ならインシデントへ。",
+      "topic_examples": [
+        "攻撃成立条件",
+        "侵入",
+        "横展開",
+        "マルウェア"
+      ],
+      "modern_primary_case_count": 0,
+      "modern_related_case_count": 8,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_threats",
+          "sc_security_assessment_controls"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 0,
+      "relatedCaseCount": 8
+    },
+    {
+      "id": "sc_b_incident_response",
+      "name": "インシデント対応",
+      "order": 6,
+      "description": "調査、証拠保全、影響範囲、封じ込め、復旧、再発防止を扱う。",
+      "boundary_rule": "検知・ログ読解が中心ならログ・監視、組織の管理体制が中心なら情報セキュリティ管理へ。",
+      "topic_examples": [
+        "調査",
+        "証拠保全",
+        "封じ込め",
+        "復旧"
+      ],
+      "modern_primary_case_count": 1,
+      "modern_related_case_count": 4,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_assessment_controls",
+          "sc_security_implementation",
+          "sc_security_threats"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 1,
+      "relatedCaseCount": 4
+    },
+    {
+      "id": "sc_b_logs_monitoring",
+      "name": "ログ・監視",
+      "order": 7,
+      "description": "ログの時系列、主体、操作、成功・失敗、相関、検知を読み取る。",
+      "boundary_rule": "ログが資料としてあるだけでは主分類にしない。事故の対応判断が中心ならインシデントへ。",
+      "topic_examples": [
+        "時系列",
+        "ログ相関",
+        "検知",
+        "フォレンジック"
+      ],
+      "modern_primary_case_count": 1,
+      "modern_related_case_count": 2,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_implementation",
+          "sc_security_assessment_controls",
+          "sc_security_threats"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 1,
+      "relatedCaseCount": 2
+    },
+    {
+      "id": "sc_b_cloud_security",
+      "name": "クラウドセキュリティ",
+      "order": 8,
+      "description": "SaaS、CI等の外部サービス、責任分界、IAM、外部連携を扱う。",
+      "boundary_rule": "クラウド上にあるだけのWeb問題はタグに留め、Webや開発を主分類にする。",
+      "topic_examples": [
+        "SaaS",
+        "CI",
+        "共有責任",
+        "IAM"
+      ],
+      "modern_primary_case_count": 0,
+      "modern_related_case_count": 2,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_implementation",
+          "sc_crypto_auth_pki",
+          "sc_security_assessment_controls"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 0,
+      "relatedCaseCount": 2
+    },
+    {
+      "id": "sc_b_secure_development",
+      "name": "セキュア開発・モバイル",
+      "order": 9,
+      "description": "コード、設計、秘密情報、レビュー、開発工程、モバイルアプリを扱う。",
+      "boundary_rule": "HTTP・ブラウザ・APIの動作判断が中心ならWebへ。組織の委託管理が中心なら情報セキュリティ管理へ。",
+      "topic_examples": [
+        "コード読解",
+        "セキュア設計",
+        "モバイル",
+        "秘密情報"
+      ],
+      "modern_primary_case_count": 2,
+      "modern_related_case_count": 8,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_implementation",
+          "sc_system_development",
+          "sc_databases",
+          "sc_security_threats"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 2,
+      "relatedCaseCount": 8
+    },
+    {
+      "id": "sc_b_vulnerability_management",
+      "name": "脆弱性・IT資産管理",
+      "order": 10,
+      "description": "診断、CVSS等の深刻度、資産把握、対応優先度、修正・検証を扱う。",
+      "boundary_rule": "脆弱性の成立機構だけが主題ならWeb・攻撃等へ。リスク判断全体が主題ならリスクへ。",
+      "topic_examples": [
+        "脆弱性診断",
+        "CVSS",
+        "EPSS",
+        "IT資産",
+        "修正優先度"
+      ],
+      "modern_primary_case_count": 3,
+      "modern_related_case_count": 6,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_assessment_controls",
+          "sc_security_implementation",
+          "sc_security_threats"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 3,
+      "relatedCaseCount": 6
+    },
+    {
+      "id": "sc_b_risk_management",
+      "name": "リスク管理",
+      "order": 11,
+      "description": "資産、脅威、影響、リスク評価、対応策とその理由を扱う。",
+      "boundary_rule": "規程・責任・委託管理が中心なら情報セキュリティ管理へ。技術的対策の成立条件は該当技術分類へ。",
+      "topic_examples": [
+        "資産",
+        "脅威",
+        "影響",
+        "残留リスク",
+        "OT"
+      ],
+      "modern_primary_case_count": 2,
+      "modern_related_case_count": 6,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_management",
+          "sc_security_assessment_controls",
+          "sc_system_audit"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 2,
+      "relatedCaseCount": 6
+    },
+    {
+      "id": "sc_b_security_governance",
+      "name": "情報セキュリティ管理",
+      "order": 12,
+      "description": "責任、規程、委託、教育、管理体制、サプライチェーンを扱う。",
+      "boundary_rule": "個別の影響・対策の評価が中心ならリスクへ。技術・コードの実装が中心なら技術分類へ。",
+      "topic_examples": [
+        "管理体制",
+        "委託",
+        "サプライチェーン",
+        "教育"
+      ],
+      "modern_primary_case_count": 1,
+      "modern_related_case_count": 5,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_management",
+          "sc_system_audit",
+          "sc_development_service_management",
+          "sc_system_development"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      },
+      "primaryCaseCount": 1,
+      "relatedCaseCount": 5
+    }
+  ]
+}

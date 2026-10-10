@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateQuestionMaterialData } from './question-material-data.mjs';
 
 const choiceIds = new Set(['A', 'B', 'C', 'D']);
 const difficulties = new Set(['基礎', '標準', '応用']);
@@ -26,7 +27,7 @@ function addDuplicateErrors(values, label, errors) {
 }
 
 export function validateData(questionsPayload, categoriesPayload) {
-  const errors = [];
+  const errors = validateQuestionMaterialData(questionsPayload);
   const questions = Array.isArray(questionsPayload?.questions) ? questionsPayload.questions : [];
   const categories = Array.isArray(categoriesPayload?.categories)
     ? categoriesPayload.categories
@@ -148,7 +149,13 @@ export function validateData(questionsPayload, categoriesPayload) {
 
 export function main() {
   const rootDir = dirname(dirname(fileURLToPath(import.meta.url)));
-  const questionsPayload = readJson(join(rootDir, 'data', 'questions.json'));
+  const questionsPayload = readJson(
+    join(
+      rootDir,
+      'data',
+      process.env.SC_A1_CANDIDATE === '1' ? 'sc-a1-v1-candidate.json' : 'questions.json',
+    ),
+  );
   const categoriesPayload = readJson(join(rootDir, 'data', 'categories.json'));
   const errors = validateData(questionsPayload, categoriesPayload);
 

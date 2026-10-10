@@ -1,0 +1,943 @@
+{
+  "schemaVersion": 3,
+  "dataset_version": "sc-b-pilot-v1",
+  "status": "development_only",
+  "cases": [
+    {
+      "caseId": "SC-2099-PILOT-B-Q01",
+      "subjectId": "b1",
+      "dataset_version": "sc-b-pilot-v1",
+      "source_id": "SC-2099-PILOT-B-Q01",
+      "examCode": "SC",
+      "term": "pilot",
+      "originalSection": "b",
+      "examSetId": "SC-2099-PILOT-B",
+      "difficulty": "基礎",
+      "year": 2099,
+      "questionNumber": 1,
+      "title": "アクセス権の確認（架空pilot）",
+      "categoryIds": [
+        "sc_b_auth_access"
+      ],
+      "topics": [
+        "セキュリティ"
+      ],
+      "estimatedMinutes": 75,
+      "purposeSummary": "架空企業の操作記録と権限を読み取り、確認と対策を検討する。",
+      "commentarySummary": "開発確認専用。正式過去問ではありません。",
+      "source": {
+        "provider": "development",
+        "exam": "SC開発用架空教材",
+        "sectionAtTime": "科目B",
+        "currentEquivalent": "科目B",
+        "questionPdfUrl": "",
+        "answerPdfUrl": "",
+        "commentaryPdfUrl": "",
+        "yearPageUrl": "",
+        "questionPdfPagesZeroBased": [
+          0
+        ]
+      },
+      "body": {
+        "fullTextIncluded": true,
+        "figuresIncluded": false,
+        "offlineAvailability": "本文・ログは同梱",
+        "sections": [
+          {
+            "id": "S1",
+            "heading": "架空サービスの運用",
+            "paragraphs": [
+              {
+                "id": "P1",
+                "text": "担当者Aは閲覧権限だけを持つ。管理者は操作記録に変更操作があることに気付いた。誰が何を操作したかを権限情報と照合する必要がある。"
+              }
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "L1",
+            "kind": "log",
+            "caption": "架空の操作ログ",
+            "text": "10:00 user=A action=read\n10:05 user=A action=update"
+          }
+        ]
+      },
+      "questionUnits": [
+        {
+          "questionId": "SC-2099-PILOT-B-Q01-S1",
+          "label": "設問1",
+          "promptSummary": "本文とログを根拠に、確認する内容を60字以内で述べよ。",
+          "promptText": "担当者はどの情報を照合すべきか。本文とログを根拠に60字以内で述べよ。",
+          "promptTextIncluded": true,
+          "answerType": "description",
+          "answerConcepts": [],
+          "gradingMode": "self_grade",
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 0,
+            "printedPage": 1,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "L1"
+            ],
+            "paragraphIds": [
+              "P1"
+            ],
+            "sectionIds": [
+              "S1"
+            ],
+            "materialIds": [
+              "L1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "理由",
+              "inputKind": "description",
+              "maxLength": 60,
+              "acceptedAnswers": [],
+              "officialAnswer": "担当者の権限と操作記録を照合する。",
+              "acceptableAnswers": [
+                "権限とログを突き合わせる。"
+              ],
+              "requiredKeywords": [
+                "権限",
+                "記録"
+              ],
+              "scoringPoints": [
+                "主体と確認対象を記述する"
+              ],
+              "gradingNote": "架空教材の自己採点用例です。IPA公式解答ではありません。"
+            }
+          ],
+          "guidance": {
+            "questionId": "SC-2099-PILOT-B-Q01-S1",
+            "requirementBreakdown": {
+              "answerTarget": "根拠に基づく理由又は対策",
+              "targetObject": "担当者の操作",
+              "targetEnvironment": "本文の架空サービス",
+              "situation": "事実と権限を照合する",
+              "answerForm": "reason",
+              "requiredAnswerCount": 1,
+              "maxLength": 60,
+              "responseChecklist": [
+                "主体・対象・行為を確認する"
+              ],
+              "constraints": [
+                "60字以内"
+              ],
+              "commonTraps": [
+                "認証と認可を混同しない"
+              ],
+              "trainingHint": "本文のP1とログL1を参照する。"
+            },
+            "officialEvidence": [],
+            "applicableFailureCauseIds": [
+              "sc_b_requirement_misread",
+              "sc_b_evidence_missed",
+              "sc_b_knowledge_gap",
+              "sc_b_auth_access_confusion",
+              "sc_b_evidence_misread"
+            ]
+          },
+          "relatedA2QuestionIds": [
+            "A2-001"
+          ],
+          "relatedA2Categories": [],
+          "relatedTerms": [
+            "認可",
+            "ログ"
+          ]
+        },
+        {
+          "questionId": "SC-2099-PILOT-B-Q01-S2",
+          "label": "設問2",
+          "promptSummary": "本文とログを根拠に、確認する内容を60字以内で述べよ。",
+          "promptText": "担当者はどの情報を照合すべきか。本文とログを根拠に60字以内で述べよ。",
+          "promptTextIncluded": true,
+          "answerType": "description",
+          "answerConcepts": [],
+          "gradingMode": "self_grade",
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 0,
+            "printedPage": 1,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "L1"
+            ],
+            "paragraphIds": [
+              "P1"
+            ],
+            "sectionIds": [
+              "S1"
+            ],
+            "materialIds": [
+              "L1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "対策",
+              "inputKind": "description",
+              "maxLength": 60,
+              "acceptedAnswers": [],
+              "officialAnswer": "担当者の権限と操作記録を照合する。",
+              "acceptableAnswers": [
+                "権限とログを突き合わせる。"
+              ],
+              "requiredKeywords": [
+                "権限",
+                "記録"
+              ],
+              "scoringPoints": [
+                "主体と確認対象を記述する"
+              ],
+              "gradingNote": "架空教材の自己採点用例です。IPA公式解答ではありません。"
+            }
+          ],
+          "guidance": {
+            "questionId": "SC-2099-PILOT-B-Q01-S2",
+            "requirementBreakdown": {
+              "answerTarget": "根拠に基づく理由又は対策",
+              "targetObject": "担当者の操作",
+              "targetEnvironment": "本文の架空サービス",
+              "situation": "事実と権限を照合する",
+              "answerForm": "reason",
+              "requiredAnswerCount": 1,
+              "maxLength": 60,
+              "responseChecklist": [
+                "主体・対象・行為を確認する"
+              ],
+              "constraints": [
+                "60字以内"
+              ],
+              "commonTraps": [
+                "認証と認可を混同しない"
+              ],
+              "trainingHint": "本文のP1とログL1を参照する。"
+            },
+            "officialEvidence": [],
+            "applicableFailureCauseIds": [
+              "sc_b_requirement_misread",
+              "sc_b_evidence_missed",
+              "sc_b_knowledge_gap",
+              "sc_b_auth_access_confusion",
+              "sc_b_evidence_misread"
+            ]
+          },
+          "relatedA2QuestionIds": [
+            "A2-001"
+          ],
+          "relatedA2Categories": [],
+          "relatedTerms": [
+            "認可",
+            "ログ"
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "SC-2099-PILOT-B-Q02",
+      "subjectId": "b1",
+      "dataset_version": "sc-b-pilot-v1",
+      "source_id": "SC-2099-PILOT-B-Q02",
+      "examCode": "SC",
+      "term": "pilot",
+      "originalSection": "b",
+      "examSetId": "SC-2099-PILOT-B",
+      "difficulty": "基礎",
+      "year": 2099,
+      "questionNumber": 2,
+      "title": "不審なログの調査（架空pilot）",
+      "categoryIds": [
+        "sc_b_logs_monitoring"
+      ],
+      "topics": [
+        "セキュリティ"
+      ],
+      "estimatedMinutes": 75,
+      "purposeSummary": "架空企業の操作記録と権限を読み取り、確認と対策を検討する。",
+      "commentarySummary": "開発確認専用。正式過去問ではありません。",
+      "source": {
+        "provider": "development",
+        "exam": "SC開発用架空教材",
+        "sectionAtTime": "科目B",
+        "currentEquivalent": "科目B",
+        "questionPdfUrl": "",
+        "answerPdfUrl": "",
+        "commentaryPdfUrl": "",
+        "yearPageUrl": "",
+        "questionPdfPagesZeroBased": [
+          0
+        ]
+      },
+      "body": {
+        "fullTextIncluded": true,
+        "figuresIncluded": false,
+        "offlineAvailability": "本文・ログは同梱",
+        "sections": [
+          {
+            "id": "S1",
+            "heading": "架空サービスの運用",
+            "paragraphs": [
+              {
+                "id": "P1",
+                "text": "担当者Aは閲覧権限だけを持つ。管理者は操作記録に変更操作があることに気付いた。誰が何を操作したかを権限情報と照合する必要がある。"
+              }
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "L1",
+            "kind": "log",
+            "caption": "架空の操作ログ",
+            "text": "10:00 user=A action=read\n10:05 user=A action=update"
+          }
+        ]
+      },
+      "questionUnits": [
+        {
+          "questionId": "SC-2099-PILOT-B-Q02-S1",
+          "label": "設問1",
+          "promptSummary": "本文とログを根拠に、確認する内容を60字以内で述べよ。",
+          "promptText": "担当者はどの情報を照合すべきか。本文とログを根拠に60字以内で述べよ。",
+          "promptTextIncluded": true,
+          "answerType": "description",
+          "answerConcepts": [],
+          "gradingMode": "self_grade",
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 0,
+            "printedPage": 1,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "L1"
+            ],
+            "paragraphIds": [
+              "P1"
+            ],
+            "sectionIds": [
+              "S1"
+            ],
+            "materialIds": [
+              "L1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "理由",
+              "inputKind": "description",
+              "maxLength": 60,
+              "acceptedAnswers": [],
+              "officialAnswer": "担当者の権限と操作記録を照合する。",
+              "acceptableAnswers": [
+                "権限とログを突き合わせる。"
+              ],
+              "requiredKeywords": [
+                "権限",
+                "記録"
+              ],
+              "scoringPoints": [
+                "主体と確認対象を記述する"
+              ],
+              "gradingNote": "架空教材の自己採点用例です。IPA公式解答ではありません。"
+            }
+          ],
+          "guidance": {
+            "questionId": "SC-2099-PILOT-B-Q02-S1",
+            "requirementBreakdown": {
+              "answerTarget": "根拠に基づく理由又は対策",
+              "targetObject": "担当者の操作",
+              "targetEnvironment": "本文の架空サービス",
+              "situation": "事実と権限を照合する",
+              "answerForm": "reason",
+              "requiredAnswerCount": 1,
+              "maxLength": 60,
+              "responseChecklist": [
+                "主体・対象・行為を確認する"
+              ],
+              "constraints": [
+                "60字以内"
+              ],
+              "commonTraps": [
+                "認証と認可を混同しない"
+              ],
+              "trainingHint": "本文のP1とログL1を参照する。"
+            },
+            "officialEvidence": [],
+            "applicableFailureCauseIds": [
+              "sc_b_requirement_misread",
+              "sc_b_evidence_missed",
+              "sc_b_knowledge_gap",
+              "sc_b_auth_access_confusion",
+              "sc_b_evidence_misread"
+            ]
+          },
+          "relatedA2QuestionIds": [],
+          "relatedA2Categories": [],
+          "relatedTerms": [
+            "認可",
+            "ログ"
+          ]
+        },
+        {
+          "questionId": "SC-2099-PILOT-B-Q02-S2",
+          "label": "設問2",
+          "promptSummary": "本文とログを根拠に、確認する内容を60字以内で述べよ。",
+          "promptText": "担当者はどの情報を照合すべきか。本文とログを根拠に60字以内で述べよ。",
+          "promptTextIncluded": true,
+          "answerType": "description",
+          "answerConcepts": [],
+          "gradingMode": "self_grade",
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 0,
+            "printedPage": 1,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "L1"
+            ],
+            "paragraphIds": [
+              "P1"
+            ],
+            "sectionIds": [
+              "S1"
+            ],
+            "materialIds": [
+              "L1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "対策",
+              "inputKind": "description",
+              "maxLength": 60,
+              "acceptedAnswers": [],
+              "officialAnswer": "担当者の権限と操作記録を照合する。",
+              "acceptableAnswers": [
+                "権限とログを突き合わせる。"
+              ],
+              "requiredKeywords": [
+                "権限",
+                "記録"
+              ],
+              "scoringPoints": [
+                "主体と確認対象を記述する"
+              ],
+              "gradingNote": "架空教材の自己採点用例です。IPA公式解答ではありません。"
+            }
+          ],
+          "guidance": {
+            "questionId": "SC-2099-PILOT-B-Q02-S2",
+            "requirementBreakdown": {
+              "answerTarget": "根拠に基づく理由又は対策",
+              "targetObject": "担当者の操作",
+              "targetEnvironment": "本文の架空サービス",
+              "situation": "事実と権限を照合する",
+              "answerForm": "reason",
+              "requiredAnswerCount": 1,
+              "maxLength": 60,
+              "responseChecklist": [
+                "主体・対象・行為を確認する"
+              ],
+              "constraints": [
+                "60字以内"
+              ],
+              "commonTraps": [
+                "認証と認可を混同しない"
+              ],
+              "trainingHint": "本文のP1とログL1を参照する。"
+            },
+            "officialEvidence": [],
+            "applicableFailureCauseIds": [
+              "sc_b_requirement_misread",
+              "sc_b_evidence_missed",
+              "sc_b_knowledge_gap",
+              "sc_b_auth_access_confusion",
+              "sc_b_evidence_misread"
+            ]
+          },
+          "relatedA2QuestionIds": [],
+          "relatedA2Categories": [],
+          "relatedTerms": [
+            "認可",
+            "ログ"
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "SC-2099-PILOT-B-Q03",
+      "subjectId": "b1",
+      "dataset_version": "sc-b-pilot-v1",
+      "source_id": "SC-2099-PILOT-B-Q03",
+      "examCode": "SC",
+      "term": "pilot",
+      "originalSection": "b",
+      "examSetId": "SC-2099-PILOT-B",
+      "difficulty": "基礎",
+      "year": 2099,
+      "questionNumber": 3,
+      "title": "更新手順の改善（架空pilot）",
+      "categoryIds": [
+        "sc_b_vulnerability_management"
+      ],
+      "topics": [
+        "セキュリティ"
+      ],
+      "estimatedMinutes": 75,
+      "purposeSummary": "架空企業の操作記録と権限を読み取り、確認と対策を検討する。",
+      "commentarySummary": "開発確認専用。正式過去問ではありません。",
+      "source": {
+        "provider": "development",
+        "exam": "SC開発用架空教材",
+        "sectionAtTime": "科目B",
+        "currentEquivalent": "科目B",
+        "questionPdfUrl": "",
+        "answerPdfUrl": "",
+        "commentaryPdfUrl": "",
+        "yearPageUrl": "",
+        "questionPdfPagesZeroBased": [
+          0
+        ]
+      },
+      "body": {
+        "fullTextIncluded": true,
+        "figuresIncluded": false,
+        "offlineAvailability": "本文・ログは同梱",
+        "sections": [
+          {
+            "id": "S1",
+            "heading": "架空サービスの運用",
+            "paragraphs": [
+              {
+                "id": "P1",
+                "text": "担当者Aは閲覧権限だけを持つ。管理者は操作記録に変更操作があることに気付いた。誰が何を操作したかを権限情報と照合する必要がある。"
+              }
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "L1",
+            "kind": "log",
+            "caption": "架空の操作ログ",
+            "text": "10:00 user=A action=read\n10:05 user=A action=update"
+          }
+        ]
+      },
+      "questionUnits": [
+        {
+          "questionId": "SC-2099-PILOT-B-Q03-S1",
+          "label": "設問1",
+          "promptSummary": "本文とログを根拠に、確認する内容を60字以内で述べよ。",
+          "promptText": "担当者はどの情報を照合すべきか。本文とログを根拠に60字以内で述べよ。",
+          "promptTextIncluded": true,
+          "answerType": "description",
+          "answerConcepts": [],
+          "gradingMode": "self_grade",
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 0,
+            "printedPage": 1,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "L1"
+            ],
+            "paragraphIds": [
+              "P1"
+            ],
+            "sectionIds": [
+              "S1"
+            ],
+            "materialIds": [
+              "L1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "理由",
+              "inputKind": "description",
+              "maxLength": 60,
+              "acceptedAnswers": [],
+              "officialAnswer": "担当者の権限と操作記録を照合する。",
+              "acceptableAnswers": [
+                "権限とログを突き合わせる。"
+              ],
+              "requiredKeywords": [
+                "権限",
+                "記録"
+              ],
+              "scoringPoints": [
+                "主体と確認対象を記述する"
+              ],
+              "gradingNote": "架空教材の自己採点用例です。IPA公式解答ではありません。"
+            }
+          ],
+          "guidance": {
+            "questionId": "SC-2099-PILOT-B-Q03-S1",
+            "requirementBreakdown": {
+              "answerTarget": "根拠に基づく理由又は対策",
+              "targetObject": "担当者の操作",
+              "targetEnvironment": "本文の架空サービス",
+              "situation": "事実と権限を照合する",
+              "answerForm": "reason",
+              "requiredAnswerCount": 1,
+              "maxLength": 60,
+              "responseChecklist": [
+                "主体・対象・行為を確認する"
+              ],
+              "constraints": [
+                "60字以内"
+              ],
+              "commonTraps": [
+                "認証と認可を混同しない"
+              ],
+              "trainingHint": "本文のP1とログL1を参照する。"
+            },
+            "officialEvidence": [],
+            "applicableFailureCauseIds": [
+              "sc_b_requirement_misread",
+              "sc_b_evidence_missed",
+              "sc_b_knowledge_gap",
+              "sc_b_auth_access_confusion",
+              "sc_b_evidence_misread"
+            ]
+          },
+          "relatedA2QuestionIds": [],
+          "relatedA2Categories": [],
+          "relatedTerms": [
+            "認可",
+            "ログ"
+          ]
+        },
+        {
+          "questionId": "SC-2099-PILOT-B-Q03-S2",
+          "label": "設問2",
+          "promptSummary": "本文とログを根拠に、確認する内容を60字以内で述べよ。",
+          "promptText": "担当者はどの情報を照合すべきか。本文とログを根拠に60字以内で述べよ。",
+          "promptTextIncluded": true,
+          "answerType": "description",
+          "answerConcepts": [],
+          "gradingMode": "self_grade",
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 0,
+            "printedPage": 1,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "L1"
+            ],
+            "paragraphIds": [
+              "P1"
+            ],
+            "sectionIds": [
+              "S1"
+            ],
+            "materialIds": [
+              "L1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "対策",
+              "inputKind": "description",
+              "maxLength": 60,
+              "acceptedAnswers": [],
+              "officialAnswer": "担当者の権限と操作記録を照合する。",
+              "acceptableAnswers": [
+                "権限とログを突き合わせる。"
+              ],
+              "requiredKeywords": [
+                "権限",
+                "記録"
+              ],
+              "scoringPoints": [
+                "主体と確認対象を記述する"
+              ],
+              "gradingNote": "架空教材の自己採点用例です。IPA公式解答ではありません。"
+            }
+          ],
+          "guidance": {
+            "questionId": "SC-2099-PILOT-B-Q03-S2",
+            "requirementBreakdown": {
+              "answerTarget": "根拠に基づく理由又は対策",
+              "targetObject": "担当者の操作",
+              "targetEnvironment": "本文の架空サービス",
+              "situation": "事実と権限を照合する",
+              "answerForm": "reason",
+              "requiredAnswerCount": 1,
+              "maxLength": 60,
+              "responseChecklist": [
+                "主体・対象・行為を確認する"
+              ],
+              "constraints": [
+                "60字以内"
+              ],
+              "commonTraps": [
+                "認証と認可を混同しない"
+              ],
+              "trainingHint": "本文のP1とログL1を参照する。"
+            },
+            "officialEvidence": [],
+            "applicableFailureCauseIds": [
+              "sc_b_requirement_misread",
+              "sc_b_evidence_missed",
+              "sc_b_knowledge_gap",
+              "sc_b_auth_access_confusion",
+              "sc_b_evidence_misread"
+            ]
+          },
+          "relatedA2QuestionIds": [],
+          "relatedA2Categories": [],
+          "relatedTerms": [
+            "認可",
+            "ログ"
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "SC-2099-PILOT-B-Q04",
+      "subjectId": "b1",
+      "dataset_version": "sc-b-pilot-v1",
+      "source_id": "SC-2099-PILOT-B-Q04",
+      "examCode": "SC",
+      "term": "pilot",
+      "originalSection": "b",
+      "examSetId": "SC-2099-PILOT-B",
+      "difficulty": "基礎",
+      "year": 2099,
+      "questionNumber": 4,
+      "title": "暗号鍵の管理（架空pilot）",
+      "categoryIds": [
+        "sc_b_crypto_pki"
+      ],
+      "topics": [
+        "セキュリティ"
+      ],
+      "estimatedMinutes": 75,
+      "purposeSummary": "架空企業の操作記録と権限を読み取り、確認と対策を検討する。",
+      "commentarySummary": "開発確認専用。正式過去問ではありません。",
+      "source": {
+        "provider": "development",
+        "exam": "SC開発用架空教材",
+        "sectionAtTime": "科目B",
+        "currentEquivalent": "科目B",
+        "questionPdfUrl": "",
+        "answerPdfUrl": "",
+        "commentaryPdfUrl": "",
+        "yearPageUrl": "",
+        "questionPdfPagesZeroBased": [
+          0
+        ]
+      },
+      "body": {
+        "fullTextIncluded": true,
+        "figuresIncluded": false,
+        "offlineAvailability": "本文・ログは同梱",
+        "sections": [
+          {
+            "id": "S1",
+            "heading": "架空サービスの運用",
+            "paragraphs": [
+              {
+                "id": "P1",
+                "text": "担当者Aは閲覧権限だけを持つ。管理者は操作記録に変更操作があることに気付いた。誰が何を操作したかを権限情報と照合する必要がある。"
+              }
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "L1",
+            "kind": "log",
+            "caption": "架空の操作ログ",
+            "text": "10:00 user=A action=read\n10:05 user=A action=update"
+          }
+        ]
+      },
+      "questionUnits": [
+        {
+          "questionId": "SC-2099-PILOT-B-Q04-S1",
+          "label": "設問1",
+          "promptSummary": "本文とログを根拠に、確認する内容を60字以内で述べよ。",
+          "promptText": "担当者はどの情報を照合すべきか。本文とログを根拠に60字以内で述べよ。",
+          "promptTextIncluded": true,
+          "answerType": "description",
+          "answerConcepts": [],
+          "gradingMode": "self_grade",
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 0,
+            "printedPage": 1,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "L1"
+            ],
+            "paragraphIds": [
+              "P1"
+            ],
+            "sectionIds": [
+              "S1"
+            ],
+            "materialIds": [
+              "L1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "理由",
+              "inputKind": "description",
+              "maxLength": 60,
+              "acceptedAnswers": [],
+              "officialAnswer": "担当者の権限と操作記録を照合する。",
+              "acceptableAnswers": [
+                "権限とログを突き合わせる。"
+              ],
+              "requiredKeywords": [
+                "権限",
+                "記録"
+              ],
+              "scoringPoints": [
+                "主体と確認対象を記述する"
+              ],
+              "gradingNote": "架空教材の自己採点用例です。IPA公式解答ではありません。"
+            }
+          ],
+          "guidance": {
+            "questionId": "SC-2099-PILOT-B-Q04-S1",
+            "requirementBreakdown": {
+              "answerTarget": "根拠に基づく理由又は対策",
+              "targetObject": "担当者の操作",
+              "targetEnvironment": "本文の架空サービス",
+              "situation": "事実と権限を照合する",
+              "answerForm": "reason",
+              "requiredAnswerCount": 1,
+              "maxLength": 60,
+              "responseChecklist": [
+                "主体・対象・行為を確認する"
+              ],
+              "constraints": [
+                "60字以内"
+              ],
+              "commonTraps": [
+                "認証と認可を混同しない"
+              ],
+              "trainingHint": "本文のP1とログL1を参照する。"
+            },
+            "officialEvidence": [],
+            "applicableFailureCauseIds": [
+              "sc_b_requirement_misread",
+              "sc_b_evidence_missed",
+              "sc_b_knowledge_gap",
+              "sc_b_auth_access_confusion",
+              "sc_b_evidence_misread"
+            ]
+          },
+          "relatedA2QuestionIds": [],
+          "relatedA2Categories": [],
+          "relatedTerms": [
+            "認可",
+            "ログ"
+          ]
+        },
+        {
+          "questionId": "SC-2099-PILOT-B-Q04-S2",
+          "label": "設問2",
+          "promptSummary": "本文とログを根拠に、確認する内容を60字以内で述べよ。",
+          "promptText": "担当者はどの情報を照合すべきか。本文とログを根拠に60字以内で述べよ。",
+          "promptTextIncluded": true,
+          "answerType": "description",
+          "answerConcepts": [],
+          "gradingMode": "self_grade",
+          "sourcePromptLocator": {
+            "pdfPageZeroBased": 0,
+            "printedPage": 1,
+            "underlineRefs": [],
+            "figureRefs": [],
+            "tableRefs": [
+              "L1"
+            ],
+            "paragraphIds": [
+              "P1"
+            ],
+            "sectionIds": [
+              "S1"
+            ],
+            "materialIds": [
+              "L1"
+            ]
+          },
+          "answerFields": [
+            {
+              "fieldId": "a",
+              "label": "対策",
+              "inputKind": "description",
+              "maxLength": 60,
+              "acceptedAnswers": [],
+              "officialAnswer": "担当者の権限と操作記録を照合する。",
+              "acceptableAnswers": [
+                "権限とログを突き合わせる。"
+              ],
+              "requiredKeywords": [
+                "権限",
+                "記録"
+              ],
+              "scoringPoints": [
+                "主体と確認対象を記述する"
+              ],
+              "gradingNote": "架空教材の自己採点用例です。IPA公式解答ではありません。"
+            }
+          ],
+          "guidance": {
+            "questionId": "SC-2099-PILOT-B-Q04-S2",
+            "requirementBreakdown": {
+              "answerTarget": "根拠に基づく理由又は対策",
+              "targetObject": "担当者の操作",
+              "targetEnvironment": "本文の架空サービス",
+              "situation": "事実と権限を照合する",
+              "answerForm": "reason",
+              "requiredAnswerCount": 1,
+              "maxLength": 60,
+              "responseChecklist": [
+                "主体・対象・行為を確認する"
+              ],
+              "constraints": [
+                "60字以内"
+              ],
+              "commonTraps": [
+                "認証と認可を混同しない"
+              ],
+              "trainingHint": "本文のP1とログL1を参照する。"
+            },
+            "officialEvidence": [],
+            "applicableFailureCauseIds": [
+              "sc_b_requirement_misread",
+              "sc_b_evidence_missed",
+              "sc_b_knowledge_gap",
+              "sc_b_auth_access_confusion",
+              "sc_b_evidence_misread"
+            ]
+          },
+          "relatedA2QuestionIds": [],
+          "relatedA2Categories": [],
+          "relatedTerms": [
+            "認可",
+            "ログ"
+          ]
+        }
+      ]
+    }
+  ]
+}

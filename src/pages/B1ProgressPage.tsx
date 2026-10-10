@@ -268,7 +268,7 @@ export function B1ProgressPage() {
                     </span>
                     <span>
                       {session.submittedAt === undefined
-                        ? '90分模試・途中から再開できます'
+                        ? `${historySummary.durationMinutes}分模試・途中から再開できます`
                         : `${formatB1DateTime(session.submittedAt)}・${formatB1MockElapsedTime(historySummary.elapsedSeconds)}`}
                     </span>
                     <span>
@@ -350,6 +350,9 @@ function getMockHistorySummary(session: B1MockSessionRow) {
   return {
     answers,
     elapsedSeconds: getB1MockElapsedSeconds(session),
+    durationMinutes: Math.round(
+      (Date.parse(session.deadlineAt) - Date.parse(session.startedAt)) / 60000,
+    ),
     correctCount: grades.filter((grade) => grade === 'correct').length,
     partialCount: grades.filter((grade) => grade === 'partial').length,
     incorrectCount: grades.filter((grade) => grade === 'incorrect' || grade === 'review').length,

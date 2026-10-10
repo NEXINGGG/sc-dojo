@@ -1,3 +1,5 @@
+import { b1Cases } from '../../data/b1';
+import { b1Identity } from '../../domain/b1Identity';
 import { getSubjectCatalog } from '../../data/catalog';
 import { getB1QuestionUnit } from '../../data/b1';
 import type { A1DojoDatabase } from '../../database/database';
@@ -87,6 +89,11 @@ export class B1LearningSupportRepository {
       id: existing?.id ?? `b1-evidence-${crypto.randomUUID()}`,
       version: 2,
       sessionId: input.sessionId,
+      identity: b1Identity(
+        b1Cases.find((item) =>
+          item.questionUnits.some((unit) => unit.questionId === input.questionId),
+        )!,
+      ),
       questionId: input.questionId,
       ...(input.sourceType === undefined ? {} : { sourceType: input.sourceType }),
       ...(input.printedPage === undefined ? {} : { printedPage: input.printedPage }),
@@ -150,6 +157,11 @@ export class B1LearningSupportRepository {
       id: existing?.id ?? `b1-reflection-${crypto.randomUUID()}`,
       version: 2,
       sessionId: input.sessionId,
+      identity: b1Identity(
+        b1Cases.find((item) =>
+          item.questionUnits.some((unit) => unit.questionId === input.questionId),
+        )!,
+      ),
       questionId: input.questionId,
       failureCauseIds,
       selfAssessment: input.selfAssessment,
@@ -211,6 +223,11 @@ export class B1LearningSupportRepository {
     const row: B1RemediationProgressRow = {
       id: `b1-remediation-${crypto.randomUUID()}`,
       version: 2,
+      identity: b1Identity(
+        b1Cases.find((item) =>
+          item.questionUnits.some((unit) => unit.questionId === input.originQuestionId),
+        )!,
+      ),
       originQuestionId: input.originQuestionId,
       originSessionId: input.originSessionId,
       ...(input.originCaseId === undefined ? {} : { originCaseId: input.originCaseId }),

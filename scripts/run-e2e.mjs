@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 
-const host = '127.0.0.1';
+const host = 'localhost';
 const port = '4174';
 const previewUrl = `http://${host}:${port}/`;
 

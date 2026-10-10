@@ -41,8 +41,8 @@ function createAttempt(
   };
 }
 
-function analyticsFor(attempts: readonly AnswerAttemptRow[]) {
-  return buildProgressAnalytics(questions, {
+function analyticsFor(attempts: readonly AnswerAttemptRow[], source = questions) {
+  return buildProgressAnalytics(source, {
     attempts,
     progressRows: [],
     practiceResults: [],
@@ -85,18 +85,22 @@ describe('成績集計', () => {
     const lawQuestions = questions.filter(
       (question) => question.categoryId === 'law_standards_emerging',
     );
-    expect(lawQuestions.some((question) => question.domainId === 'technology')).toBe(true);
-    expect(lawQuestions.some((question) => question.domainId === 'strategy')).toBe(true);
-
-    const analytics = analyticsFor([]);
+    // Explicit mixed-domain fixture: formal editorial classification no longer
+    // leaves technical signature questions in the law category.
+    const source = questions.map((question) =>
+      question.code === lawQuestions[0].code
+        ? { ...question, domainId: 'technology' as const }
+        : question,
+    );
+    const analytics = analyticsFor([], source);
     const technology = analytics.domains.find((domain) => domain.id === 'technology');
     const strategy = analytics.domains.find((domain) => domain.id === 'strategy');
 
     expect(technology?.totalQuestions).toBe(
-      questions.filter((question) => question.domainId === 'technology').length,
+      source.filter((question) => question.domainId === 'technology').length,
     );
     expect(strategy?.totalQuestions).toBe(
-      questions.filter((question) => question.domainId === 'strategy').length,
+      source.filter((question) => question.domainId === 'strategy').length,
     );
   });
 

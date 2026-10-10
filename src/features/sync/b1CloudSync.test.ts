@@ -313,7 +313,7 @@ describe('B-1 cloud sync Phase 3', () => {
         .filter((row) => row.scope === 'b1.answer' || row.scope === 'b1.progress')
         .every((row) => row.isDeleted),
     ).toBe(true);
-  });
+  }, 15_000); // Full reset synchronizes tombstones for all 480 legacy questions.
 
   it('uses the reset boundary to delete cloud-only sessions that this device never downloaded', async () => {
     const source = createTestDatabase();
@@ -345,7 +345,7 @@ describe('B-1 cloud sync Phase 3', () => {
       itemKey: 'practice-sessions',
       isDeleted: false,
     });
-  });
+  }, 15_000);
 
   it('keeps B-1 mock sessions outside Phase 3 scopes', async () => {
     const database = createTestDatabase();

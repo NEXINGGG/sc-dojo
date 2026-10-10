@@ -1,0 +1,1449 @@
+{
+  "map_version": 1,
+  "dataset_version": "sc-a2-v1",
+  "selection_revision": "sc-a2-selection-2026-10-07-v2",
+  "finalized_on": "2026-10-07",
+  "rule": "v1初回のみpractice/mock1/mock2順、各組内source_id辞書順。以後はこの対応表を正本として使用し、再抽選・再採番しない。",
+  "entries": [
+    {
+      "code": "A2-001",
+      "id": 1001,
+      "source_id": "SC-2017-FALL-Q20",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-002",
+      "id": 1002,
+      "source_id": "SC-2017-SPRING-Q04",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-003",
+      "id": 1003,
+      "source_id": "SC-2017-SPRING-Q05",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-004",
+      "id": 1004,
+      "source_id": "SC-2017-SPRING-Q06",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-005",
+      "id": 1005,
+      "source_id": "SC-2017-SPRING-Q08",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-006",
+      "id": 1006,
+      "source_id": "SC-2017-SPRING-Q09",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-007",
+      "id": 1007,
+      "source_id": "SC-2017-SPRING-Q13",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-008",
+      "id": 1008,
+      "source_id": "SC-2017-SPRING-Q16",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-009",
+      "id": 1009,
+      "source_id": "SC-2017-SPRING-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-010",
+      "id": 1010,
+      "source_id": "SC-2018-FALL-Q07",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-011",
+      "id": 1011,
+      "source_id": "SC-2018-FALL-Q21",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-012",
+      "id": 1012,
+      "source_id": "SC-2018-SPRING-Q01",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-013",
+      "id": 1013,
+      "source_id": "SC-2018-SPRING-Q05",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-014",
+      "id": 1014,
+      "source_id": "SC-2018-SPRING-Q14",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-015",
+      "id": 1015,
+      "source_id": "SC-2018-SPRING-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-016",
+      "id": 1016,
+      "source_id": "SC-2019-FALL-Q01",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-017",
+      "id": 1017,
+      "source_id": "SC-2019-FALL-Q02",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-018",
+      "id": 1018,
+      "source_id": "SC-2019-FALL-Q10",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-019",
+      "id": 1019,
+      "source_id": "SC-2019-FALL-Q13",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-020",
+      "id": 1020,
+      "source_id": "SC-2019-FALL-Q15",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-021",
+      "id": 1021,
+      "source_id": "SC-2019-FALL-Q19",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-022",
+      "id": 1022,
+      "source_id": "SC-2019-FALL-Q20",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-023",
+      "id": 1023,
+      "source_id": "SC-2019-FALL-Q21",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-024",
+      "id": 1024,
+      "source_id": "SC-2019-FALL-Q22",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-025",
+      "id": 1025,
+      "source_id": "SC-2019-FALL-Q23",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-026",
+      "id": 1026,
+      "source_id": "SC-2019-SPRING-Q11",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-027",
+      "id": 1027,
+      "source_id": "SC-2019-SPRING-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-028",
+      "id": 1028,
+      "source_id": "SC-2019-SPRING-Q20",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-029",
+      "id": 1029,
+      "source_id": "SC-2019-SPRING-Q22",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-030",
+      "id": 1030,
+      "source_id": "SC-2019-SPRING-Q24",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-031",
+      "id": 1031,
+      "source_id": "SC-2020-OCTOBER-Q03",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-032",
+      "id": 1032,
+      "source_id": "SC-2020-OCTOBER-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-033",
+      "id": 1033,
+      "source_id": "SC-2020-OCTOBER-Q19",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-034",
+      "id": 1034,
+      "source_id": "SC-2020-OCTOBER-Q25",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-035",
+      "id": 1035,
+      "source_id": "SC-2021-FALL-Q05",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-036",
+      "id": 1036,
+      "source_id": "SC-2021-FALL-Q10",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-037",
+      "id": 1037,
+      "source_id": "SC-2021-FALL-Q11",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-038",
+      "id": 1038,
+      "source_id": "SC-2021-FALL-Q12",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-039",
+      "id": 1039,
+      "source_id": "SC-2021-FALL-Q13",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-040",
+      "id": 1040,
+      "source_id": "SC-2021-FALL-Q14",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-041",
+      "id": 1041,
+      "source_id": "SC-2021-FALL-Q16",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-042",
+      "id": 1042,
+      "source_id": "SC-2021-FALL-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-043",
+      "id": 1043,
+      "source_id": "SC-2021-FALL-Q21",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-044",
+      "id": 1044,
+      "source_id": "SC-2021-FALL-Q22",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-045",
+      "id": 1045,
+      "source_id": "SC-2021-FALL-Q24",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-046",
+      "id": 1046,
+      "source_id": "SC-2021-FALL-Q25",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-047",
+      "id": 1047,
+      "source_id": "SC-2021-SPRING-Q01",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-048",
+      "id": 1048,
+      "source_id": "SC-2021-SPRING-Q06",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-049",
+      "id": 1049,
+      "source_id": "SC-2021-SPRING-Q07",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-050",
+      "id": 1050,
+      "source_id": "SC-2021-SPRING-Q08",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-051",
+      "id": 1051,
+      "source_id": "SC-2021-SPRING-Q09",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-052",
+      "id": 1052,
+      "source_id": "SC-2021-SPRING-Q12",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-053",
+      "id": 1053,
+      "source_id": "SC-2021-SPRING-Q13",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-054",
+      "id": 1054,
+      "source_id": "SC-2021-SPRING-Q15",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-055",
+      "id": 1055,
+      "source_id": "SC-2021-SPRING-Q16",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-056",
+      "id": 1056,
+      "source_id": "SC-2021-SPRING-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-057",
+      "id": 1057,
+      "source_id": "SC-2021-SPRING-Q19",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-058",
+      "id": 1058,
+      "source_id": "SC-2021-SPRING-Q20",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-059",
+      "id": 1059,
+      "source_id": "SC-2021-SPRING-Q24",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-060",
+      "id": 1060,
+      "source_id": "SC-2022-FALL-Q06",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-061",
+      "id": 1061,
+      "source_id": "SC-2022-FALL-Q09",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-062",
+      "id": 1062,
+      "source_id": "SC-2022-FALL-Q12",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-063",
+      "id": 1063,
+      "source_id": "SC-2022-FALL-Q13",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-064",
+      "id": 1064,
+      "source_id": "SC-2022-FALL-Q15",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-065",
+      "id": 1065,
+      "source_id": "SC-2022-FALL-Q17",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-066",
+      "id": 1066,
+      "source_id": "SC-2022-FALL-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-067",
+      "id": 1067,
+      "source_id": "SC-2022-FALL-Q20",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-068",
+      "id": 1068,
+      "source_id": "SC-2022-FALL-Q21",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-069",
+      "id": 1069,
+      "source_id": "SC-2022-FALL-Q22",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-070",
+      "id": 1070,
+      "source_id": "SC-2022-FALL-Q23",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-071",
+      "id": 1071,
+      "source_id": "SC-2022-FALL-Q25",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-072",
+      "id": 1072,
+      "source_id": "SC-2022-SPRING-Q03",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-073",
+      "id": 1073,
+      "source_id": "SC-2022-SPRING-Q04",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-074",
+      "id": 1074,
+      "source_id": "SC-2022-SPRING-Q05",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-075",
+      "id": 1075,
+      "source_id": "SC-2022-SPRING-Q07",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-076",
+      "id": 1076,
+      "source_id": "SC-2022-SPRING-Q09",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-077",
+      "id": 1077,
+      "source_id": "SC-2022-SPRING-Q10",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-078",
+      "id": 1078,
+      "source_id": "SC-2022-SPRING-Q12",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-079",
+      "id": 1079,
+      "source_id": "SC-2022-SPRING-Q13",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-080",
+      "id": 1080,
+      "source_id": "SC-2022-SPRING-Q15",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-081",
+      "id": 1081,
+      "source_id": "SC-2022-SPRING-Q21",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-082",
+      "id": 1082,
+      "source_id": "SC-2023-FALL-Q01",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-083",
+      "id": 1083,
+      "source_id": "SC-2023-FALL-Q02",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-084",
+      "id": 1084,
+      "source_id": "SC-2023-FALL-Q03",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-085",
+      "id": 1085,
+      "source_id": "SC-2023-FALL-Q07",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-086",
+      "id": 1086,
+      "source_id": "SC-2023-FALL-Q08",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-087",
+      "id": 1087,
+      "source_id": "SC-2023-FALL-Q10",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-088",
+      "id": 1088,
+      "source_id": "SC-2023-FALL-Q13",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-089",
+      "id": 1089,
+      "source_id": "SC-2023-FALL-Q15",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-090",
+      "id": 1090,
+      "source_id": "SC-2023-FALL-Q16",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-091",
+      "id": 1091,
+      "source_id": "SC-2023-FALL-Q17",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-092",
+      "id": 1092,
+      "source_id": "SC-2023-FALL-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-093",
+      "id": 1093,
+      "source_id": "SC-2023-FALL-Q19",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-094",
+      "id": 1094,
+      "source_id": "SC-2023-FALL-Q20",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-095",
+      "id": 1095,
+      "source_id": "SC-2023-FALL-Q21",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-096",
+      "id": 1096,
+      "source_id": "SC-2023-FALL-Q22",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-097",
+      "id": 1097,
+      "source_id": "SC-2023-FALL-Q23",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-098",
+      "id": 1098,
+      "source_id": "SC-2023-FALL-Q24",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-099",
+      "id": 1099,
+      "source_id": "SC-2023-FALL-Q25",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-100",
+      "id": 1100,
+      "source_id": "SC-2023-SPRING-Q07",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-101",
+      "id": 1101,
+      "source_id": "SC-2023-SPRING-Q08",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-102",
+      "id": 1102,
+      "source_id": "SC-2023-SPRING-Q14",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-103",
+      "id": 1103,
+      "source_id": "SC-2023-SPRING-Q17",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-104",
+      "id": 1104,
+      "source_id": "SC-2023-SPRING-Q20",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-105",
+      "id": 1105,
+      "source_id": "SC-2023-SPRING-Q21",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-106",
+      "id": 1106,
+      "source_id": "SC-2023-SPRING-Q22",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-107",
+      "id": 1107,
+      "source_id": "SC-2023-SPRING-Q23",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-108",
+      "id": 1108,
+      "source_id": "SC-2024-FALL-Q01",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-109",
+      "id": 1109,
+      "source_id": "SC-2024-FALL-Q04",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-110",
+      "id": 1110,
+      "source_id": "SC-2024-FALL-Q07",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-111",
+      "id": 1111,
+      "source_id": "SC-2024-FALL-Q08",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-112",
+      "id": 1112,
+      "source_id": "SC-2024-FALL-Q09",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-113",
+      "id": 1113,
+      "source_id": "SC-2024-FALL-Q10",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-114",
+      "id": 1114,
+      "source_id": "SC-2024-FALL-Q11",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-115",
+      "id": 1115,
+      "source_id": "SC-2024-FALL-Q12",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-116",
+      "id": 1116,
+      "source_id": "SC-2024-FALL-Q14",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-117",
+      "id": 1117,
+      "source_id": "SC-2024-FALL-Q15",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-118",
+      "id": 1118,
+      "source_id": "SC-2024-FALL-Q16",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-119",
+      "id": 1119,
+      "source_id": "SC-2024-FALL-Q17",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-120",
+      "id": 1120,
+      "source_id": "SC-2024-FALL-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-121",
+      "id": 1121,
+      "source_id": "SC-2024-FALL-Q21",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-122",
+      "id": 1122,
+      "source_id": "SC-2024-FALL-Q22",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-123",
+      "id": 1123,
+      "source_id": "SC-2024-FALL-Q23",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-124",
+      "id": 1124,
+      "source_id": "SC-2024-FALL-Q24",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-125",
+      "id": 1125,
+      "source_id": "SC-2024-SPRING-Q02",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-126",
+      "id": 1126,
+      "source_id": "SC-2024-SPRING-Q04",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-127",
+      "id": 1127,
+      "source_id": "SC-2024-SPRING-Q06",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-128",
+      "id": 1128,
+      "source_id": "SC-2024-SPRING-Q07",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-129",
+      "id": 1129,
+      "source_id": "SC-2024-SPRING-Q08",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-130",
+      "id": 1130,
+      "source_id": "SC-2024-SPRING-Q09",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-131",
+      "id": 1131,
+      "source_id": "SC-2024-SPRING-Q10",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-132",
+      "id": 1132,
+      "source_id": "SC-2024-SPRING-Q11",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-133",
+      "id": 1133,
+      "source_id": "SC-2024-SPRING-Q12",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-134",
+      "id": 1134,
+      "source_id": "SC-2024-SPRING-Q13",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-135",
+      "id": 1135,
+      "source_id": "SC-2024-SPRING-Q14",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-136",
+      "id": 1136,
+      "source_id": "SC-2024-SPRING-Q15",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-137",
+      "id": 1137,
+      "source_id": "SC-2024-SPRING-Q16",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-138",
+      "id": 1138,
+      "source_id": "SC-2024-SPRING-Q17",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-139",
+      "id": 1139,
+      "source_id": "SC-2024-SPRING-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-140",
+      "id": 1140,
+      "source_id": "SC-2024-SPRING-Q19",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-141",
+      "id": 1141,
+      "source_id": "SC-2024-SPRING-Q20",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-142",
+      "id": 1142,
+      "source_id": "SC-2024-SPRING-Q21",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-143",
+      "id": 1143,
+      "source_id": "SC-2024-SPRING-Q22",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-144",
+      "id": 1144,
+      "source_id": "SC-2024-SPRING-Q23",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-145",
+      "id": 1145,
+      "source_id": "SC-2024-SPRING-Q24",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-146",
+      "id": 1146,
+      "source_id": "SC-2024-SPRING-Q25",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-147",
+      "id": 1147,
+      "source_id": "SC-2025-FALL-Q01",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-148",
+      "id": 1148,
+      "source_id": "SC-2025-FALL-Q03",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-149",
+      "id": 1149,
+      "source_id": "SC-2025-FALL-Q04",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-150",
+      "id": 1150,
+      "source_id": "SC-2025-FALL-Q05",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-151",
+      "id": 1151,
+      "source_id": "SC-2025-FALL-Q08",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-152",
+      "id": 1152,
+      "source_id": "SC-2025-FALL-Q09",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-153",
+      "id": 1153,
+      "source_id": "SC-2025-FALL-Q10",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-154",
+      "id": 1154,
+      "source_id": "SC-2025-FALL-Q11",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-155",
+      "id": 1155,
+      "source_id": "SC-2025-FALL-Q12",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-156",
+      "id": 1156,
+      "source_id": "SC-2025-FALL-Q13",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-157",
+      "id": 1157,
+      "source_id": "SC-2025-FALL-Q14",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-158",
+      "id": 1158,
+      "source_id": "SC-2025-FALL-Q15",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-159",
+      "id": 1159,
+      "source_id": "SC-2025-FALL-Q16",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-160",
+      "id": 1160,
+      "source_id": "SC-2025-FALL-Q17",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-161",
+      "id": 1161,
+      "source_id": "SC-2025-FALL-Q19",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-162",
+      "id": 1162,
+      "source_id": "SC-2025-FALL-Q20",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-163",
+      "id": 1163,
+      "source_id": "SC-2025-FALL-Q22",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-164",
+      "id": 1164,
+      "source_id": "SC-2025-FALL-Q23",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-165",
+      "id": 1165,
+      "source_id": "SC-2025-FALL-Q24",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-166",
+      "id": 1166,
+      "source_id": "SC-2025-FALL-Q25",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-167",
+      "id": 1167,
+      "source_id": "SC-2025-SPRING-Q01",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-168",
+      "id": 1168,
+      "source_id": "SC-2025-SPRING-Q02",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-169",
+      "id": 1169,
+      "source_id": "SC-2025-SPRING-Q03",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-170",
+      "id": 1170,
+      "source_id": "SC-2025-SPRING-Q04",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-171",
+      "id": 1171,
+      "source_id": "SC-2025-SPRING-Q05",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-172",
+      "id": 1172,
+      "source_id": "SC-2025-SPRING-Q06",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-173",
+      "id": 1173,
+      "source_id": "SC-2025-SPRING-Q07",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-174",
+      "id": 1174,
+      "source_id": "SC-2025-SPRING-Q08",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-175",
+      "id": 1175,
+      "source_id": "SC-2025-SPRING-Q09",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-176",
+      "id": 1176,
+      "source_id": "SC-2025-SPRING-Q10",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-177",
+      "id": 1177,
+      "source_id": "SC-2025-SPRING-Q11",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-178",
+      "id": 1178,
+      "source_id": "SC-2025-SPRING-Q12",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-179",
+      "id": 1179,
+      "source_id": "SC-2025-SPRING-Q13",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-180",
+      "id": 1180,
+      "source_id": "SC-2025-SPRING-Q14",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-181",
+      "id": 1181,
+      "source_id": "SC-2025-SPRING-Q16",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-182",
+      "id": 1182,
+      "source_id": "SC-2025-SPRING-Q17",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-183",
+      "id": 1183,
+      "source_id": "SC-2025-SPRING-Q18",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-184",
+      "id": 1184,
+      "source_id": "SC-2025-SPRING-Q19",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-185",
+      "id": 1185,
+      "source_id": "SC-2025-SPRING-Q20",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-186",
+      "id": 1186,
+      "source_id": "SC-2025-SPRING-Q21",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-187",
+      "id": 1187,
+      "source_id": "SC-2025-SPRING-Q22",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-188",
+      "id": 1188,
+      "source_id": "SC-2025-SPRING-Q23",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-189",
+      "id": 1189,
+      "source_id": "SC-2025-SPRING-Q24",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-190",
+      "id": 1190,
+      "source_id": "SC-2025-SPRING-Q25",
+      "assignment": "practice"
+    },
+    {
+      "code": "A2-191",
+      "id": 1191,
+      "source_id": "SC-2017-FALL-Q14",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-192",
+      "id": 1192,
+      "source_id": "SC-2017-SPRING-Q02",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-193",
+      "id": 1193,
+      "source_id": "SC-2018-FALL-Q01",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-194",
+      "id": 1194,
+      "source_id": "SC-2018-FALL-Q25",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-195",
+      "id": 1195,
+      "source_id": "SC-2018-SPRING-Q19",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-196",
+      "id": 1196,
+      "source_id": "SC-2019-FALL-Q14",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-197",
+      "id": 1197,
+      "source_id": "SC-2019-SPRING-Q01",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-198",
+      "id": 1198,
+      "source_id": "SC-2020-OCTOBER-Q07",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-199",
+      "id": 1199,
+      "source_id": "SC-2020-OCTOBER-Q17",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-200",
+      "id": 1200,
+      "source_id": "SC-2020-OCTOBER-Q24",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-201",
+      "id": 1201,
+      "source_id": "SC-2021-FALL-Q06",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-202",
+      "id": 1202,
+      "source_id": "SC-2021-FALL-Q20",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-203",
+      "id": 1203,
+      "source_id": "SC-2021-SPRING-Q02",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-204",
+      "id": 1204,
+      "source_id": "SC-2022-SPRING-Q01",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-205",
+      "id": 1205,
+      "source_id": "SC-2022-SPRING-Q11",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-206",
+      "id": 1206,
+      "source_id": "SC-2022-SPRING-Q22",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-207",
+      "id": 1207,
+      "source_id": "SC-2023-SPRING-Q04",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-208",
+      "id": 1208,
+      "source_id": "SC-2023-SPRING-Q15",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-209",
+      "id": 1209,
+      "source_id": "SC-2023-SPRING-Q18",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-210",
+      "id": 1210,
+      "source_id": "SC-2024-FALL-Q06",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-211",
+      "id": 1211,
+      "source_id": "SC-2024-FALL-Q13",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-212",
+      "id": 1212,
+      "source_id": "SC-2024-FALL-Q19",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-213",
+      "id": 1213,
+      "source_id": "SC-2025-FALL-Q02",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-214",
+      "id": 1214,
+      "source_id": "SC-2025-FALL-Q21",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-215",
+      "id": 1215,
+      "source_id": "SC-2025-SPRING-Q15",
+      "assignment": "mock1"
+    },
+    {
+      "code": "A2-216",
+      "id": 1216,
+      "source_id": "SC-2017-FALL-Q11",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-217",
+      "id": 1217,
+      "source_id": "SC-2017-FALL-Q15",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-218",
+      "id": 1218,
+      "source_id": "SC-2018-FALL-Q18",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-219",
+      "id": 1219,
+      "source_id": "SC-2018-SPRING-Q07",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-220",
+      "id": 1220,
+      "source_id": "SC-2019-SPRING-Q08",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-221",
+      "id": 1221,
+      "source_id": "SC-2019-SPRING-Q12",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-222",
+      "id": 1222,
+      "source_id": "SC-2020-OCTOBER-Q12",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-223",
+      "id": 1223,
+      "source_id": "SC-2020-OCTOBER-Q13",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-224",
+      "id": 1224,
+      "source_id": "SC-2020-OCTOBER-Q22",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-225",
+      "id": 1225,
+      "source_id": "SC-2021-SPRING-Q05",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-226",
+      "id": 1226,
+      "source_id": "SC-2021-SPRING-Q17",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-227",
+      "id": 1227,
+      "source_id": "SC-2021-SPRING-Q21",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-228",
+      "id": 1228,
+      "source_id": "SC-2022-FALL-Q08",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-229",
+      "id": 1229,
+      "source_id": "SC-2022-FALL-Q14",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-230",
+      "id": 1230,
+      "source_id": "SC-2022-FALL-Q24",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-231",
+      "id": 1231,
+      "source_id": "SC-2023-FALL-Q12",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-232",
+      "id": 1232,
+      "source_id": "SC-2023-SPRING-Q12",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-233",
+      "id": 1233,
+      "source_id": "SC-2023-SPRING-Q19",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-234",
+      "id": 1234,
+      "source_id": "SC-2024-FALL-Q02",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-235",
+      "id": 1235,
+      "source_id": "SC-2024-FALL-Q03",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-236",
+      "id": 1236,
+      "source_id": "SC-2024-FALL-Q20",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-237",
+      "id": 1237,
+      "source_id": "SC-2024-FALL-Q25",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-238",
+      "id": 1238,
+      "source_id": "SC-2025-FALL-Q06",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-239",
+      "id": 1239,
+      "source_id": "SC-2025-FALL-Q07",
+      "assignment": "mock2"
+    },
+    {
+      "code": "A2-240",
+      "id": 1240,
+      "source_id": "SC-2025-FALL-Q18",
+      "assignment": "mock2"
+    }
+  ]
+}

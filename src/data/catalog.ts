@@ -2,6 +2,10 @@ import a1CategoriesPayload from '../../data/categories.json';
 import a1QuestionsPayload from '../../data/questions.json';
 import a2CategoriesPayload from '../../data/a2-categories.json';
 import a2QuestionsPayload from '../../data/a2-questions.json';
+import pilotQuestionsPayload from '../../data/sc-a2-pilot-30.json';
+import pilotCategoriesPayload from '../../data/sc-a2-categories-draft.json';
+import { isScA2Pilot } from './pilotMode';
+import { calculateQuestionContentHash } from '../domain/questionContent.mjs';
 import type { SubjectId } from '../domain/subject';
 import type {
   Category,
@@ -13,15 +17,17 @@ import type {
   Question,
   QuestionSet,
   QuestionSource,
+  QuestionStimulus,
   Subcategory,
 } from '../types/question';
 
 interface RawChoice {
   id: ChoiceId;
   text: string;
+  stimulus?: readonly QuestionStimulus[];
 }
 
-interface RawQuestion {
+export interface RawQuestion {
   id: number;
   code: string;
   domain_id: string;
@@ -34,17 +40,22 @@ interface RawQuestion {
   choices: RawChoice[];
   correct_choice: ChoiceId;
   explanation: string;
+  choice_explanations?: Readonly<Record<ChoiceId, string>>;
+  exam_tip?: string;
+  related_terms?: readonly string[];
   memory_point: string;
   question_set: QuestionSet;
   source: QuestionSource;
   status: string;
   schema_version: number;
   original_category_label?: string;
+  content_hash?: string;
+  stimulus?: readonly QuestionStimulus[];
 }
 
-interface RawQuestionPayload {
+export interface RawQuestionPayload {
   schema_version: number;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, unknown> & { dataset_version?: string };
   questions: RawQuestion[];
 }
 
@@ -68,6 +79,7 @@ export interface SubjectCatalog {
   subjectId: SubjectId;
   questionDataVersion: number;
   questionMetadata: Record<string, unknown>;
+  datasetVersion?: string;
   categoryDataVersion: number;
   questions: readonly Question[];
   categories: readonly Category[];
@@ -81,14 +93,34 @@ export interface SubjectCatalog {
 type ChoiceSubjectId = Exclude<SubjectId, 'b1'>;
 
 function toChoice(choice: RawChoice): Choice {
-  return { id: choice.id, text: choice.text };
+  return {
+    id: choice.id,
+    text: choice.text,
+    ...(choice.stimulus === undefined ? {} : { stimulus: choice.stimulus }),
+  };
 }
 
-function toQuestion(question: RawQuestion, subjectId: SubjectId): Question {
+export function toQuestion(
+  question: RawQuestion,
+  subjectId: SubjectId,
+  datasetVersion?: string,
+): Question {
   return {
     subjectId,
     id: String(question.id),
     code: question.code,
+    ...(subjectId === 'a1'
+      ? {
+          sourceId: question.source.source_id ?? `SC-A1-ORIGINAL-${question.code.slice(3)}`,
+          contentHash: calculateQuestionContentHash(question),
+          datasetVersion: datasetVersion ?? 'legacy-sc-a1-v0',
+        }
+      : {
+          ...(question.source.source_id === undefined ? {} : { sourceId: question.source.source_id }),
+          ...(question.content_hash === undefined ? {} : { contentHash: question.content_hash }),
+          ...(datasetVersion === undefined ? {} : { datasetVersion }),
+        }),
+    ...(question.stimulus === undefined ? {} : { stimulus: question.stimulus }),
     domainId: question.domain_id,
     categoryId: question.category_id,
     subcategoryId: question.subcategory_id,
@@ -99,6 +131,11 @@ function toQuestion(question: RawQuestion, subjectId: SubjectId): Question {
     choices: question.choices.map(toChoice),
     correctChoice: question.correct_choice,
     explanation: question.explanation,
+    ...(question.choice_explanations === undefined
+      ? {}
+      : { choiceExplanations: question.choice_explanations }),
+    ...(question.exam_tip === undefined ? {} : { examTip: question.exam_tip }),
+    ...(question.related_terms === undefined ? {} : { relatedTerms: question.related_terms }),
     memoryPoint: question.memory_point,
     questionSet: question.question_set,
     source: question.source,
@@ -120,12 +157,15 @@ function toCategory(category: RawCategory): Category {
   };
 }
 
-function createCatalog(
+export function createCatalog(
   subjectId: SubjectId,
   rawQuestions: RawQuestionPayload,
   rawCategories: RawCategoriesPayload,
 ): SubjectCatalog {
-  const subjectQuestions = rawQuestions.questions.map((question) => toQuestion(question, subjectId));
+  const datasetVersion = rawQuestions.metadata.dataset_version;
+  const subjectQuestions = rawQuestions.questions.map((question) =>
+    toQuestion(question, subjectId, datasetVersion),
+  );
   const subjectCategories = rawCategories.categories.map(toCategory);
   const questionByCode = new Map(subjectQuestions.map((question) => [question.code, question]));
   const categoryById = new Map(subjectCategories.map((category) => [category.id, category]));
@@ -135,6 +175,7 @@ function createCatalog(
     subjectId,
     questionDataVersion: rawQuestions.schema_version,
     questionMetadata: rawQuestions.metadata,
+    datasetVersion,
     categoryDataVersion: rawCategories.schema_version,
     questions: subjectQuestions,
     categories: subjectCategories,
@@ -143,7 +184,9 @@ function createCatalog(
     getCategoryById: (categoryId) => categoryById.get(categoryId),
     getDomainById: (domainId) => domainById.get(domainId),
     getQuestionsInSet: (questionSetId) =>
-      subjectQuestions.filter((question) => question.questionSet.id === questionSetId),
+      subjectQuestions
+        .filter((question) => question.questionSet.id === questionSetId)
+        .sort((a, b) => (a.questionSet.sequence ?? 0) - (b.questionSet.sequence ?? 0)),
   };
 }
 
@@ -155,8 +198,8 @@ const catalogs: Readonly<Record<ChoiceSubjectId, SubjectCatalog>> = {
   ),
   a2: createCatalog(
     'a2',
-    a2QuestionsPayload as RawQuestionPayload,
-    a2CategoriesPayload as RawCategoriesPayload,
+    (isScA2Pilot ? pilotQuestionsPayload : a2QuestionsPayload) as RawQuestionPayload,
+    (isScA2Pilot ? pilotCategoriesPayload : a2CategoriesPayload) as RawCategoriesPayload,
   ),
 };
 
@@ -180,16 +223,24 @@ export const categoryDataVersion = catalogs.a1.categoryDataVersion;
 export const questions = catalogs.a1.questions;
 export const categories = catalogs.a1.categories;
 export const domains = catalogs.a1.domains;
-export const allQuestions: readonly Question[] = [...catalogs.a1.questions, ...catalogs.a2.questions];
+export const allQuestions: readonly Question[] = [
+  ...catalogs.a1.questions,
+  ...catalogs.a2.questions,
+];
 
 export function getQuestionByCode(code: string, subjectId?: SubjectId): Question | undefined {
   if (subjectId === 'b1') {
     return undefined;
   }
-  return subjectId === undefined ? allQuestionByCode.get(code) : catalogs[subjectId].getQuestionByCode(code);
+  return subjectId === undefined
+    ? allQuestionByCode.get(code)
+    : catalogs[subjectId].getQuestionByCode(code);
 }
 
-export function getCategoryById(categoryId: string, subjectId: SubjectId = 'a1'): Category | undefined {
+export function getCategoryById(
+  categoryId: string,
+  subjectId: SubjectId = 'a1',
+): Category | undefined {
   if (subjectId === 'b1') {
     return undefined;
   }

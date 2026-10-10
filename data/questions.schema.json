@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "NW A1 Dojo Questions",
+  "title": "A-1 / A-2 Question Data",
   "type": "object",
   "required": [
     "schema_version",
@@ -13,12 +13,16 @@
       "minimum": 1
     },
     "metadata": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "dataset_version": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        }
+      }
     },
     "questions": {
       "type": "array",
-      "minItems": 240,
-      "maxItems": 240,
       "items": {
         "type": "object",
         "required": [
@@ -43,12 +47,11 @@
         "properties": {
           "id": {
             "type": "integer",
-            "minimum": 1,
-            "maximum": 240
+            "minimum": 1
           },
           "code": {
             "type": "string",
-            "pattern": "^A1-[0-9]{3}$"
+            "pattern": "^A[12]-[0-9]{3}$|^A2-PILOT-SC-[0-9]{4}-(SPRING|FALL|OCTOBER)-Q[0-9]{2}$"
           },
           "domain_id": {
             "type": "string",
@@ -106,6 +109,9 @@
                 "text": {
                   "type": "string",
                   "minLength": 1
+                },
+                "stimulus": {
+                  "$ref": "#/$defs/stimulus"
                 }
               },
               "additionalProperties": false
@@ -131,7 +137,69 @@
             "type": "object"
           },
           "source": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+              "basis": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "verbatim_past_question": {
+                "type": "boolean"
+              },
+              "source_id": {
+                "type": "string",
+                "pattern": "^[A-Z]{2,8}-[0-9]{4}-(SPRING|FALL|OCTOBER)-Q[0-9]{2}$"
+              },
+              "exam": {
+                "type": "string",
+                "minLength": 1
+              },
+              "year": {
+                "type": "integer",
+                "minimum": 2000,
+                "maximum": 2100
+              },
+              "term": {
+                "enum": [
+                  "spring",
+                  "fall",
+                  "october"
+                ]
+              },
+              "question_number": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 99
+              },
+              "official_question_url": {
+                "type": "string",
+                "pattern": "^https://(?:[a-z0-9-]+\\.)*ipa\\.go\\.jp/"
+              },
+              "official_answer_url": {
+                "type": "string",
+                "pattern": "^https://(?:[a-z0-9-]+\\.)*ipa\\.go\\.jp/"
+              },
+              "official_answer": {
+                "enum": [
+                  "ア",
+                  "イ",
+                  "ウ",
+                  "エ"
+                ]
+              },
+              "official_answer_choice_id": {
+                "enum": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ]
+              }
+            }
           },
           "status": {
             "type": "string",
@@ -140,11 +208,233 @@
           "schema_version": {
             "type": "integer",
             "minimum": 1
+          },
+          "stimulus": {
+            "$ref": "#/$defs/stimulus"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "choice_explanations": {
+            "type": "object",
+            "required": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "properties": {
+              "A": {
+                "type": "string",
+                "minLength": 1
+              },
+              "B": {
+                "type": "string",
+                "minLength": 1
+              },
+              "C": {
+                "type": "string",
+                "minLength": 1
+              },
+              "D": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          },
+          "exam_tip": {
+            "type": "string",
+            "minLength": 1
+          },
+          "related_terms": {
+            "type": "array",
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         },
-        "additionalProperties": true
+        "additionalProperties": true,
+        "not": {
+          "required": [
+            "dataset_version"
+          ]
+        }
       }
     }
   },
-  "additionalProperties": true
+  "additionalProperties": true,
+  "$defs": {
+    "stimulus": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "headers",
+              "rows"
+            ],
+            "properties": {
+              "type": {
+                "const": "table"
+              },
+              "headers": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "rows": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "caption": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "content"
+            ],
+            "properties": {
+              "type": {
+                "const": "code"
+              },
+              "content": {
+                "type": "string",
+                "minLength": 1
+              },
+              "language": {
+                "type": "string",
+                "minLength": 1
+              },
+              "caption": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "src",
+              "alt",
+              "asset_sha256"
+            ],
+            "properties": {
+              "type": {
+                "const": "image"
+              },
+              "src": {
+                "type": "string",
+                "pattern": "^questions/(sc|nw)/(a1|a2)/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\\.(png|svg|jpg|jpeg|webp|avif|gif)$"
+              },
+              "alt": {
+                "type": "string",
+                "minLength": 1
+              },
+              "caption": {
+                "type": "string"
+              },
+              "asset_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "metadata": {
+            "required": [
+              "dataset_version"
+            ],
+            "properties": {
+              "dataset_version": {
+                "pattern": "^sc-a2-"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "questions": {
+            "minItems": 1,
+            "maxItems": 240,
+            "items": {
+              "required": [
+                "content_hash",
+                "subject_id"
+              ],
+              "properties": {
+                "subject_id": {
+                  "const": "a2"
+                },
+                "code": {
+                  "pattern": "^A2-[0-9]{3}$"
+                },
+                "source": {
+                  "required": [
+                    "source_id",
+                    "exam",
+                    "year",
+                    "term",
+                    "question_number",
+                    "official_question_url",
+                    "official_answer_url",
+                    "basis",
+                    "type",
+                    "verbatim_past_question"
+                  ],
+                  "properties": {
+                    "exam": {
+                      "const": "SC"
+                    },
+                    "type": {
+                      "const": "official_past_question"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "questions": {
+            "minItems": 240,
+            "maxItems": 240
+          }
+        }
+      }
+    }
+  ]
 }

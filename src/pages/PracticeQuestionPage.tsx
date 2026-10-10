@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { QuestionExplanation } from '../components/QuestionExplanation';
+import { QuestionChoiceContent, QuestionStimuli } from '../components/QuestionStimuli';
 import {
   getCategoryById,
   getDomainForQuestion,
@@ -440,6 +442,7 @@ export function PracticeQuestionPage() {
           <span className="chip chip-muted">難易度: {currentQuestion.difficulty}</span>
         </div>
         <h2 className="question-text">{currentQuestion.question}</h2>
+        <QuestionStimuli stimulus={currentQuestion.stimulus} />
 
         <fieldset className="answer-choice-list" disabled={currentAnswer !== undefined || isSaving}>
           <legend>答えを1つ選んでください</legend>
@@ -469,7 +472,7 @@ export function PracticeQuestionPage() {
                   value={choice.id}
                 />
                 <span className="choice-id">{choice.id}</span>
-                <span>{choice.text}</span>
+                <QuestionChoiceContent choice={choice} />
                 {isCorrect ? <strong>正解</strong> : null}
                 {isIncorrectSelection ? <strong>あなたの回答</strong> : null}
               </label>
@@ -489,10 +492,7 @@ export function PracticeQuestionPage() {
             <p>
               あなたの回答: {currentAnswer.selectedChoice} / 正解: {currentQuestion.correctChoice}
             </p>
-            <h3>解説</h3>
-            <p>{currentQuestion.explanation}</p>
-            <h3>覚える一行</h3>
-            <p>{currentQuestion.memoryPoint}</p>
+            <QuestionExplanation question={currentQuestion} />
           </section>
         ) : null}
         <Link className="text-link history-link" to={`/history/${currentQuestion.code}`}>

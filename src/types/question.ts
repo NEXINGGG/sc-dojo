@@ -9,24 +9,50 @@ export type Priority = (typeof priorities)[number];
 export interface Choice {
   id: ChoiceId;
   text: string;
+  stimulus?: readonly QuestionStimulus[];
 }
+
+export type QuestionStimulus =
+  | {
+      type: 'table';
+      headers: readonly string[];
+      rows: readonly (readonly string[])[];
+      caption?: string;
+    }
+  | { type: 'code'; content: string; language?: string; caption?: string }
+  | { type: 'image'; src: string; alt: string; caption?: string; asset_sha256: string };
+
+export type QuestionTerm = 'spring' | 'fall' | 'october';
 
 export interface QuestionSet {
   id: string;
-  number: number;
-  sequence: number;
+  number: number | null;
+  sequence: number | null;
 }
 
 export interface QuestionSource {
   basis: string;
   type: string;
   verbatim_past_question: boolean;
+  source_id?: string;
+  exam?: string;
+  year?: number;
+  term?: QuestionTerm;
+  question_number?: number;
+  official_question_url?: string;
+  official_answer_url?: string;
+  official_answer?: string;
+  official_answer_choice_id?: ChoiceId;
 }
 
 export interface Question {
   subjectId: SubjectId;
   id: string;
   code: string;
+  sourceId?: string;
+  contentHash?: string;
+  datasetVersion?: string;
+  stimulus?: readonly QuestionStimulus[];
   domainId: string;
   categoryId: string;
   subcategoryId: string;
@@ -37,6 +63,9 @@ export interface Question {
   choices: readonly Choice[];
   correctChoice: ChoiceId;
   explanation: string;
+  choiceExplanations?: Readonly<Record<ChoiceId, string>>;
+  examTip?: string;
+  relatedTerms?: readonly string[];
   memoryPoint: string;
   questionSet: QuestionSet;
   source: QuestionSource;

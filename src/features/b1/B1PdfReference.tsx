@@ -20,6 +20,10 @@ export function B1PdfReference({
   const [fileName, setFileName] = useState<string>();
   const [message, setMessage] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedPage, setSelectedPage] = useState<{ questionId: string; page: number }>();
+  const effectiveRequestedPage =
+    requestedPrintedPage ??
+    (selectedPage?.questionId === unit.questionId ? selectedPage.page : undefined);
   const objectUrl = useRef<string | undefined>(undefined);
   const printedPages = useMemo(
     () =>
@@ -29,16 +33,24 @@ export function B1PdfReference({
     [unit.sourcePromptLocator.printedPage],
   );
   const pageFragment = useMemo(
-    () => `#page=${requestedPrintedPage ?? printedPages[0]}`,
-    [printedPages, requestedPrintedPage],
+    () =>
+      `#page=${effectiveRequestedPage === undefined ? (Array.isArray(unit.sourcePromptLocator.pdfPageZeroBased) ? unit.sourcePromptLocator.pdfPageZeroBased[0] : unit.sourcePromptLocator.pdfPageZeroBased) + 1 : effectiveRequestedPage + ((Array.isArray(unit.sourcePromptLocator.pdfPageZeroBased) ? unit.sourcePromptLocator.pdfPageZeroBased[0] : unit.sourcePromptLocator.pdfPageZeroBased) + 1 - printedPages[0])}`,
+    [printedPages, effectiveRequestedPage, unit.sourcePromptLocator.pdfPageZeroBased],
   );
+  const physicalPromptPage = Array.isArray(unit.sourcePromptLocator.pdfPageZeroBased)
+    ? unit.sourcePromptLocator.pdfPageZeroBased[0]
+    : unit.sourcePromptLocator.pdfPageZeroBased;
+  const documentOffset = physicalPromptPage + 1 - printedPages[0];
+  const referencePages = caseItem.source.questionPdfPagesZeroBased.map((page) => page + 1 - documentOffset);
 
   useEffect(() => {
     let active = true;
     setIsLoading(true);
     setMessage(undefined);
+    setFileName(undefined);
+    setLocalUrl(undefined);
     void repository
-      .getPdf(caseItem.year)
+      .getPdf(caseItem)
       .then((row) => {
         if (!active || row === undefined) return;
         replaceObjectUrl(row.blob);
@@ -57,13 +69,13 @@ export function B1PdfReference({
         objectUrl.current = undefined;
       }
     };
-  }, [caseItem.year]);
+  }, [caseItem]);
 
   async function registerPdf(file: File | undefined) {
     if (file === undefined) return;
     setMessage(undefined);
     try {
-      await repository.savePdf(caseItem.year, file);
+      await repository.savePdf(caseItem, file);
       setMessage(`${caseItem.year}年度の公式問題PDFをこの端末へ登録しました。外部送信はしません。`);
       replaceObjectUrl(file);
       setFileName(file.name);
@@ -74,7 +86,7 @@ export function B1PdfReference({
 
   async function removePdf() {
     try {
-      await repository.removePdf(caseItem.year);
+      await repository.removePdf(caseItem);
       if (objectUrl.current !== undefined) {
         URL.revokeObjectURL(objectUrl.current);
         objectUrl.current = undefined;
@@ -87,8 +99,29 @@ export function B1PdfReference({
     }
   }
 
-  const referenceUrl =
-    localUrl ?? (isOnline ? `${caseItem.source.questionPdfUrl}${pageFragment}` : undefined);
+  async function registerIncludedPdf() {
+    try {
+      const response = await fetch(caseItem.source.localQuestionPdfUrl!);
+      if (!response.ok)
+        throw new Error(
+          '同梱PDFを読み込めませんでした。開発サーバーを起動して再試行してください。',
+        );
+      const blob = await response.blob();
+      await registerPdf(new File([blob], '2025r07a_sc_pm_qs.pdf', { type: 'application/pdf' }));
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : '同梱PDFを登録できませんでした。再試行してください。',
+      );
+    }
+  }
+
+  const referenceUrl = localUrl
+    ? `${localUrl}${pageFragment}`
+    : isOnline
+      ? `${caseItem.source.questionPdfUrl}${pageFragment}`
+      : undefined;
 
   return (
     <section aria-label="公式PDF" className="b1-pdf-reference surface-card">
@@ -96,7 +129,8 @@ export function B1PdfReference({
         <div>
           <p className="eyebrow">公式PDF</p>
           <h2>
-            {caseItem.year}年度 問{caseItem.questionNumber}
+            {caseItem.examCode} {caseItem.year}年度 {caseItem.term === 'spring' ? '春期' : '秋期'} {caseItem.source.sectionAtTime}{' '}
+            問{caseItem.questionNumber}
           </h2>
         </div>
         <a
@@ -108,6 +142,9 @@ export function B1PdfReference({
           公式PDFを開く
         </a>
       </div>
+      <p className="muted-text">
+        登録時は試験・年度・期・区分を確認してください。ファイルの公式一致は自動検証していません。
+      </p>
       <p>
         設問掲載ページ: <strong>{printedPages.join('・')}ページ</strong>
         {unit.sourcePromptLocator.figureRefs.length > 0
@@ -117,6 +154,26 @@ export function B1PdfReference({
           ? `（${unit.sourcePromptLocator.tableRefs.join('・')}を確認）`
           : ''}
       </p>
+      {referencePages.length ? (
+        <label className="setting-option">
+          PDF参照ページ
+          <select
+            value={effectiveRequestedPage ?? printedPages[0]}
+            onChange={(event) =>
+              setSelectedPage({
+                questionId: unit.questionId,
+                page: Number(event.currentTarget.value),
+              })
+            }
+          >
+            {referencePages.map((page, index) => (
+              <option key={page} value={page}>
+                {page}ページ{index === 0 ? '（大問の開始）' : ''}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       {referenceUrl !== undefined ? (
         <iframe
           className="b1-pdf-frame"
@@ -133,6 +190,15 @@ export function B1PdfReference({
         </section>
       )}
       <div className="b1-pdf-register">
+        {caseItem.source.localQuestionPdfUrl ? (
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={() => void registerIncludedPdf()}
+          >
+            同梱公式PDFを端末へ登録
+          </button>
+        ) : null}
         <label className="file-input-label" htmlFor={`b1-pdf-${caseItem.year}`}>
           {caseItem.year}年度のPDFを端末へ登録
         </label>

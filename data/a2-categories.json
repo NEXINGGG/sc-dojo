@@ -1,456 +1,621 @@
 {
   "schema_version": 1,
-  "exam_id": "network_specialist",
+  "exam_id": "information_security_specialist",
+  "exam_code": "SC",
   "subject_id": "a2",
+  "metadata": {
+    "status": "release",
+    "dataset_version": "sc-a2-v1",
+    "selection_revision": "sc-a2-selection-2026-10-07-v2",
+    "category_id_policy": "監査済みsc_* IDを正式採用。表示名と分離し，更新時もIDを維持する。"
+  },
   "domains": [
     {
       "id": "technology",
       "name": "テクノロジ系",
       "order": 1
+    },
+    {
+      "id": "management",
+      "name": "マネジメント系",
+      "order": 2
     }
   ],
   "categories": [
     {
-      "id": "network_methods",
-      "name": "ネットワーク方式",
+      "id": "sc_security_threats",
+      "name": "情報セキュリティ・脅威・攻撃",
       "order": 1,
       "default_domain": "technology",
       "priority": "S",
-      "description": "伝送量計算、呼量、誤り率、伝送媒体、フレーム効率など",
+      "description": "保護目的、脅威・脆弱性、攻撃の成立条件を理解する。暗号・認証は別カテゴリへ分類する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": [
+          "11.1"
+        ]
+      },
+      "allocation": {
+        "category_drill": 25,
+        "mock_exam_1": 4,
+        "mock_exam_2": 4,
+        "total": 33
+      },
       "subcategories": [
         {
-          "id": "network_methods__1d073375",
-          "name": "ビット誤り率"
+          "id": "sc_security_threats__goals",
+          "name": "情報の保護目的",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 0,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 0
+          }
         },
         {
-          "id": "network_methods__34d06d1a",
-          "name": "フレーム効率"
+          "id": "sc_security_threats__threats_vulnerabilities",
+          "name": "脅威・脆弱性",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 6,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 6
+          }
         },
         {
-          "id": "network_methods__1cc360eb",
-          "name": "伝送媒体"
-        },
-        {
-          "id": "network_methods__24add817",
-          "name": "伝送時間・回線速度"
-        },
-        {
-          "id": "network_methods__335efa4a",
-          "name": "伝送量計算"
-        },
-        {
-          "id": "network_methods__495e5804",
-          "name": "呼量・トラフィック理論"
-        },
-        {
-          "id": "network_methods__6ecbd426",
-          "name": "符号化・変調"
+          "id": "sc_security_threats__attack_mechanisms",
+          "name": "攻撃の仕組み",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 19,
+            "mock_exam_1": 4,
+            "mock_exam_2": 4,
+            "total": 27
+          }
         }
       ]
     },
     {
-      "id": "data_communication_control",
-      "name": "データ通信と制御",
+      "id": "sc_crypto_auth_pki",
+      "name": "暗号・認証・PKI",
       "order": 2,
       "default_domain": "technology",
       "priority": "S",
-      "description": "Ethernet、VLAN、STP、リンク集約、無線アクセス、経路制御など",
+      "description": "暗号、認証、署名、証明書の役割と使い分けを理解する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": [
+          "11.1"
+        ]
+      },
+      "allocation": {
+        "category_drill": 27,
+        "mock_exam_1": 4,
+        "mock_exam_2": 4,
+        "total": 35
+      },
       "subcategories": [
         {
-          "id": "data_communication_control__5e543b17",
-          "name": "BGP"
+          "id": "sc_crypto_auth_pki__encryption",
+          "name": "暗号・鍵",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 7,
+            "mock_exam_1": 1,
+            "mock_exam_2": 1,
+            "total": 9
+          }
         },
         {
-          "id": "data_communication_control__b897930a",
-          "name": "CSMA/CD"
+          "id": "sc_crypto_auth_pki__hash_signature",
+          "name": "ハッシュ・署名",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 3,
+            "mock_exam_1": 1,
+            "mock_exam_2": 2,
+            "total": 6
+          }
         },
         {
-          "id": "data_communication_control__e1bd9675",
-          "name": "Ethernet・MAC学習"
+          "id": "sc_crypto_auth_pki__authentication",
+          "name": "認証",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 12,
+            "mock_exam_1": 0,
+            "mock_exam_2": 1,
+            "total": 13
+          }
         },
         {
-          "id": "data_communication_control__fbaa55c2",
-          "name": "OSPF"
-        },
-        {
-          "id": "data_communication_control__4c6ef0ac",
-          "name": "QoS"
-        },
-        {
-          "id": "data_communication_control__ad0f16af",
-          "name": "STP・RSTP"
-        },
-        {
-          "id": "data_communication_control__17124680",
-          "name": "VLAN・802.1Q"
-        },
-        {
-          "id": "data_communication_control__fcec23fb",
-          "name": "リンクアグリゲーション"
-        },
-        {
-          "id": "data_communication_control__d7b69a16",
-          "name": "ループ防止"
-        },
-        {
-          "id": "data_communication_control__154d344b",
-          "name": "冗長ゲートウェイ"
-        },
-        {
-          "id": "data_communication_control__421ab5f8",
-          "name": "無線アクセス制御"
+          "id": "sc_crypto_auth_pki__pki",
+          "name": "PKI・証明書",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 5,
+            "mock_exam_1": 2,
+            "mock_exam_2": 0,
+            "total": 7
+          }
         }
       ]
     },
     {
-      "id": "communication_protocols",
-      "name": "通信プロトコル",
+      "id": "sc_security_management",
+      "name": "情報セキュリティ管理・リスク",
       "order": 3,
       "default_domain": "technology",
       "priority": "S",
-      "description": "IPv4/IPv6、TCP/UDP、ICMP、DNS、DHCP、ルーティング、マルチキャストなど",
+      "description": "資産とリスク、規程、組織の責任、継続の考え方を理解する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": [
+          "11.2"
+        ]
+      },
+      "allocation": {
+        "category_drill": 8,
+        "mock_exam_1": 1,
+        "mock_exam_2": 1,
+        "total": 10
+      },
       "subcategories": [
         {
-          "id": "communication_protocols__0fbb7f72",
-          "name": "ARP"
+          "id": "sc_security_management__assets_risk",
+          "name": "資産・リスク",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 2,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 2
+          }
         },
         {
-          "id": "communication_protocols__22c55c0e",
-          "name": "CIDR・経路集約"
+          "id": "sc_security_management__isms_policy",
+          "name": "ISMS・規程",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 3,
+            "mock_exam_1": 1,
+            "mock_exam_2": 1,
+            "total": 5
+          }
         },
         {
-          "id": "communication_protocols__a73114ea",
-          "name": "DHCP"
-        },
-        {
-          "id": "communication_protocols__3ddc21b1",
-          "name": "DNS"
-        },
-        {
-          "id": "communication_protocols__05eceda6",
-          "name": "ICMP"
-        },
-        {
-          "id": "communication_protocols__e4c0d453",
-          "name": "IPv4サブネット"
-        },
-        {
-          "id": "communication_protocols__4dbeec45",
-          "name": "IPv6アドレス"
-        },
-        {
-          "id": "communication_protocols__e044be3a",
-          "name": "IPv6フラグメンテーション"
-        },
-        {
-          "id": "communication_protocols__32e4f425",
-          "name": "IPv6移行"
-        },
-        {
-          "id": "communication_protocols__afa3273c",
-          "name": "IPv6自動設定"
-        },
-        {
-          "id": "communication_protocols__3ef4eb3a",
-          "name": "IPv6近隣探索"
-        },
-        {
-          "id": "communication_protocols__418fb6ca",
-          "name": "MTU・フラグメンテーション"
-        },
-        {
-          "id": "communication_protocols__c5d768a7",
-          "name": "NAT・NAPT"
-        },
-        {
-          "id": "communication_protocols__045240b6",
-          "name": "PPP"
-        },
-        {
-          "id": "communication_protocols__f544fb30",
-          "name": "TCP"
-        },
-        {
-          "id": "communication_protocols__52e59354",
-          "name": "TCPシーケンス番号"
-        },
-        {
-          "id": "communication_protocols__e9a6f622",
-          "name": "UDP"
-        },
-        {
-          "id": "communication_protocols__71d5f5a3",
-          "name": "マルチキャスト"
-        },
-        {
-          "id": "communication_protocols__4e4779a1",
-          "name": "ルーティング"
-        },
-        {
-          "id": "communication_protocols__8991bc71",
-          "name": "無線LANプロトコル"
+          "id": "sc_security_management__organization_continuity",
+          "name": "組織・継続",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 3,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 3
+          }
         }
       ]
     },
     {
-      "id": "network_management",
-      "name": "ネットワーク管理",
+      "id": "sc_security_assessment_controls",
+      "name": "セキュリティ技術評価・対策",
       "order": 4,
       "default_domain": "technology",
-      "priority": "A",
-      "description": "SNMP、Syslog、NTP/PTP、SDN/OpenFlow、監視設計など",
+      "priority": "S",
+      "description": "技術の評価・診断と、リスクに応じた防御・対策・対応の選択を学ぶ。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": [
+          "11.3",
+          "11.4"
+        ]
+      },
+      "allocation": {
+        "category_drill": 25,
+        "mock_exam_1": 3,
+        "mock_exam_2": 3,
+        "total": 31
+      },
       "subcategories": [
         {
-          "id": "network_management__5333ac81",
-          "name": "NTP・PTP"
+          "id": "sc_security_assessment_controls__assessment",
+          "name": "セキュリティ技術評価",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 12,
+            "mock_exam_1": 0,
+            "mock_exam_2": 1,
+            "total": 13
+          }
         },
         {
-          "id": "network_management__41857e33",
-          "name": "SDN・OpenFlow"
-        },
-        {
-          "id": "network_management__9aa33d88",
-          "name": "SNMP"
-        },
-        {
-          "id": "network_management__f2b4eb8f",
-          "name": "Syslog"
+          "id": "sc_security_assessment_controls__controls",
+          "name": "情報セキュリティ対策",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 13,
+            "mock_exam_1": 3,
+            "mock_exam_2": 2,
+            "total": 18
+          }
         }
       ]
     },
     {
-      "id": "network_applications",
-      "name": "ネットワーク応用",
+      "id": "sc_security_implementation",
+      "name": "セキュリティ実装技術",
       "order": 5,
       "default_domain": "technology",
-      "priority": "A",
-      "description": "HTTP、メール、VoIP、CDN、IoT、5G・クラウドサービスなど",
+      "priority": "S",
+      "description": "安全な通信、設定、アクセス制御、コードの具体的な実装判断を学ぶ。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": [
+          "11.5"
+        ]
+      },
+      "allocation": {
+        "category_drill": 36,
+        "mock_exam_1": 5,
+        "mock_exam_2": 5,
+        "total": 46
+      },
       "subcategories": [
         {
-          "id": "network_applications__6884c2e3",
-          "name": "5G・モバイル"
+          "id": "sc_security_implementation__secure_communications",
+          "name": "安全な通信の実装",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 17,
+            "mock_exam_1": 3,
+            "mock_exam_2": 2,
+            "total": 22
+          }
         },
         {
-          "id": "network_applications__67b6c4b8",
-          "name": "CDN"
+          "id": "sc_security_implementation__access_configuration",
+          "name": "アクセス制御・設定",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 14,
+            "mock_exam_1": 2,
+            "mock_exam_2": 3,
+            "total": 19
+          }
         },
         {
-          "id": "network_applications__c74f088d",
-          "name": "HTTP・Web"
-        },
-        {
-          "id": "network_applications__41c40a37",
-          "name": "IoTプロトコル"
-        },
-        {
-          "id": "network_applications__2ff4f370",
-          "name": "VoIP"
-        },
-        {
-          "id": "network_applications__521b4c8b",
-          "name": "WebDAV"
-        },
-        {
-          "id": "network_applications__327eb3f8",
-          "name": "負荷分散"
-        },
-        {
-          "id": "network_applications__fca5c560",
-          "name": "電子メール"
+          "id": "sc_security_implementation__secure_coding",
+          "name": "安全なコード・入力処理",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 5,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 5
+          }
         }
       ]
     },
     {
-      "id": "security",
-      "name": "セキュリティ",
+      "id": "sc_networks",
+      "name": "ネットワーク",
       "order": 6,
       "default_domain": "technology",
-      "priority": "S",
-      "description": "TLS、IPsec、認証、メールセキュリティ、攻撃対策、無線LANセキュリティなど",
+      "priority": "A",
+      "description": "通信の流れとプロトコル、制御、管理、応用を学ぶ。安全性の実装が主題ならセキュリティ実装技術へ分類する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": [
+          "10.1",
+          "10.2",
+          "10.3",
+          "10.4",
+          "10.5"
+        ]
+      },
+      "allocation": {
+        "category_drill": 28,
+        "mock_exam_1": 4,
+        "mock_exam_2": 4,
+        "total": 36
+      },
       "subcategories": [
         {
-          "id": "security__aab770d1",
-          "name": "DNSセキュリティ"
+          "id": "sc_networks__methods",
+          "name": "ネットワーク方式",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 2,
+            "mock_exam_1": 2,
+            "mock_exam_2": 0,
+            "total": 4
+          }
         },
         {
-          "id": "security__1071dc6f",
-          "name": "FW・IDS・IPS"
+          "id": "sc_networks__communication_control",
+          "name": "データ通信と制御",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 3,
+            "mock_exam_1": 0,
+            "mock_exam_2": 1,
+            "total": 4
+          }
         },
         {
-          "id": "security__7b6db741",
-          "name": "IPsec"
+          "id": "sc_networks__protocols",
+          "name": "通信プロトコル",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 18,
+            "mock_exam_1": 2,
+            "mock_exam_2": 1,
+            "total": 21
+          }
         },
         {
-          "id": "security__d91e1888",
-          "name": "TLS"
+          "id": "sc_networks__management",
+          "name": "ネットワーク管理",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 1,
+            "mock_exam_1": 0,
+            "mock_exam_2": 1,
+            "total": 2
+          }
         },
         {
-          "id": "security__33b7378d",
-          "name": "VPN"
-        },
-        {
-          "id": "security__e1ca58cc",
-          "name": "クラウドセキュリティ"
-        },
-        {
-          "id": "security__662a3076",
-          "name": "セキュリティ運用"
-        },
-        {
-          "id": "security__6c056a52",
-          "name": "ゼロトラスト"
-        },
-        {
-          "id": "security__60e0bb9c",
-          "name": "メールセキュリティ"
-        },
-        {
-          "id": "security__5c505132",
-          "name": "攻撃手法"
-        },
-        {
-          "id": "security__082a5415",
-          "name": "暗号・証明書"
-        },
-        {
-          "id": "security__54f64d6e",
-          "name": "無線LANセキュリティ"
-        },
-        {
-          "id": "security__5664ed9a",
-          "name": "認証・802.1X"
-        },
-        {
-          "id": "security__4d51d57d",
-          "name": "認証・EAP"
-        },
-        {
-          "id": "security__50b8411d",
-          "name": "認証・RADIUS"
+          "id": "sc_networks__applications",
+          "name": "ネットワーク応用",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 4,
+            "mock_exam_1": 0,
+            "mock_exam_2": 1,
+            "total": 5
+          }
         }
       ]
     },
     {
-      "id": "computer_components",
-      "name": "コンピュータ構成要素",
+      "id": "sc_databases",
+      "name": "データベース",
       "order": 7,
       "default_domain": "technology",
-      "priority": "B",
-      "description": "CPU、メモリ、キャッシュ、バス、入出力など",
+      "priority": "A",
+      "description": "データの構造、設計・操作、トランザクションと回復、応用を学ぶ。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": [
+          "9.1",
+          "9.2",
+          "9.3",
+          "9.4",
+          "9.5"
+        ]
+      },
+      "allocation": {
+        "category_drill": 12,
+        "mock_exam_1": 1,
+        "mock_exam_2": 1,
+        "total": 14
+      },
       "subcategories": [
         {
-          "id": "computer_components__a8b32c4b",
-          "name": "キャッシュメモリ"
+          "id": "sc_databases__models_design",
+          "name": "方式・設計",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 3,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 3
+          }
         },
         {
-          "id": "computer_components__cbda7566",
-          "name": "バス・I/O"
+          "id": "sc_databases__operations",
+          "name": "データ操作",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 5,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 5
+          }
         },
         {
-          "id": "computer_components__cef68868",
-          "name": "メモリ"
+          "id": "sc_databases__transactions_recovery",
+          "name": "トランザクション・回復",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 2,
+            "mock_exam_1": 1,
+            "mock_exam_2": 1,
+            "total": 4
+          }
         },
         {
-          "id": "computer_components__c29d7cd4",
-          "name": "割込み"
+          "id": "sc_databases__applications",
+          "name": "データベース応用",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 2,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 2
+          }
         }
       ]
     },
     {
-      "id": "system_components",
-      "name": "システム構成要素",
+      "id": "sc_system_development",
+      "name": "システム開発・セキュア開発",
       "order": 8,
       "default_domain": "technology",
       "priority": "A",
-      "description": "信頼性、性能、冗長化、仮想化、クラウド実行基盤など",
+      "description": "開発工程全体と各工程の安全性を学ぶ。具体的な防御コードの判断はセキュリティ実装技術へ分類する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": [
+          "12.1",
+          "12.2",
+          "12.3",
+          "12.4",
+          "12.5",
+          "12.6"
+        ]
+      },
+      "allocation": {
+        "category_drill": 12,
+        "mock_exam_1": 1,
+        "mock_exam_2": 1,
+        "total": 14
+      },
       "subcategories": [
         {
-          "id": "system_components__0d2688ba",
-          "name": "仮想化・クラウド"
+          "id": "sc_system_development__requirements_design",
+          "name": "要件定義・設計",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 3,
+            "mock_exam_1": 1,
+            "mock_exam_2": 1,
+            "total": 5
+          }
         },
         {
-          "id": "system_components__bcf07e26",
-          "name": "信頼性"
+          "id": "sc_system_development__implementation_testing",
+          "name": "実装工程・統合・テスト",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 9,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 9
+          }
         },
         {
-          "id": "system_components__5c8f4459",
-          "name": "冗長化"
-        },
-        {
-          "id": "system_components__11b0f730",
-          "name": "可用性"
-        },
-        {
-          "id": "system_components__e6ffcdc8",
-          "name": "性能評価"
-        },
-        {
-          "id": "system_components__327eb3f8",
-          "name": "負荷分散"
+          "id": "sc_system_development__deployment_maintenance",
+          "name": "導入・受入れ・保守・廃棄",
+          "domain_id": "technology",
+          "allocation": {
+            "category_drill": 0,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 0
+          }
         }
       ]
     },
     {
-      "id": "system_development",
-      "name": "システム開発技術",
+      "id": "sc_development_service_management",
+      "name": "開発管理・サービスマネジメント",
       "order": 9,
       "default_domain": "technology",
-      "priority": "B",
-      "description": "要件定義、設計、レビュー、テスト、導入など",
+      "priority": "A",
+      "description": "開発の管理とサービスの管理を小分類で分離する。問題ごとにテクノロジ系・マネジメント系を設定する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": [
+          "13.1",
+          "13.2",
+          "13.3",
+          "13.4",
+          "15.1",
+          "15.2",
+          "15.3",
+          "15.4",
+          "15.5"
+        ]
+      },
+      "allocation": {
+        "category_drill": 10,
+        "mock_exam_1": 1,
+        "mock_exam_2": 1,
+        "total": 12
+      },
       "subcategories": [
         {
-          "id": "system_development__a67e9f5d",
-          "name": "アーキテクチャ"
+          "id": "sc_development_service_management__development_management",
+          "name": "ソフトウェア開発管理技術",
+          "domain_id": "technology",
+          "official_syllabus_sections": [
+            "13.1",
+            "13.2",
+            "13.3",
+            "13.4"
+          ],
+          "allocation": {
+            "category_drill": 5,
+            "mock_exam_1": 0,
+            "mock_exam_2": 0,
+            "total": 5
+          }
         },
         {
-          "id": "system_development__63b560db",
-          "name": "テスト"
-        },
-        {
-          "id": "system_development__bd3906c0",
-          "name": "安全設計"
-        },
-        {
-          "id": "system_development__55d61cbd",
-          "name": "導入・環境"
-        },
-        {
-          "id": "system_development__f52fd514",
-          "name": "要件定義・モデリング"
-        },
-        {
-          "id": "system_development__cf1ec8c2",
-          "name": "設計レビュー"
+          "id": "sc_development_service_management__service_management",
+          "name": "サービスマネジメント",
+          "domain_id": "management",
+          "official_syllabus_sections": [
+            "15.1",
+            "15.2",
+            "15.3",
+            "15.4",
+            "15.5"
+          ],
+          "allocation": {
+            "category_drill": 5,
+            "mock_exam_1": 1,
+            "mock_exam_2": 1,
+            "total": 7
+          }
         }
       ]
     },
     {
-      "id": "software_development_management",
-      "name": "ソフトウェア開発管理技術",
+      "id": "sc_system_audit",
+      "name": "システム監査・内部統制",
       "order": 10,
-      "default_domain": "technology",
-      "priority": "B",
-      "description": "構成管理、CI/CD、課題管理、アジャイル、IaCなど",
+      "default_domain": "management",
+      "priority": "A",
+      "description": "監査の独立性、証拠、手続と内部統制の評価を学ぶ。管理策の実施主体としての判断とは区別する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": [
+          "16.1",
+          "16.2"
+        ]
+      },
+      "allocation": {
+        "category_drill": 7,
+        "mock_exam_1": 1,
+        "mock_exam_2": 1,
+        "total": 9
+      },
       "subcategories": [
         {
-          "id": "software_development_management__25ef1b43",
-          "name": "CI/CD"
+          "id": "sc_system_audit__audit",
+          "name": "システム監査",
+          "domain_id": "management",
+          "allocation": {
+            "category_drill": 1,
+            "mock_exam_1": 1,
+            "mock_exam_2": 0,
+            "total": 2
+          }
         },
         {
-          "id": "software_development_management__4aecf59a",
-          "name": "IaC・DevOps"
-        },
-        {
-          "id": "software_development_management__f27ef97b",
-          "name": "アジャイル"
-        },
-        {
-          "id": "software_development_management__a41dced3",
-          "name": "構成管理"
-        },
-        {
-          "id": "software_development_management__d01c53e6",
-          "name": "課題管理"
+          "id": "sc_system_audit__internal_control",
+          "name": "内部統制",
+          "domain_id": "management",
+          "allocation": {
+            "category_drill": 6,
+            "mock_exam_1": 0,
+            "mock_exam_2": 1,
+            "total": 7
+          }
         }
       ]
     }

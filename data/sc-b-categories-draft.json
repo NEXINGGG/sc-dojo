@@ -1,0 +1,907 @@
+{
+  "draft_version": 1,
+  "schema_version": 1,
+  "exam_id": "information_security_specialist",
+  "exam_code": "SC",
+  "subject_id": "b1",
+  "metadata": {
+    "status": "draft",
+    "runtime_enabled": false,
+    "dataset_version": "sc-b-categories-draft-v1",
+    "target_exam_year": 2026,
+    "created_on": "2026-10-08",
+    "plan_document": "docs/sc-b-current-system-audit.md",
+    "allocation_status": "manual_case_level_draft_not_field_audit",
+    "notice": "監査・設計用のカテゴリ草案。本番アプリから読み込まない。教材本文・設問・解答欄・公式解答・許容解答は収録していない。",
+    "classification_policy": "大問に主分類を1件、副分類を複数付与。主分類は中心となる判断で決める。設問単位の分類は教材化時に別途校閲する。",
+    "distribution_policy": "主分類の件数合計は20。関連大問数には主・副分類の重複がある。0件は試験範囲外を意味せず、出題比率の予測やIPA公式分類ではない。",
+    "scope_note": "2023秋～2025秋の現行形式5回20大問が分類対象。2026未公開問題、2027制度、旧SC午後I/IIはこの分布に含めない。"
+  },
+  "target_exam_format": {
+    "rule_id": "sc-b-2026",
+    "response_type": "descriptive",
+    "duration_minutes": 150,
+    "presented_case_count": 4,
+    "selected_case_count": 2,
+    "internal_subject_id": "b1",
+    "display_name": "科目B"
+  },
+  "evidence_method": {
+    "basis": "IPA公式解答PDFの出題趣旨・解答の論点を確認し、監査者が主・副分類と境界を提案した。",
+    "checked_sitting_count": 5,
+    "checked_case_count": 20,
+    "limitations": [
+      "問題全文・全欄の教材化校閲は未実施。設問別の配点・採点基準を推定しない。",
+      "副分類は大問レベルの設計候補。個別設問に一律適用しない。",
+      "A-2候補カテゴリは実在を確認したが、個別問題への復習リンクは未著作。"
+    ],
+    "sources_are_primary": true
+  },
+  "policy_references": [
+    {
+      "id": "ipa_sc_exam",
+      "title": "IPA SC試験区分",
+      "url": "https://www.ipa.go.jp/shiken/kubun/sc.html",
+      "checked_on": "2026-10-08"
+    },
+    {
+      "id": "ipa_sc_2023_format_change",
+      "title": "IPA 2023秋からのSC出題構成変更",
+      "url": "https://www.ipa.go.jp/shiken/syllabus/henkou/2022/20221220.html",
+      "checked_on": "2026-10-08"
+    },
+    {
+      "id": "ipa_2026_cbt",
+      "title": "IPA 2026年度CBT実施案内",
+      "url": "https://www.ipa.go.jp/shiken/2026/ap_koudo_sc-cbt.html",
+      "checked_on": "2026-10-08"
+    }
+  ],
+  "references": [
+    {
+      "id": "ipa_sc_2023_fall_pm",
+      "exam_set_id": "SC-2023-FALL-PM",
+      "year": 2023,
+      "term": "fall",
+      "original_section": "pm",
+      "title": "IPA 2023秋 SC 午後",
+      "year_page_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2023r05.html",
+      "question_pdf_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_sc_pm_qs.pdf",
+      "answer_pdf_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_sc_pm_ans.pdf",
+      "physical_page_counts": {
+        "question": 32,
+        "answer": 3
+      },
+      "checked_on": "2026-10-08",
+      "classification_basis": "公式解答PDFの出題趣旨・解答の論点を基に主分類を人が判断。全本文・全欄の教材化校閲は未実施。"
+    },
+    {
+      "id": "ipa_sc_2024_spring_pm",
+      "exam_set_id": "SC-2024-SPRING-PM",
+      "year": 2024,
+      "term": "spring",
+      "original_section": "pm",
+      "title": "IPA 2024春 SC 午後",
+      "year_page_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2024r06.html",
+      "question_pdf_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_pm_qs.pdf",
+      "answer_pdf_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_pm_ans.pdf",
+      "physical_page_counts": {
+        "question": 41,
+        "answer": 4
+      },
+      "checked_on": "2026-10-08",
+      "classification_basis": "公式解答PDFの出題趣旨・解答の論点を基に主分類を人が判断。全本文・全欄の教材化校閲は未実施。",
+      "official_notice": "2024-07-19訂正あり。問4の公式解答に設問不成立の注記があり、教材化時に採点除外を欄単位で確認する。"
+    },
+    {
+      "id": "ipa_sc_2024_fall_pm",
+      "exam_set_id": "SC-2024-FALL-PM",
+      "year": 2024,
+      "term": "fall",
+      "original_section": "pm",
+      "title": "IPA 2024秋 SC 午後",
+      "year_page_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2024r06.html",
+      "question_pdf_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_sc_pm_qs.pdf",
+      "answer_pdf_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_sc_pm_ans.pdf",
+      "physical_page_counts": {
+        "question": 40,
+        "answer": 4
+      },
+      "checked_on": "2026-10-08",
+      "classification_basis": "公式解答PDFの出題趣旨・解答の論点を基に主分類を人が判断。全本文・全欄の教材化校閲は未実施。"
+    },
+    {
+      "id": "ipa_sc_2025_spring_pm",
+      "exam_set_id": "SC-2025-SPRING-PM",
+      "year": 2025,
+      "term": "spring",
+      "original_section": "pm",
+      "title": "IPA 2025春 SC 午後",
+      "year_page_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2025r07.html",
+      "question_pdf_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_pm_qs.pdf",
+      "answer_pdf_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_pm_ans.pdf",
+      "physical_page_counts": {
+        "question": 40,
+        "answer": 4
+      },
+      "checked_on": "2026-10-08",
+      "classification_basis": "公式解答PDFの出題趣旨・解答の論点を基に主分類を人が判断。全本文・全欄の教材化校閲は未実施。"
+    },
+    {
+      "id": "ipa_sc_2025_fall_pm",
+      "exam_set_id": "SC-2025-FALL-PM",
+      "year": 2025,
+      "term": "fall",
+      "original_section": "pm",
+      "title": "IPA 2025秋 SC 午後",
+      "year_page_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2025r07.html",
+      "question_pdf_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_sc_pm_qs.pdf",
+      "answer_pdf_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_sc_pm_ans.pdf",
+      "physical_page_counts": {
+        "question": 36,
+        "answer": 4
+      },
+      "checked_on": "2026-10-08",
+      "classification_basis": "公式解答PDFの出題趣旨・解答の論点を基に主分類を人が判断。全本文・全欄の教材化校閲は未実施。",
+      "official_notice": "2025-12-24に解答ラベル等の訂正あり。教材化時は年度ページの最新版を照合する。"
+    }
+  ],
+  "categories": [
+    {
+      "id": "sc_b_auth_access",
+      "name": "認証・認可",
+      "order": 1,
+      "description": "主体、資格情報、セッション、本人確認、操作権限を区別する。",
+      "boundary_rule": "暗号の処理・鍵そのものは暗号・PKIへ。利用基盤だけで主分類にしない。",
+      "topic_examples": [
+        "MFA",
+        "セッション",
+        "トークン",
+        "アクセス制御"
+      ],
+      "modern_primary_case_count": 0,
+      "modern_related_case_count": 12,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_crypto_auth_pki",
+          "sc_security_implementation"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_crypto_pki",
+      "name": "暗号・PKI",
+      "order": 2,
+      "description": "暗号化、署名、検証、鍵、ハッシュ、証明書の役割と管理を扱う。",
+      "boundary_rule": "本人確認・権限判断を主題にする場合は認証・認可へ。",
+      "topic_examples": [
+        "鍵管理",
+        "電子署名",
+        "証明書",
+        "ハッシュ"
+      ],
+      "modern_primary_case_count": 1,
+      "modern_related_case_count": 6,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_crypto_auth_pki",
+          "sc_security_implementation"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_web_security",
+      "name": "Web・APIセキュリティ",
+      "order": 3,
+      "description": "HTTP、ブラウザ、Web APIの動作と、脆弱性・攻撃・防御を扱う。",
+      "boundary_rule": "コードや開発工程の改善判断が中心ならセキュア開発、診断の運用・優先度が中心なら脆弱性管理へ。",
+      "topic_examples": [
+        "Web",
+        "API",
+        "ブラウザ",
+        "入力検証"
+      ],
+      "modern_primary_case_count": 5,
+      "modern_related_case_count": 8,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_implementation",
+          "sc_security_threats",
+          "sc_system_development"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_network_security",
+      "name": "ネットワーク・メールセキュリティ",
+      "order": 4,
+      "description": "FW、VPN、無線LAN、DNS、メール認証などの安全な通信・設定を扱う。",
+      "boundary_rule": "経路設計・帯域設計をSCの基本分類にしない。攻撃解析・リスク判断が中心なら該当分類へ。",
+      "topic_examples": [
+        "VPN",
+        "無線LAN",
+        "メール",
+        "DMARC",
+        "通信境界"
+      ],
+      "modern_primary_case_count": 4,
+      "modern_related_case_count": 6,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_implementation",
+          "sc_networks",
+          "sc_crypto_auth_pki"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_attack_malware",
+      "name": "攻撃・マルウェア",
+      "order": 5,
+      "description": "攻撃の前提、成立条件、侵入、横展開、窃取、マルウェアの振る舞いを扱う。",
+      "boundary_rule": "脆弱性という原因、被害、攻撃手法を区別する。対応手順が主題ならインシデントへ。",
+      "topic_examples": [
+        "攻撃成立条件",
+        "侵入",
+        "横展開",
+        "マルウェア"
+      ],
+      "modern_primary_case_count": 0,
+      "modern_related_case_count": 8,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_threats",
+          "sc_security_assessment_controls"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_incident_response",
+      "name": "インシデント対応",
+      "order": 6,
+      "description": "調査、証拠保全、影響範囲、封じ込め、復旧、再発防止を扱う。",
+      "boundary_rule": "検知・ログ読解が中心ならログ・監視、組織の管理体制が中心なら情報セキュリティ管理へ。",
+      "topic_examples": [
+        "調査",
+        "証拠保全",
+        "封じ込め",
+        "復旧"
+      ],
+      "modern_primary_case_count": 1,
+      "modern_related_case_count": 4,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_assessment_controls",
+          "sc_security_implementation",
+          "sc_security_threats"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_logs_monitoring",
+      "name": "ログ・監視",
+      "order": 7,
+      "description": "ログの時系列、主体、操作、成功・失敗、相関、検知を読み取る。",
+      "boundary_rule": "ログが資料としてあるだけでは主分類にしない。事故の対応判断が中心ならインシデントへ。",
+      "topic_examples": [
+        "時系列",
+        "ログ相関",
+        "検知",
+        "フォレンジック"
+      ],
+      "modern_primary_case_count": 1,
+      "modern_related_case_count": 2,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_implementation",
+          "sc_security_assessment_controls",
+          "sc_security_threats"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_cloud_security",
+      "name": "クラウドセキュリティ",
+      "order": 8,
+      "description": "SaaS、CI等の外部サービス、責任分界、IAM、外部連携を扱う。",
+      "boundary_rule": "クラウド上にあるだけのWeb問題はタグに留め、Webや開発を主分類にする。",
+      "topic_examples": [
+        "SaaS",
+        "CI",
+        "共有責任",
+        "IAM"
+      ],
+      "modern_primary_case_count": 0,
+      "modern_related_case_count": 2,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_implementation",
+          "sc_crypto_auth_pki",
+          "sc_security_assessment_controls"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_secure_development",
+      "name": "セキュア開発・モバイル",
+      "order": 9,
+      "description": "コード、設計、秘密情報、レビュー、開発工程、モバイルアプリを扱う。",
+      "boundary_rule": "HTTP・ブラウザ・APIの動作判断が中心ならWebへ。組織の委託管理が中心なら情報セキュリティ管理へ。",
+      "topic_examples": [
+        "コード読解",
+        "セキュア設計",
+        "モバイル",
+        "秘密情報"
+      ],
+      "modern_primary_case_count": 2,
+      "modern_related_case_count": 8,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_implementation",
+          "sc_system_development",
+          "sc_databases",
+          "sc_security_threats"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_vulnerability_management",
+      "name": "脆弱性・IT資産管理",
+      "order": 10,
+      "description": "診断、CVSS等の深刻度、資産把握、対応優先度、修正・検証を扱う。",
+      "boundary_rule": "脆弱性の成立機構だけが主題ならWeb・攻撃等へ。リスク判断全体が主題ならリスクへ。",
+      "topic_examples": [
+        "脆弱性診断",
+        "CVSS",
+        "EPSS",
+        "IT資産",
+        "修正優先度"
+      ],
+      "modern_primary_case_count": 3,
+      "modern_related_case_count": 6,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_assessment_controls",
+          "sc_security_implementation",
+          "sc_security_threats"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_risk_management",
+      "name": "リスク管理",
+      "order": 11,
+      "description": "資産、脅威、影響、リスク評価、対応策とその理由を扱う。",
+      "boundary_rule": "規程・責任・委託管理が中心なら情報セキュリティ管理へ。技術的対策の成立条件は該当技術分類へ。",
+      "topic_examples": [
+        "資産",
+        "脅威",
+        "影響",
+        "残留リスク",
+        "OT"
+      ],
+      "modern_primary_case_count": 2,
+      "modern_related_case_count": 6,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_management",
+          "sc_security_assessment_controls",
+          "sc_system_audit"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    },
+    {
+      "id": "sc_b_security_governance",
+      "name": "情報セキュリティ管理",
+      "order": 12,
+      "description": "責任、規程、委託、教育、管理体制、サプライチェーンを扱う。",
+      "boundary_rule": "個別の影響・対策の評価が中心ならリスクへ。技術・コードの実装が中心なら技術分類へ。",
+      "topic_examples": [
+        "管理体制",
+        "委託",
+        "サプライチェーン",
+        "教育"
+      ],
+      "modern_primary_case_count": 1,
+      "modern_related_case_count": 5,
+      "a2_review_candidates": {
+        "category_ids": [
+          "sc_security_management",
+          "sc_system_audit",
+          "sc_development_service_management",
+          "sc_system_development"
+        ],
+        "link_status": "candidate_categories_only",
+        "rule": "正式SC A-2 v1の実在カテゴリへの候補。設問のrequiredKnowledgeTags、related_terms等から個別code/source_id/content_hashを人が校閲し、B側でリンクを著作する。カテゴリ全問を自動推薦しない。"
+      }
+    }
+  ],
+  "case_inventory": [
+    {
+      "source_id": "SC-2023-FALL-PM-Q01",
+      "exam_set_id": "SC-2023-FALL-PM",
+      "year": 2023,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 1,
+      "topic_summary": "Web脆弱性・コード読解",
+      "primary_category_id": "sc_b_web_security",
+      "category_ids": [
+        "sc_b_web_security",
+        "sc_b_auth_access",
+        "sc_b_attack_malware",
+        "sc_b_secure_development"
+      ],
+      "topic_tags": [
+        "Web",
+        "コード読解"
+      ],
+      "classification_reason": "Web固有の脆弱性と防御が中心。コードは副分類。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2023_fall_pm"
+    },
+    {
+      "source_id": "SC-2023-FALL-PM-Q02",
+      "exam_set_id": "SC-2023-FALL-PM",
+      "year": 2023,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 2,
+      "topic_summary": "無線LANの対策見直し",
+      "primary_category_id": "sc_b_network_security",
+      "category_ids": [
+        "sc_b_network_security",
+        "sc_b_auth_access",
+        "sc_b_crypto_pki"
+      ],
+      "topic_tags": [
+        "無線LAN"
+      ],
+      "classification_reason": "無線LANの安全な通信・設定を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2023_fall_pm"
+    },
+    {
+      "source_id": "SC-2023-FALL-PM-Q03",
+      "exam_set_id": "SC-2023-FALL-PM",
+      "year": 2023,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 3,
+      "topic_summary": "CIサービスの侵害対応",
+      "primary_category_id": "sc_b_incident_response",
+      "category_ids": [
+        "sc_b_incident_response",
+        "sc_b_cloud_security",
+        "sc_b_attack_malware",
+        "sc_b_auth_access"
+      ],
+      "topic_tags": [
+        "CI",
+        "外部サービス",
+        "侵害対応"
+      ],
+      "classification_reason": "外部サービス利用中の侵害を受けた調査・対応を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2023_fall_pm"
+    },
+    {
+      "source_id": "SC-2023-FALL-PM-Q04",
+      "exam_set_id": "SC-2023-FALL-PM",
+      "year": 2023,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 4,
+      "topic_summary": "委託業務のリスク評価",
+      "primary_category_id": "sc_b_risk_management",
+      "category_ids": [
+        "sc_b_risk_management",
+        "sc_b_security_governance"
+      ],
+      "topic_tags": [
+        "委託",
+        "リスク評価"
+      ],
+      "classification_reason": "業務・資産・影響と対応の評価を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2023_fall_pm"
+    },
+    {
+      "source_id": "SC-2024-SPRING-PM-Q01",
+      "exam_set_id": "SC-2024-SPRING-PM",
+      "year": 2024,
+      "term": "spring",
+      "original_section": "pm",
+      "question_number": 1,
+      "topic_summary": "APIの脆弱性と防御",
+      "primary_category_id": "sc_b_web_security",
+      "category_ids": [
+        "sc_b_web_security",
+        "sc_b_auth_access",
+        "sc_b_secure_development",
+        "sc_b_vulnerability_management"
+      ],
+      "topic_tags": [
+        "API",
+        "Web"
+      ],
+      "classification_reason": "APIの脆弱性の成立と防御を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2024_spring_pm"
+    },
+    {
+      "source_id": "SC-2024-SPRING-PM-Q02",
+      "exam_set_id": "SC-2024-SPRING-PM",
+      "year": 2024,
+      "term": "spring",
+      "original_section": "pm",
+      "question_number": 2,
+      "topic_summary": "VPN・DDoSへの対策",
+      "primary_category_id": "sc_b_network_security",
+      "category_ids": [
+        "sc_b_network_security",
+        "sc_b_attack_malware",
+        "sc_b_auth_access"
+      ],
+      "topic_tags": [
+        "VPN",
+        "DDoS"
+      ],
+      "classification_reason": "VPN等の通信構成と安全性対策を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2024_spring_pm"
+    },
+    {
+      "source_id": "SC-2024-SPRING-PM-Q03",
+      "exam_set_id": "SC-2024-SPRING-PM",
+      "year": 2024,
+      "term": "spring",
+      "original_section": "pm",
+      "question_number": 3,
+      "topic_summary": "Web脆弱性診断",
+      "primary_category_id": "sc_b_web_security",
+      "category_ids": [
+        "sc_b_web_security",
+        "sc_b_vulnerability_management",
+        "sc_b_attack_malware",
+        "sc_b_auth_access"
+      ],
+      "topic_tags": [
+        "Web",
+        "脆弱性診断"
+      ],
+      "classification_reason": "診断対象のWeb固有の脆弱性・対策を主題とする。診断管理は副分類。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2024_spring_pm"
+    },
+    {
+      "source_id": "SC-2024-SPRING-PM-Q04",
+      "exam_set_id": "SC-2024-SPRING-PM",
+      "year": 2024,
+      "term": "spring",
+      "original_section": "pm",
+      "question_number": 4,
+      "topic_summary": "Java/RDBMSの安全な実装",
+      "primary_category_id": "sc_b_secure_development",
+      "category_ids": [
+        "sc_b_secure_development",
+        "sc_b_auth_access",
+        "sc_b_crypto_pki"
+      ],
+      "topic_tags": [
+        "Java",
+        "RDBMS",
+        "コード読解"
+      ],
+      "classification_reason": "プログラム・データ処理の安全な実装判断を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2024_spring_pm",
+      "materialization_note": "設問不成立の公式注記を欄単位で照合し、採点除外として扱う。草案は答案・採点情報を収録しない。"
+    },
+    {
+      "source_id": "SC-2024-FALL-PM-Q01",
+      "exam_set_id": "SC-2024-FALL-PM",
+      "year": 2024,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 1,
+      "topic_summary": "端末侵害のログ解析",
+      "primary_category_id": "sc_b_logs_monitoring",
+      "category_ids": [
+        "sc_b_logs_monitoring",
+        "sc_b_attack_malware",
+        "sc_b_incident_response"
+      ],
+      "topic_tags": [
+        "端末",
+        "ログ解析",
+        "フォレンジック"
+      ],
+      "classification_reason": "記録の読み取り・時系列と事実の判断を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2024_fall_pm"
+    },
+    {
+      "source_id": "SC-2024-FALL-PM-Q02",
+      "exam_set_id": "SC-2024-FALL-PM",
+      "year": 2024,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 2,
+      "topic_summary": "メールサービス・DMARC",
+      "primary_category_id": "sc_b_network_security",
+      "category_ids": [
+        "sc_b_network_security",
+        "sc_b_auth_access",
+        "sc_b_crypto_pki",
+        "sc_b_attack_malware"
+      ],
+      "topic_tags": [
+        "メール",
+        "DMARC"
+      ],
+      "classification_reason": "メールの通信・認証・運用上の対策を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2024_fall_pm"
+    },
+    {
+      "source_id": "SC-2024-FALL-PM-Q03",
+      "exam_set_id": "SC-2024-FALL-PM",
+      "year": 2024,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 3,
+      "topic_summary": "Webスキミングの調査",
+      "primary_category_id": "sc_b_web_security",
+      "category_ids": [
+        "sc_b_web_security",
+        "sc_b_attack_malware",
+        "sc_b_incident_response",
+        "sc_b_logs_monitoring",
+        "sc_b_secure_development"
+      ],
+      "topic_tags": [
+        "Webスキミング",
+        "調査"
+      ],
+      "classification_reason": "Web上の攻撃成立と対策を主分類にし、調査・ログを副分類にする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2024_fall_pm"
+    },
+    {
+      "source_id": "SC-2024-FALL-PM-Q04",
+      "exam_set_id": "SC-2024-FALL-PM",
+      "year": 2024,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 4,
+      "topic_summary": "Web/API診断と改善",
+      "primary_category_id": "sc_b_vulnerability_management",
+      "category_ids": [
+        "sc_b_vulnerability_management",
+        "sc_b_web_security",
+        "sc_b_auth_access",
+        "sc_b_secure_development"
+      ],
+      "topic_tags": [
+        "Web",
+        "API",
+        "脆弱性診断"
+      ],
+      "classification_reason": "診断から改善までの脆弱性対応を主題とする。Web機構は副分類。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2024_fall_pm"
+    },
+    {
+      "source_id": "SC-2025-SPRING-PM-Q01",
+      "exam_set_id": "SC-2025-SPRING-PM",
+      "year": 2025,
+      "term": "spring",
+      "original_section": "pm",
+      "question_number": 1,
+      "topic_summary": "開発企業のサプライチェーン対策",
+      "primary_category_id": "sc_b_security_governance",
+      "category_ids": [
+        "sc_b_security_governance",
+        "sc_b_secure_development",
+        "sc_b_risk_management",
+        "sc_b_vulnerability_management"
+      ],
+      "topic_tags": [
+        "サプライチェーン",
+        "開発組織"
+      ],
+      "classification_reason": "開発企業・委託を含む管理体制を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2025_spring_pm"
+    },
+    {
+      "source_id": "SC-2025-SPRING-PM-Q02",
+      "exam_set_id": "SC-2025-SPRING-PM",
+      "year": 2025,
+      "term": "spring",
+      "original_section": "pm",
+      "question_number": 2,
+      "topic_summary": "脆弱性の深刻度・対応優先度",
+      "primary_category_id": "sc_b_vulnerability_management",
+      "category_ids": [
+        "sc_b_vulnerability_management",
+        "sc_b_risk_management",
+        "sc_b_web_security"
+      ],
+      "topic_tags": [
+        "CVSS",
+        "優先度"
+      ],
+      "classification_reason": "脆弱性の評価・対応順位を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2025_spring_pm"
+    },
+    {
+      "source_id": "SC-2025-SPRING-PM-Q03",
+      "exam_set_id": "SC-2025-SPRING-PM",
+      "year": 2025,
+      "term": "spring",
+      "original_section": "pm",
+      "question_number": 3,
+      "topic_summary": "スマートフォンアプリの安全性",
+      "primary_category_id": "sc_b_secure_development",
+      "category_ids": [
+        "sc_b_secure_development",
+        "sc_b_auth_access",
+        "sc_b_crypto_pki",
+        "sc_b_web_security"
+      ],
+      "topic_tags": [
+        "モバイル",
+        "アプリ開発"
+      ],
+      "classification_reason": "モバイルアプリの設計・実装の安全性を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2025_spring_pm"
+    },
+    {
+      "source_id": "SC-2025-SPRING-PM-Q04",
+      "exam_set_id": "SC-2025-SPRING-PM",
+      "year": 2025,
+      "term": "spring",
+      "original_section": "pm",
+      "question_number": 4,
+      "topic_summary": "公開IT資産の把握と脆弱性",
+      "primary_category_id": "sc_b_vulnerability_management",
+      "category_ids": [
+        "sc_b_vulnerability_management",
+        "sc_b_network_security",
+        "sc_b_risk_management",
+        "sc_b_security_governance"
+      ],
+      "topic_tags": [
+        "IT資産",
+        "公開サービス"
+      ],
+      "classification_reason": "資産把握と脆弱性対応の管理を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2025_spring_pm"
+    },
+    {
+      "source_id": "SC-2025-FALL-PM-Q01",
+      "exam_set_id": "SC-2025-FALL-PM",
+      "year": 2025,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 1,
+      "topic_summary": "Webの設計・実装不備",
+      "primary_category_id": "sc_b_web_security",
+      "category_ids": [
+        "sc_b_web_security",
+        "sc_b_auth_access",
+        "sc_b_attack_malware",
+        "sc_b_secure_development"
+      ],
+      "topic_tags": [
+        "Web",
+        "設計不備"
+      ],
+      "classification_reason": "Web固有の機構と実装不備を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2025_fall_pm"
+    },
+    {
+      "source_id": "SC-2025-FALL-PM-Q02",
+      "exam_set_id": "SC-2025-FALL-PM",
+      "year": 2025,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 2,
+      "topic_summary": "暗号鍵の管理と処理",
+      "primary_category_id": "sc_b_crypto_pki",
+      "category_ids": [
+        "sc_b_crypto_pki",
+        "sc_b_risk_management",
+        "sc_b_security_governance"
+      ],
+      "topic_tags": [
+        "鍵管理",
+        "暗号資産"
+      ],
+      "classification_reason": "鍵の管理と暗号処理を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2025_fall_pm"
+    },
+    {
+      "source_id": "SC-2025-FALL-PM-Q03",
+      "exam_set_id": "SC-2025-FALL-PM",
+      "year": 2025,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 3,
+      "topic_summary": "リモートワークのVPN導入",
+      "primary_category_id": "sc_b_network_security",
+      "category_ids": [
+        "sc_b_network_security",
+        "sc_b_auth_access",
+        "sc_b_crypto_pki",
+        "sc_b_cloud_security"
+      ],
+      "topic_tags": [
+        "VPN",
+        "リモートワーク"
+      ],
+      "classification_reason": "VPN導入時の安全な通信・接続を主題とする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2025_fall_pm"
+    },
+    {
+      "source_id": "SC-2025-FALL-PM-Q04",
+      "exam_set_id": "SC-2025-FALL-PM",
+      "year": 2025,
+      "term": "fall",
+      "original_section": "pm",
+      "question_number": 4,
+      "topic_summary": "サプライチェーン・製造環境の対策",
+      "primary_category_id": "sc_b_risk_management",
+      "category_ids": [
+        "sc_b_risk_management",
+        "sc_b_network_security",
+        "sc_b_incident_response",
+        "sc_b_security_governance"
+      ],
+      "topic_tags": [
+        "サプライチェーン",
+        "OT",
+        "製造"
+      ],
+      "classification_reason": "製造環境の脅威・影響と対策判断を主分類にする。",
+      "classification_status": "draft_manual_case_level",
+      "source_reference_id": "ipa_sc_2025_fall_pm"
+    }
+  ],
+  "future_review_rules": [
+    "旧午後I/IIを加える前に個別の現在性とカテゴリを再監査する。現行本番模試と区別する。",
+    "表示名変更とID変更を分離し、既存カテゴリIDを別の意味で再利用しない。",
+    "サプライチェーン、OT、モバイル、メール等は横断タグを先に使い、少数例だけで主分類を増やさない。",
+    "正式化時に試験回4大問・主分類件数・副分類参照・出典の最新版・SC A-2参照を専用validatorで再検証する。"
+  ]
+}

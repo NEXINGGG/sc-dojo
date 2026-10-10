@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "dataset_version": "sc-b-v1",
+  "sources": [
+    {
+      "examSetId": "SC-2023-FALL-PM",
+      "kind": "qs",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_sc_pm_qs.pdf",
+      "path": "reference/sc-b-official/2023-fall/qs.pdf",
+      "sha256": "sha256:f93ab7e4adecd524b22e59aaaddb7b5b720d981fecadd854d05f6c35b4c69592",
+      "pageCount": 32,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2023-FALL-PM",
+      "kind": "ans",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_sc_pm_ans.pdf",
+      "path": "reference/sc-b-official/2023-fall/ans.pdf",
+      "sha256": "sha256:e5cd7fe051f7a05f6461569bd5cb2c7177398f1a601e4d147b3ba90364a0f8af",
+      "pageCount": 3,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2023-FALL-PM",
+      "kind": "cmnt",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_sc_pm_cmnt.pdf",
+      "path": "reference/sc-b-official/2023-fall/cmnt.pdf",
+      "sha256": "sha256:730f670b50830276f325cf9db5029771806a084a14b85bc9bf963b400914cd3c",
+      "pageCount": 2,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2024-SPRING-PM",
+      "kind": "qs",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_pm_qs.pdf",
+      "path": "reference/sc-b-official/2024-spring/qs.pdf",
+      "sha256": "sha256:96f9f59dc9f679c58f1e0a59aaf4594ed6479fece8b4b593a9569849203d0eb0",
+      "pageCount": 41,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2024-SPRING-PM",
+      "kind": "ans",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_pm_ans.pdf",
+      "path": "reference/sc-b-official/2024-spring/ans.pdf",
+      "sha256": "sha256:6b306dbaab42bd9480f5fbc0a5dc14aebe0566f2bec1cbe153cc35ac6096c6bd",
+      "pageCount": 4,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2024-SPRING-PM",
+      "kind": "cmnt",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_sc_pm_cmnt.pdf",
+      "path": "reference/sc-b-official/2024-spring/cmnt.pdf",
+      "sha256": "sha256:3e44913a721650f6f267ffc628fd7e5ac023fe7abcd45c0f252a2fc235c1268b",
+      "pageCount": 1,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2024-FALL-PM",
+      "kind": "qs",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_sc_pm_qs.pdf",
+      "path": "reference/sc-b-official/2024-fall/qs.pdf",
+      "sha256": "sha256:f850e88fbd713b3c36d99d42ce2955850386c5e78fe62def62a64534cb4bf472",
+      "pageCount": 40,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2024-FALL-PM",
+      "kind": "ans",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_sc_pm_ans.pdf",
+      "path": "reference/sc-b-official/2024-fall/ans.pdf",
+      "sha256": "sha256:6071e14cf74ef5be4c9ad1fb913d4447da92a7a2584daa9a8b462ddc5165abc2",
+      "pageCount": 4,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2024-FALL-PM",
+      "kind": "cmnt",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_sc_pm_cmnt.pdf",
+      "path": "reference/sc-b-official/2024-fall/cmnt.pdf",
+      "sha256": "sha256:1846a6848f33f22bad6ae47551b318286efcf7102a04e0ccf7fb42f198c327cf",
+      "pageCount": 2,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2025-SPRING-PM",
+      "kind": "qs",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_pm_qs.pdf",
+      "path": "reference/sc-b-official/2025-spring/qs.pdf",
+      "sha256": "sha256:63cf7d1bffa5c1d11ce891720a424b8fee82a9f6ac3332f741b87677d17cf1bf",
+      "pageCount": 40,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2025-SPRING-PM",
+      "kind": "ans",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_pm_ans.pdf",
+      "path": "reference/sc-b-official/2025-spring/ans.pdf",
+      "sha256": "sha256:06ba3ad4ac11a8e1b16626e9c3dcfbb5e0bcc0a6d7bee994e7c3913ece028d7e",
+      "pageCount": 4,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2025-SPRING-PM",
+      "kind": "cmnt",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_sc_pm_cmnt.pdf",
+      "path": "reference/sc-b-official/2025-spring/cmnt.pdf",
+      "sha256": "sha256:ce73e66ee31b0a7ae7e476e75ee09de6e6512f9232f2ca78a4bea8e21f993117",
+      "pageCount": 2,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2025-FALL-PM",
+      "kind": "qs",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_sc_pm_qs.pdf",
+      "path": "reference/sc-b-official/2025-fall/qs.pdf",
+      "sha256": "sha256:44dfea4548fad2f80fe4864e91ba50ea01742858b10c45a390106a81f126578d",
+      "pageCount": 36,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2025-FALL-PM",
+      "kind": "ans",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_sc_pm_ans.pdf",
+      "path": "reference/sc-b-official/2025-fall/ans.pdf",
+      "sha256": "sha256:b66c84932ecbb6c8fbe4833beedaf6240b71c777a37204c7b6f778eea8ed223e",
+      "pageCount": 4,
+      "checkedOn": "2026-10-09"
+    },
+    {
+      "examSetId": "SC-2025-FALL-PM",
+      "kind": "cmnt",
+      "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_sc_pm_cmnt.pdf",
+      "path": "reference/sc-b-official/2025-fall/cmnt.pdf",
+      "sha256": "sha256:4fd81f6b3c441a332642ced11e05347c544b3f033f188bddadb98b97855cfa43",
+      "pageCount": 2,
+      "checkedOn": "2026-10-09"
+    }
+  ]
+}

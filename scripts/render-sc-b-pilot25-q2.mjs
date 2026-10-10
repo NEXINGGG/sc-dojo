@@ -1,0 +1,12 @@
+import {writeFileSync} from 'node:fs';
+const t=(x,y,text)=>'<text x="'+x+'" y="'+y+'" stroke="none" fill="#111">'+text+'</text>';
+const b=(x,y,w,h,text)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="white"/>'+t(x+10,y+35,text);
+let s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 580"><rect width="1200" height="580" fill="white"/><g stroke="#111" stroke-width="2" fill="none" font-family="sans-serif" font-size="22">';
+s+='<rect x="20" y="260" width="690" height="295"/>'+t(35,290,'クラウド基盤')+'<rect x="755" y="190" width="425" height="355"/>'+t(770,225,'A社本社');
+s+='<path d="M340 160 L155 320 M445 165 V320 M590 135 L780 270 M900 270 H955 M1055 270 L1110 250 M1055 270 L1110 280 M155 365 L135 455 M155 365 L300 455 M155 365 L465 455 M155 365 L630 455 M230 342 H335"/>';
+s+='<ellipse cx="420" cy="135" rx="180" ry="45"/>'+t(340,143,'インターネット');
+s+=b(55,320,175,55,'仮想FW')+b(335,320,330,55,'VPNゲートウェイ');
+['顧客向け','従業員向け','基幹','台帳'].forEach((v,i)=>{s+=b(55+i*165,455,150,75,v)+t(68+i*165,515,'サーバ');});
+s+=b(780,245,120,55,'FW')+b(955,245,100,55,'L3SW')+b(1080,235,80,55,'')+b(1070,250,80,55,'')+t(1075,335,'業務PC');
+s+='<rect x="780" y="375" width="375" height="140" stroke-dasharray="10 7"/>'+t(790,405,'施設K')+b(855,435,220,55,'鍵管理PC');
+writeFileSync('public/questions/sc/b/2025-fall/q2-figure-1.svg',s+'</g></svg>');

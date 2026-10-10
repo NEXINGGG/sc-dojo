@@ -7,7 +7,9 @@ import type { ProgressAnalytics } from '../domain/progress';
 import type { ExamOverview } from '../features/exam/examRepository';
 import { ExamRepository } from '../features/exam/examRepository';
 import { formatExamRemainingTime, getExamName, getExamTimerState } from '../domain/exam';
-import { defaultPracticeFilters } from '../domain/practice';
+import { defaultPracticeFilters, filterPracticeQuestions } from '../domain/practice';
+import { getSubjectCatalog } from '../data/catalog';
+import { LearningRepository } from '../features/learning/learningRepository';
 import { ProgressRepository } from '../features/progress/progressRepository';
 import { PracticeSessionRepository } from '../features/practice/practiceSessionRepository';
 import { SubjectSwitcher, useSubject } from '../features/subjects/SubjectContext';
@@ -24,10 +26,13 @@ export function HomePage() {
   );
   const exams = useMemo(() => new ExamRepository(database, subjectId), [subjectId]);
   const progress = useMemo(() => new ProgressRepository(database, subjectId), [subjectId]);
+  const learning = useMemo(() => new LearningRepository(database, subjectId), [subjectId]);
+  const { questions } = useMemo(() => getSubjectCatalog(subjectId), [subjectId]);
   const [inProgressSession, setInProgressSession] = useState<PracticeSessionRow>();
   const [analytics, setAnalytics] = useState<ProgressAnalytics>();
   const [examOverview, setExamOverview] = useState<ExamOverview>(emptyExamOverview);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [practiceUnansweredCount, setPracticeUnansweredCount] = useState<number>();
 
   useEffect(() => {
     let isCurrent = true;
@@ -35,15 +40,23 @@ export function HomePage() {
     async function loadHomeData() {
       try {
         await exams.submitExpiredInProgress();
-        const [session, stats, overview] = await Promise.all([
+        const [session, stats, overview, progressByCode] = await Promise.all([
           practiceSessions.getInProgress(),
           progress.getAnalytics('30d'),
           exams.getOverview(),
+          learning.getProgressMap(),
         ]);
         if (isCurrent) {
           setInProgressSession(session);
           setAnalytics(stats);
           setExamOverview(overview);
+          setPracticeUnansweredCount(
+            filterPracticeQuestions(
+              questions,
+              { ...defaultPracticeFilters, answerStatus: 'unanswered' },
+              progressByCode,
+            ).length,
+          );
         }
       } catch {
         if (isCurrent) {
@@ -56,7 +69,7 @@ export function HomePage() {
     return () => {
       isCurrent = false;
     };
-  }, [exams, practiceSessions, progress]);
+  }, [exams, practiceSessions, progress, learning, questions]);
 
   const currentQuestionNumber =
     inProgressSession === undefined ? undefined : inProgressSession.currentIndex + 1;
@@ -136,7 +149,10 @@ export function HomePage() {
         <p>回答状態を選ぶと、復習に合う問題だけを出題します。</p>
         <div className="quick-start-list">
           <QuickStartLink
-            count={overall?.unansweredQuestions ?? subject.questionCount}
+            count={
+              practiceUnansweredCount ??
+              filterPracticeQuestions(questions, defaultPracticeFilters).length
+            }
             label="未回答を学習"
             status="unanswered"
           />

@@ -1,3 +1,4 @@
+import type { B1ContentIdentity } from './b1Identity';
 export const B1_FAILURE_CAUSE_IDS = [
   'knowledge_gap',
   'missed_condition',
@@ -10,6 +11,18 @@ export const B1_FAILURE_CAUSE_IDS = [
   'wording_length',
   'calculation_error',
   'time_management',
+  'sc_b_requirement_misread',
+  'sc_b_evidence_missed',
+  'sc_b_evidence_misread',
+  'sc_b_knowledge_gap',
+  'sc_b_attack_vulnerability_confusion',
+  'sc_b_actor_scope_confusion',
+  'sc_b_auth_access_confusion',
+  'sc_b_direction_sequence_error',
+  'sc_b_control_effect_mismatch',
+  'sc_b_missing_answer_element',
+  'sc_b_wording_length',
+  'sc_b_time_shortage',
 ] as const;
 
 export type B1FailureCauseId = (typeof B1_FAILURE_CAUSE_IDS)[number];
@@ -27,6 +40,7 @@ export type B1AnswerForm =
   | 'selection'
   | 'other';
 export type B1EvidenceSourceType =
+  | 'log'
   | 'paragraph'
   | 'figure'
   | 'table'
@@ -35,7 +49,7 @@ export type B1EvidenceSourceType =
   | 'sequence'
   | 'general_knowledge';
 
-export type B1LearningMode = 'training' | 'practical' | 'mock90';
+export type B1LearningMode = 'training' | 'practical' | 'mock90' | 'mock150';
 export type B1MockType = 'official_year' | 'current_focus' | 'all_years' | 'legacy_reading';
 
 export interface B1RelevanceFilter {
@@ -139,6 +153,7 @@ export interface B1A2Remediation {
 }
 
 export interface B1LearnerEvidence {
+  identity?: B1ContentIdentity;
   id: string;
   version: 1 | 2;
   sessionId: string;
@@ -153,6 +168,7 @@ export interface B1LearnerEvidence {
 }
 
 export interface B1LearningReflection {
+  identity?: B1ContentIdentity;
   id: string;
   version: 1 | 2;
   sessionId: string;
@@ -167,6 +183,7 @@ export interface B1LearningReflection {
 export type B1RemediationProgressStatus = 'in_progress' | 'completed' | 'cancelled';
 
 export interface B1RemediationProgress {
+  identity?: B1ContentIdentity;
   id: string;
   version: 1 | 2;
   originQuestionId: string;

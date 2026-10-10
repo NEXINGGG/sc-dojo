@@ -1,3 +1,5 @@
+import { b1Cases } from '../../data/b1';
+import { b1Identity, sameB1Identity } from '../../domain/b1Identity';
 import type { A1DojoDatabase } from '../../database/database';
 import type {
   B1PracticeSessionRow,
@@ -19,7 +21,10 @@ import {
 } from './types';
 
 export const B1_CLOUD_SYNC_SCOPES = ['b1.answer', 'b1.progress', 'b1.reset'] as const;
-export const B1_RESET_ITEM_KEY = 'practice-sessions';
+export const B1_RESET_ITEM_KEY =
+  b1Cases[0]?.examCode === 'SC'
+    ? `practice-sessions:${b1Cases[0].dataset_version}`
+    : 'practice-sessions';
 export const B1_CLOUD_SYNC_DEBOUNCE_MS = 1_500;
 
 type B1CloudSyncScope = (typeof B1_CLOUD_SYNC_SCOPES)[number];
@@ -202,6 +207,25 @@ export async function applyRemoteB1PracticeItem(
     deviceId: item.deviceId,
     isDeleted: item.isDeleted,
   });
+}
+
+/** Foreign datasets stay in the cloud and cannot affect active answers or reset boundaries. */
+export function isCompatibleB1RemoteItem(item: CloudLearningSyncItem): boolean {
+  if (item.scope === 'b1.reset') return item.itemKey === B1_RESET_ITEM_KEY;
+  if (item.isDeleted)
+    return (
+      b1Cases[0]?.examCode !== 'SC' || item.itemKey.startsWith(`b1-${b1Cases[0].dataset_version}-`)
+    );
+  if (!isRecord(item.payload) || !isRecord(item.payload.session)) return true;
+  const descriptor = item.payload.session;
+  if (typeof descriptor.caseId !== 'string') return true;
+  const caseItem = getB1Case(descriptor.caseId);
+  if (!caseItem) return false;
+  if (caseItem.examCode !== 'SC' && descriptor.identity === undefined) return true;
+  return sameB1Identity(
+    descriptor.identity as import('../../domain/b1Identity').B1ContentIdentity | undefined,
+    b1Identity(caseItem),
+  );
 }
 
 export function normalizeRemoteB1PracticeItem(item: CloudLearningSyncItem): LearningSyncItem {
@@ -469,6 +493,8 @@ function mergeDescriptor(
     if (
       existing.id !== descriptor.id ||
       existing.caseId !== descriptor.caseId ||
+      (descriptor.identity !== undefined &&
+        !sameB1Identity(existing.identity, descriptor.identity)) ||
       JSON.stringify(existing.unitIds) !== JSON.stringify(descriptor.unitIds)
     ) {
       throw new Error('科目Bセッションの構成が一致しません。');
@@ -584,6 +610,15 @@ function parseDescriptor(value: unknown): B1PracticeDescriptorV1 {
   const caseItem = getB1Case(value.caseId);
   const expectedUnitIds = caseItem?.questionUnits.map((unit) => unit.questionId);
   if (
+    caseItem?.examCode === 'SC' &&
+    !sameB1Identity(
+      value.identity as import('../../domain/b1Identity').B1ContentIdentity | undefined,
+      b1Identity(caseItem),
+    )
+  ) {
+    throw new Error('科目B教材のdataset・source・contentが一致しません。旧履歴は取り込みません。');
+  }
+  if (
     expectedUnitIds === undefined ||
     JSON.stringify(value.unitIds) !== JSON.stringify(expectedUnitIds)
   ) {
@@ -594,6 +629,7 @@ function parseDescriptor(value: unknown): B1PracticeDescriptorV1 {
     subjectId: 'b1',
     version: value.version,
     mode: value.mode,
+    identity: caseItem ? b1Identity(caseItem) : undefined,
     caseId: value.caseId,
     unitIds: [...value.unitIds],
     createdAt: value.createdAt,
@@ -652,6 +688,7 @@ function createDescriptor(session: B1PracticeSessionRow): B1PracticeDescriptorV1
     subjectId: 'b1',
     version: session.version,
     mode: session.mode,
+    identity: session.identity,
     caseId: session.caseId,
     unitIds: [...session.unitIds],
     createdAt: session.createdAt,

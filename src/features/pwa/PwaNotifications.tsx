@@ -18,7 +18,7 @@ export function PwaNotifications() {
     dismissUpdate,
   } = usePwa();
   const [showExamConfirmation, setShowExamConfirmation] = useState(false);
-  const isExamInProgress = /^\/exam\/[^/]+$/.test(location.pathname);
+  const isExamInProgress = /^(?:\/exam|\/b1\/mock)\/[^/]+$/.test(location.pathname);
   const showUpdate = needsUpdate && !isUpdateDismissed;
 
   async function applyUpdate() {

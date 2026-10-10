@@ -28,7 +28,7 @@ const checks = [
   ['src/features/b1/B1AnswerForm.tsx', '模範解答と自分の回答を確認する', '模範解答比較UI'],
   ['src/pages/B1SessionPage.tsx', '回答を確定して模範解答を確認する', '回答確定UI'],
   ['src/pages/B1ProgressPage.tsx', '次に復習する問題', '復習導線'],
-  ['src/domain/backup.ts', 'BACKUP_FORMAT_VERSION = 6', 'Phase 4バックアップ形式'],
+  ['src/domain/backup.ts', 'BACKUP_FORMAT_VERSION = 7', 'Phase 4バックアップ形式'],
 ];
 
 for (const [path, requiredText, label] of checks) {

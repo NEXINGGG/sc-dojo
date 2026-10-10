@@ -54,12 +54,13 @@ for (const name of ['answerAttempts', 'preferences'])
   if (!backup.includes(name)) errors.push(`バックアップ拡張がありません: ${name}`);
 if (
   !backup.includes('BACKUP_FORMAT_VERSION = 5') &&
-  !backup.includes('BACKUP_FORMAT_VERSION = 6')
+  !backup.includes('BACKUP_FORMAT_VERSION = 6') &&
+  !backup.includes('BACKUP_FORMAT_VERSION = 7')
 ) {
   errors.push('B-1答案履歴を含むバックアップ形式のバージョンがありません');
 }
-if (!sessionUi.includes("learningMode !== 'mock90'"))
-  errors.push('mock90解答中の補助情報を分離していません');
+if (!sessionUi.includes('{!isMock ? (') && !sessionUi.includes("learningMode !== 'mock90'"))
+  errors.push('模試解答中の補助情報を分離していません');
 if (supportUi.includes('acceptedAnswers'))
   errors.push('解答前UIにacceptedAnswersを含めてはいけません');
 if (errors.length) {

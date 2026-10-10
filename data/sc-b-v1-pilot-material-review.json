@@ -1,0 +1,78 @@
+{
+  "entries": [
+    {
+      "source_id": "SC-2025-FALL-PM-Q01",
+      "originalMaterialHash": "sha256:d60a1d5cd544bf5bacdc7ca5aac755cf0b02ec1216400ed5552b22dad4a49f98",
+      "structuredMaterialHash": "sha256:e64168a8cdfaa9b7a42944526ba3dfef0c5b3eda60555a45e251dccb9914b9a9",
+      "materialIds": [
+        "table-1",
+        "figure-1",
+        "figure-2",
+        "figure-3",
+        "figure-4"
+      ],
+      "method": "IPA公式紙面を再読し，全セル・手順を転記。既存の段落・設問・公式答案・学習支援を維持し，必要知識だけを補足。詳細と正本hashは最終二次校閲記録に保存。"
+    },
+    {
+      "source_id": "SC-2025-FALL-PM-Q02",
+      "originalMaterialHash": "sha256:79788f725de5a0d8b835ccb24c7f96a62a1c8e56646f4e742648e386d89f03db",
+      "structuredMaterialHash": "sha256:9e73dc0a15d82d40465c7c91460216dbaabafa04c342747770c23c01a59fdcc2",
+      "materialIds": [
+        "figure-1",
+        "table-1",
+        "figure-2",
+        "figure-3",
+        "figure-4",
+        "figure-5",
+        "figure-6",
+        "figure-7"
+      ],
+      "method": "IPA公式紙面を再読し，全セル・手順を転記。既存の段落・設問・公式答案・学習支援を維持し，必要知識だけを補足。詳細と正本hashは最終二次校閲記録に保存。"
+    },
+    {
+      "source_id": "SC-2025-FALL-PM-Q03",
+      "originalMaterialHash": "sha256:b62de9f2fe2342ed7d8ecebe17875f8509736fcd67bf1645da693a990d226db7",
+      "structuredMaterialHash": "sha256:0a128e2be1936b2a9150329e98b1105df903d91e5b1d54f31d0eaf4335f74684",
+      "materialIds": [
+        "table-1",
+        "figure-1",
+        "table-2",
+        "table-3",
+        "figure-2",
+        "table-4",
+        "figure-3",
+        "figure-4",
+        "table-5",
+        "figure-5",
+        "figure-6",
+        "figure-7",
+        "figure-8"
+      ],
+      "method": "IPA公式紙面を再読し，全セル・手順を転記。既存の段落・設問・公式答案・学習支援を維持し，必要知識だけを補足。詳細と正本hashは最終二次校閲記録に保存。"
+    },
+    {
+      "source_id": "SC-2025-FALL-PM-Q04",
+      "originalMaterialHash": "sha256:9ee2a726f2f89296f97a784a7bb4d8da77557fe941d03f83f44f588cd083a5b2",
+      "structuredMaterialHash": "sha256:ef0eeb2794b43d4ee8e6ab459f89c8ed826ba108e503ace3a9c0eacc40481a05",
+      "materialIds": [
+        "figure-1",
+        "figure-2",
+        "figure-3",
+        "table-1",
+        "table-2",
+        "figure-4",
+        "figure-5",
+        "table-3",
+        "figure-6",
+        "figure-7",
+        "figure-8",
+        "figure-9",
+        "table-4",
+        "figure-10",
+        "table-5",
+        "table-6"
+      ],
+      "method": "IPA公式紙面を再読し，全セル・手順を転記。既存の段落・設問・公式答案・学習支援を維持し，必要知識だけを補足。詳細と正本hashは最終二次校閲記録に保存。"
+    }
+  ]
+}

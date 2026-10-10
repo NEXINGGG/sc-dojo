@@ -3,6 +3,7 @@ import { APP_SHORT_NAME } from '../app/appIdentity';
 import { Icon } from '../components/Icon';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { PwaNotifications } from '../features/pwa/PwaNotifications';
+import { isScA2Pilot } from '../data/pilotMode';
 
 const navigationItems = [
   { to: '/', label: 'ホーム', icon: 'home' },
@@ -20,6 +21,11 @@ export function AppLayout() {
         <ThemeToggle />
       </header>
       <PwaNotifications />
+      {isScA2Pilot ? (
+        <p className="pilot-notice" role="status">
+          SC A-2 教材試作・30問（開発専用）／学習記録は試作用に保存
+        </p>
+      ) : null}
       <main className="page-content">
         <Outlet />
       </main>

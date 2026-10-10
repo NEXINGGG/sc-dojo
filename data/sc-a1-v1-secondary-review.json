@@ -1,0 +1,1455 @@
+{
+  "review_version": 1,
+  "status": "completed",
+  "reviewed_on": "2026-10-08",
+  "method": "完成candidateとIPA公式PDFのページ画像・公式解答を別工程で照合。転記時と同一AI作業者による二次校閲。専門家による独立校閲ではない。",
+  "original_fix_review": {
+    "status": "not_applicable",
+    "reason": "FIX45問（内容修正26・REPLACE相当2を含む）は全て独自問題。公式問題番号を推測しない。監査・計画と技術根拠で再校閲。"
+  },
+  "questions": [
+    {
+      "code": "A1-007",
+      "source_id": "IPA-KOUDO-AM1-2024-SPRING-Q01",
+      "year": 2024,
+      "term": "spring",
+      "question_number": 1,
+      "pdf_page": 4,
+      "question_pdf_sha256": "af5a908f675557dcef3f2de64c97ce8a4e577d3a741bc98039c29fc730f6bb07",
+      "answer_pdf_sha256": "b8a61bdebc21cb91edf8313ce5a14ce61265fee30d3307ff59eb12b6001083cc",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_koudo_am1_ans.pdf",
+      "content_hash": "sha256:6acc087f670a1f33c68090df447160820866e8f1133f5538ce9ca7e6f8d5c5f2",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "分数を括弧付きの式へ変換、Tの添字をUnicode表現。"
+    },
+    {
+      "code": "A1-144",
+      "source_id": "IPA-KOUDO-AM1-2024-FALL-Q17",
+      "year": 2024,
+      "term": "fall",
+      "question_number": 17,
+      "pdf_page": 9,
+      "question_pdf_sha256": "0ec2f285dc54e432d53ad16ed1d1354a2e1a9b3097077bac6b070ec67daa1f7d",
+      "answer_pdf_sha256": "4667691ee7fd4901b13985107421dd9719a4a4c7df5ead193d3f0537750f697b",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:c64f6348168758b99cb44aa81cdc2c201b6035e441d106b2a1d4afd394b89ed7",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-181",
+      "source_id": "IPA-KOUDO-AM1-2024-SPRING-Q03",
+      "year": 2024,
+      "term": "spring",
+      "question_number": 3,
+      "pdf_page": 5,
+      "question_pdf_sha256": "af5a908f675557dcef3f2de64c97ce8a4e577d3a741bc98039c29fc730f6bb07",
+      "answer_pdf_sha256": "b8a61bdebc21cb91edf8313ce5a14ce61265fee30d3307ff59eb12b6001083cc",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_koudo_am1_ans.pdf",
+      "content_hash": "sha256:6894d775b6d388115c9536f1c2c998000efa6ca0884edb459d134a0e2d5d59f1",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-191",
+      "source_id": "IPA-KOUDO-AM1-2025-FALL-Q10",
+      "year": 2025,
+      "term": "fall",
+      "question_number": 10,
+      "pdf_page": 8,
+      "question_pdf_sha256": "60e483feceaeae5a5f7131997a849208045b276c7339405400ab4b77f5746f4e",
+      "answer_pdf_sha256": "9fcdf4d3e963f15807a4e0132ae88548548232c4f78eeae1f540bfd1ce5cb927",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:0f27fe899b7081a32e674f2b13802652df73ba6d394f178dd2b8600dcec9cc67",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-197",
+      "source_id": "IPA-KOUDO-AM1-2024-FALL-Q09",
+      "year": 2024,
+      "term": "fall",
+      "question_number": 9,
+      "pdf_page": 6,
+      "question_pdf_sha256": "0ec2f285dc54e432d53ad16ed1d1354a2e1a9b3097077bac6b070ec67daa1f7d",
+      "answer_pdf_sha256": "4667691ee7fd4901b13985107421dd9719a4a4c7df5ead193d3f0537750f697b",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:d0963de4e7bf217fb19655f3e2ffbd6e9b94c03b15860b45105869d86c654999",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-198",
+      "source_id": "IPA-KOUDO-AM1-2024-FALL-Q25",
+      "year": 2024,
+      "term": "fall",
+      "question_number": 25,
+      "pdf_page": 14,
+      "question_pdf_sha256": "0ec2f285dc54e432d53ad16ed1d1354a2e1a9b3097077bac6b070ec67daa1f7d",
+      "answer_pdf_sha256": "4667691ee7fd4901b13985107421dd9719a4a4c7df5ead193d3f0537750f697b",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:48000052f3c6a42567ac268e790cdc6d2b1041db3ec7aa7d360f459a3e40b272",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-202",
+      "source_id": "IPA-KOUDO-AM1-2025-SPRING-Q20",
+      "year": 2025,
+      "term": "spring",
+      "question_number": 20,
+      "pdf_page": 13,
+      "question_pdf_sha256": "ad34ffa99163fb1ec0ebe97f3f874dcb129fc0925820d53f43a9abf41f5d9f53",
+      "answer_pdf_sha256": "e1121c3c11c0ffe120ab25e688e39de7d6dcdbfb15aafd95ec6f5bb1e4f61f37",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_koudo_am1_ans.pdf",
+      "content_hash": "sha256:0b6c1e8f251d7afe918d4ddc48e63d16c53153e620f86fb4ca1a5332ae856244",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-205",
+      "source_id": "IPA-KOUDO-AM1-2025-FALL-Q25",
+      "year": 2025,
+      "term": "fall",
+      "question_number": 25,
+      "pdf_page": 14,
+      "question_pdf_sha256": "60e483feceaeae5a5f7131997a849208045b276c7339405400ab4b77f5746f4e",
+      "answer_pdf_sha256": "9fcdf4d3e963f15807a4e0132ae88548548232c4f78eeae1f540bfd1ce5cb927",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:25ac557e40f6d7deeb21da2026d4548673d11c7e861583d5c4a555ec4a254ed4",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-207",
+      "source_id": "IPA-KOUDO-AM1-2024-FALL-Q27",
+      "year": 2024,
+      "term": "fall",
+      "question_number": 27,
+      "pdf_page": 14,
+      "question_pdf_sha256": "0ec2f285dc54e432d53ad16ed1d1354a2e1a9b3097077bac6b070ec67daa1f7d",
+      "answer_pdf_sha256": "4667691ee7fd4901b13985107421dd9719a4a4c7df5ead193d3f0537750f697b",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:9163b4ac02e2f6b212d4b26a1002b008915fb3a907cfd275041162def7fd53d2",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-210",
+      "source_id": "IPA-KOUDO-AM1-2024-FALL-Q13",
+      "year": 2024,
+      "term": "fall",
+      "question_number": 13,
+      "pdf_page": 8,
+      "question_pdf_sha256": "0ec2f285dc54e432d53ad16ed1d1354a2e1a9b3097077bac6b070ec67daa1f7d",
+      "answer_pdf_sha256": "4667691ee7fd4901b13985107421dd9719a4a4c7df5ead193d3f0537750f697b",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:1b5e927d9476ccba4688b9d8c2c0da55f55040709e3b7fde707e5a5045267444",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-229",
+      "source_id": "IPA-KOUDO-AM1-2025-FALL-Q29",
+      "year": 2025,
+      "term": "fall",
+      "question_number": 29,
+      "pdf_page": 16,
+      "question_pdf_sha256": "60e483feceaeae5a5f7131997a849208045b276c7339405400ab4b77f5746f4e",
+      "answer_pdf_sha256": "9fcdf4d3e963f15807a4e0132ae88548548232c4f78eeae1f540bfd1ce5cb927",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:d33ca343eb4578443600c30eac5fc7328efa63a80f54751e87c133d42121c297",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-232",
+      "source_id": "IPA-KOUDO-AM1-2025-FALL-Q08",
+      "year": 2025,
+      "term": "fall",
+      "question_number": 8,
+      "pdf_page": 7,
+      "question_pdf_sha256": "60e483feceaeae5a5f7131997a849208045b276c7339405400ab4b77f5746f4e",
+      "answer_pdf_sha256": "9fcdf4d3e963f15807a4e0132ae88548548232c4f78eeae1f540bfd1ce5cb927",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:fa284f59ea8a149c76daecb14caeee5aa49835dcea29bba422a9cd3719570074",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-236",
+      "source_id": "IPA-KOUDO-AM1-2024-FALL-Q26",
+      "year": 2024,
+      "term": "fall",
+      "question_number": 26,
+      "pdf_page": 14,
+      "question_pdf_sha256": "0ec2f285dc54e432d53ad16ed1d1354a2e1a9b3097077bac6b070ec67daa1f7d",
+      "answer_pdf_sha256": "4667691ee7fd4901b13985107421dd9719a4a4c7df5ead193d3f0537750f697b",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:53a4ca9283b0ae72146cee12321b9def3aa9a35740a1190478a0430215cf50e3",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-237",
+      "source_id": "IPA-KOUDO-AM1-2025-FALL-Q30",
+      "year": 2025,
+      "term": "fall",
+      "question_number": 30,
+      "pdf_page": 16,
+      "question_pdf_sha256": "60e483feceaeae5a5f7131997a849208045b276c7339405400ab4b77f5746f4e",
+      "answer_pdf_sha256": "9fcdf4d3e963f15807a4e0132ae88548548232c4f78eeae1f540bfd1ce5cb927",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_koudo_am1_ans.pdf",
+      "content_hash": "sha256:d8ce1a44a8716ca9e635fd69a75cb7930c464a001f7454196672143e3a6aa810",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "組版由来の空白・改行を画面向けに調整。条件・四肢・図表の意味は保持。"
+    },
+    {
+      "code": "A1-239",
+      "source_id": "IPA-KOUDO-AM1-2024-SPRING-Q07",
+      "year": 2024,
+      "term": "spring",
+      "question_number": 7,
+      "pdf_page": 7,
+      "question_pdf_sha256": "af5a908f675557dcef3f2de64c97ce8a4e577d3a741bc98039c29fc730f6bb07",
+      "answer_pdf_sha256": "b8a61bdebc21cb91edf8313ce5a14ce61265fee30d3307ff59eb12b6001083cc",
+      "official_question_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_koudo_am1_qs.pdf",
+      "official_answer_url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_koudo_am1_ans.pdf",
+      "content_hash": "sha256:22b7356599c11030b4d3bb10cbe66edf50a50a517022ae939a13cf6629941ee0",
+      "status": "verified",
+      "reviewed_on": "2026-10-08",
+      "checks": {
+        "question": "verified",
+        "choice_A": "verified",
+        "choice_B": "verified",
+        "choice_C": "verified",
+        "choice_D": "verified",
+        "official_answer": "verified",
+        "figures": "verified",
+        "year": "verified",
+        "term": "verified",
+        "question_number": "verified",
+        "source_id": "verified"
+      },
+      "formatting_note": "図の四肢は原本抽出画像＋意味を保持した補助テキスト・alt。"
+    }
+  ],
+  "fix_reviews": [
+    {
+      "code": "A1-012",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-012",
+      "content_hash": "sha256:58e3d897ad70b9e72ffbf9187ee2fcd7a64ce5b656027a37e4b088a06a2168f1",
+      "changed_targets": [
+        "question"
+      ],
+      "reviewed_fields": {
+        "question": "辺の重みが全て非負であるグラフで、ある頂点から他の全頂点までの最短経路を求める代表的なアルゴリズムはどれか。"
+      },
+      "policy_result": "非負の辺重みを条件に追加する。負辺を持つ場合まで適用できるとは説明しない。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-028",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-028",
+      "content_hash": "sha256:74953d8bb0fe08a38676872f44de7c2e675db7465ef6315ff6d43bdbea8e2c3d",
+      "changed_targets": [
+        "question"
+      ],
+      "reviewed_fields": {
+        "question": "キャッシュアクセス2ns、主記憶アクセス40ns、ミス率5%で、必ずキャッシュを確認する。ミス時はキャッシュ確認後に主記憶アクセス40nsが追加され、両者は並行動作しない。平均アクセス時間はどれか。"
+      },
+      "policy_result": "ミス時はキャッシュ確認時間に主記憶時間が追加され、並行アクセスしない前提を明示する。数値とBは維持。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-029",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-029",
+      "content_hash": "sha256:313028e5658187ea31aef7a83f4717af0d196d4a57d2b51e76fe5ac42cc3dd4f",
+      "changed_targets": [
+        "question",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "question": "主記憶に使う通常のDRAMやSRAMを対象とすると、電源を切ると内容が失われる揮発性メモリはどれか。",
+        "memory_point": "通常のDRAM・SRAMは揮発性。NVRAMのような不揮発性RAMもある。"
+      },
+      "policy_result": "DRAM/SRAMなど通常の主記憶用RAMを対象にし、NVRAMを含むRAM全般への断定を避ける。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-030",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-030",
+      "content_hash": "sha256:a8a750d000fbb9bdf0939eb789408466a6db97752b4df1b91a810c1a1d30536b",
+      "changed_targets": [
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "explanation": "転送中にCPUがデータを一つずつコピーしない方式がDMAです。CPUは転送先・長さなどの設定、開始の指示、完了時の処理を担い、DMAコントローラが入出力装置と主記憶の転送を担います。DNSは名前解決、NATはアドレス変換、RAIDは記憶装置の構成方式です。",
+        "memory_point": "DMAは転送中のCPUコピーを省く。設定・開始・完了処理にはCPUが関わる。"
+      },
+      "policy_result": "CPUが設定・開始・完了処理を担い、転送中のコピーをDMAが担うと補足する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-031",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-031",
+      "content_hash": "sha256:d03caecc867b732e42eac90cb66b1929998f0494d4a6efccc3a7ba78ff2c2769",
+      "changed_targets": [
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "explanation": "参照に必要なページが主記憶にないと、ページフォールトが発生してOSが対応します。ディスクに退避したページなら読み戻しますが、初めて使うページをゼロで初期化して割り当てる場合もあり、必ずディスクを読むわけではありません。デッドロックは処理同士の待ち合いです。"
+      },
+      "policy_result": "ディスク退避済みページの読込みを例とし、初回のゼロページ割当て等もあると限定する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-044",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-044",
+      "content_hash": "sha256:316bba345d746b8dbac7c54f73c58570ce8255a7b06b286391766a226a63f5f0",
+      "changed_targets": [
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "explanation": "ジャーナリングは、ファイルシステムのメタデータなどの更新記録を先に残し、障害後の整合性回復を支援します。実装や設定によって記録対象は異なり、全ユーザデータの保存を必ず保証する方式ではありません。キャッシングは高速化、ストライピングは複数装置への分散です。",
+        "memory_point": "ジャーナリングは更新記録で整合性回復を支援する。全利用者データの永続化保証とは別。"
+      },
+      "policy_result": "メタデータ等の更新記録で整合性回復を支援する説明に限定し、全利用者データの永続化を保証しない。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-050",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-050",
+      "content_hash": "sha256:492d197711cab1f4611e2d68940a3832cdd4b44bf8dae9beb54950708ab62c2c",
+      "changed_targets": [
+        "question",
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "question": "稼働率0.9の装置を2台直列に接続し、両方正常なときだけシステムが動作する。各装置の正常・故障状態が互いに独立なら、システム稼働率はどれか。",
+        "explanation": "直列構成では両方の装置が正常である必要があります。状態が独立なので、その確率は0.9×0.9=0.81です。0.99は独立な並列構成の値です。共通電源の故障などで状態が相関する場合は、単純に稼働率を掛ける計算はできません。",
+        "memory_point": "独立な直列構成の稼働率は各稼働率の積。相関する故障にはそのまま使えない。"
+      },
+      "policy_result": "装置の正常・故障状態が独立という条件と、相関があれば積にできない旨を明示する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-051",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-051",
+      "content_hash": "sha256:84f8d8d8532b0609bcd5b297a2329221429397fa2f163af5a982a905d18eebb4",
+      "changed_targets": [
+        "question",
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "question": "稼働率0.9の装置を2台並列にし、どちらか1台が正常なら動作する。装置の故障は互いに独立し、共通原因故障はなく、切替えは必ず成功する。システム稼働率はどれか。",
+        "explanation": "停止するのは両方が故障するときだけです。各故障率は1−0.9=0.1で、独立なので同時故障率は0.1×0.1=0.01。したがって稼働率は1−0.01=0.99です。稼働率を足した1.80は確率として不適切です。切替え失敗や共通原因故障があればこの計算だけでは求まりません。",
+        "memory_point": "独立故障・確実な切替えの並列構成は1−全装置故障確率。"
+      },
+      "policy_result": "独立故障、切替え成功、共通原因故障なしを条件に加える。計算値Cは維持。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-062",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-062",
+      "content_hash": "sha256:44d9a741ad61868f65c1a8ba60cb9e53ea5d63950a343227f7b8484934d24796",
+      "changed_targets": [
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "explanation": "この例のように参照先のキーと対応を持つのが外部キーです。参照先が存在することを制約で確認して参照整合性を保ちます。参照先は主キーだけでなく一意キーも可能で、複数列からなる外部キーや同じ表への自己参照もあります。ビューは問合せ結果を表として扱う仕組みです。",
+        "memory_point": "外部キーは主キー・一意キーを参照する。複合列や自己参照も可能。"
+      },
+      "policy_result": "外部キーは主キー又は一意キーを参照し、複合列・自己参照もあり得ると入門的に補足する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-064",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-064",
+      "content_hash": "sha256:2916b04094634b6ca326cf4b480911e93ff2478e7d92f7a499476e8054362d53",
+      "changed_targets": [
+        "question",
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "question": "第1正規形で、唯一の候補キーが複合主キーである表を考える。候補キーに含まれない属性が主キーの一部だけに従属している。この部分関数従属を排除して満たす正規形はどれか。",
+        "explanation": "第2正規形は第1正規形を前提に、全候補キーに対して非素属性（どの候補キーにも含まれない属性）が完全関数従属する状態です。この例では候補キーが一つなので、複合キーの一部だけで決まる属性を別表へ分けます。第3正規形で扱う推移的従属との違いを押さえましょう。"
+      },
+      "policy_result": "第1正規形の前提と全候補キーに対する非素属性の完全関数従属を補う。例は単一複合候補キーに限定可能。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-065",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-065",
+      "content_hash": "sha256:628e56242c2a7da8014f6bf6829e0fd91c8f568bb4cfc22a9a15a777018bf64c",
+      "changed_targets": [
+        "question",
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "question": "第2正規形で、唯一の候補キーが社員番号である社員表に、部署番号と部署名がある。社員番号→部署番号→部署名という推移的関数従属だけがあり、部署番号は社員表の候補キーではない。この従属を分離して満たす正規形はどれか。",
+        "explanation": "社員番号から部署番号を経由して部署名が決まるので、非素属性の部署名が候補キーに推移的に従属しています。部署番号と部署名を部署表へ分ければ第3正規形になります。一般の第3正規形は、非自明な従属X→AでXがスーパーキー又はAが素属性という条件です。属性間の従属を全て禁止するわけではありません。",
+        "memory_point": "第2正規形を前提に、候補キーから非素属性への推移的従属を整理するのが第3正規形。"
+      },
+      "policy_result": "第2正規形を前提とした候補キーから非素属性への推移従属の例にする。全ての非キー属性間従属を禁止する表現を避ける。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-084",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P2",
+      "source_id": "SC-A1-ORIGINAL-084",
+      "content_hash": "sha256:6d8651d51b4db0a57e973546725e9dcec2c1a906fc78eebd37662625b401c69b",
+      "changed_targets": [
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "explanation": "SNMPはネットワーク機器のエージェントからMIB情報を取得したり、通知を受けたりする監視用プロトコルです。SMTPはメール、SIPは通話などのセッション制御、SMBはファイル共有に使います。v1/v2cのコミュニティ方式と、認証・暗号化機能を持つv3を区別し、旧版の安全性を保証する説明にはしません。"
+      },
+      "policy_result": "監視用途は維持。SNMPv1/v2cのコミュニティ方式とv3の認証・暗号化の差を短く補足し、旧版を推奨しない。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-086",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-086",
+      "content_hash": "sha256:9feef98dec994854ebb39a3b5c98415a93f7e8f52646c7d931367b2bd97f4b02",
+      "changed_targets": [
+        "question"
+      ],
+      "reviewed_fields": {
+        "question": "公開鍵暗号方式で機密性を確保するため、送信者がデータ暗号化に使う鍵はどれか。"
+      },
+      "policy_result": "公開鍵暗号方式で機密性を確保する場合と明示する。受信者公開鍵のBは維持。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-088",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-088",
+      "content_hash": "sha256:74a2084fe51555056966d24cbca472ce98d4fa403ba3bff7e9399904e3d8d265",
+      "changed_targets": [
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "explanation": "改ざん検知には暗号学的ハッシュ関数を使い、計算した値を真正な照合元の値と比較します。データと添付ハッシュの両方を攻撃者が変更できるなら、その比較だけでは攻撃を見抜けません。署名やMACなどで真正性も保護する必要があります。ハッシュは固定長の値を作り、圧縮のように元データへ戻すものではありません。",
+        "memory_point": "暗号学的ハッシュは真正な値との照合で変更を検知。値も改ざん可能なら署名・MAC等が必要。"
+      },
+      "policy_result": "暗号学的ハッシュと真正な照合元を条件にし、攻撃者がデータと値を両方変更できる場合は署名・MAC等が必要と補足する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-089",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-089",
+      "content_hash": "sha256:aa67ed70bd93c403a191bf52b2fb17769340840de65a63bd5fca2d3f9ba1aeee",
+      "changed_targets": [
+        "question",
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "question": "パスワードに加え、登録済みで本人が所持するスマートフォンの認証器が端末内の秘密から生成するワンタイムパスワードも検証する方式はどれか。",
+        "explanation": "パスワードは知識要素、登録済み端末の認証器の秘密を用いるOTPは所持要素を検証します。異なる要素の組合せなので多要素認証です。同じ端末で入力するという事実だけでは要素は増えません。シングルサインオンは一度の認証で複数サービスを使う仕組みで、要素の数とは別の概念です。"
+      },
+      "policy_result": "登録済み所持端末の認証器が生成するOTP等を指定し、単に同じ端末に入力するだけでは要素が増えないと補足する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-092",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P2",
+      "source_id": "SC-A1-ORIGINAL-092",
+      "content_hash": "sha256:ceda221ea433db1007b412ab69d5990760fd2fef526299f1d434873f8a8f6e60",
+      "changed_targets": [
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "explanation": "XSSは利用者のブラウザで不正スクリプトを実行させる攻撃です。HTML本文・属性・JavaScriptなど出力先の文脈に合うエスケープや、安全なDOM APIを使います。CSPは実行可能なコードを制限する補助策で、適切な出力処理を省く理由にはなりません。SQLインジェクションはDBへ送る命令の構造を変える攻撃です。"
+      },
+      "policy_result": "HTML・属性・JavaScript等の出力文脈に応じたエスケープ又は安全なAPIを説明し、CSPは補助策とする。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-100",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P3",
+      "source_id": "SC-A1-ORIGINAL-100",
+      "content_hash": "sha256:71cd8d575d5f05f0bafa6db53bfc21e84cf307496583a31a66faad23f84f908a",
+      "changed_targets": [
+        "question"
+      ],
+      "reviewed_fields": {
+        "question": "各クラスの属性・操作及びクラス間の関連を表すUML図はどれか。"
+      },
+      "policy_result": "各クラスの属性・操作及びクラス間の関連を表す図に表現を直す。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-110",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-110",
+      "content_hash": "sha256:5c9fc1d8d2550101b0e029bc3abb44a90e34bb82c0fee87afb5048069b759a6c",
+      "changed_targets": [
+        "question"
+      ],
+      "reviewed_fields": {
+        "question": "開始点と終了点を共有する全経路はAとBの二つである。経路Aは3日+5日、経路Bは4日+2日を要し、他の依存関係や資源制約はない。クリティカルパスはどれか。"
+      },
+      "policy_result": "開始・終了を共有する二つの全経路で、追加依存関係・資源制約なしと明示する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-125",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-125",
+      "content_hash": "sha256:7d317bfefb4221967e8444dda19c074faf6e20251cafab0b5fe3a2acfc3cd5c0",
+      "changed_targets": [
+        "question"
+      ],
+      "reviewed_fields": {
+        "question": "毎日0時から24時までサービスを提供する30日間を対象に、稼働率99.9%以上を求める。計画停止も停止時間に含め、対象時間からの除外はない。許容停止時間の上限に最も近いものはどれか。"
+      },
+      "policy_result": "毎日0〜24時の30日間を分母とし、計画停止も含める等、対象サービス時間と除外条件を明示する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-128",
+      "status": "verified",
+      "fix_class": "REPLACE_EQUIVALENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-128",
+      "content_hash": "sha256:aea7ff0c0d03b860432573189cba727ea266750c5907f3086a9e5e7b6f12502b",
+      "changed_targets": [
+        "question",
+        "choices",
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "question": "ITIL 4で、承認済みのソフトウェアや設定を本番環境へ移送する活動を主に扱うプラクティスはどれか。",
+        "choices": [
+          {
+            "id": "A",
+            "text": "問題管理"
+          },
+          {
+            "id": "B",
+            "text": "リリース管理"
+          },
+          {
+            "id": "C",
+            "text": "変更実現"
+          },
+          {
+            "id": "D",
+            "text": "デプロイメント管理"
+          }
+        ],
+        "explanation": "デプロイメント管理はソフトウェアなどを本番等の環境へ移送する活動を扱います。リリース管理は新規・変更したサービスや機能を利用可能にする活動を扱い、移送と利用開始は別の時点にもできます。変更実現は変更のリスク評価・承認など、問題管理はインシデントの原因への対応です。",
+        "memory_point": "ITIL 4：環境への移送はデプロイメント管理、機能の利用可能化はリリース管理。"
+      },
+      "policy_result": "ITILのデプロイメント（承認済みソフトウェアや設定の本番環境への移送）を問う。正解Dをデプロイメント管理へ変更し，利用可能化を担うリリース管理と区別する。本文・四択・解説・記憶文を再監査する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-151",
+      "status": "verified",
+      "fix_class": "REPLACE_EQUIVALENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-151",
+      "content_hash": "sha256:cf0ae0252deb764e1a926a0c9a259c6a8af5eb404ef5efdb2711cb5ad6886f0f",
+      "changed_targets": [
+        "question",
+        "choices",
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "question": "最終目標へ至る活動や進捗を評価する重要業績評価指標はどれか。例えば、売上目標へ向けて商談件数や成約率を測る指標を指す。",
+        "choices": [
+          {
+            "id": "A",
+            "text": "KGI"
+          },
+          {
+            "id": "B",
+            "text": "RPO"
+          },
+          {
+            "id": "C",
+            "text": "KPI"
+          },
+          {
+            "id": "D",
+            "text": "ROI"
+          }
+        ],
+        "explanation": "KPIは目標達成へ向かう活動や進捗を測る重要業績評価指標です。例の商談件数・成約率が該当します。KGIは最終的な重要目標の達成度（例：目標売上）、RPOは復旧時に許容するデータ損失の時間幅、ROIは投資に対する利益を評価する指標です。目標と、その達成へ至る過程を区別します。"
+      },
+      "policy_result": "重要業績評価指標と重要目標達成指標を区別し、KPIは目標へ至る活動・進捗の評価と明示する。KGIを妥当な誤答に加える。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-163",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-163",
+      "content_hash": "sha256:50c433fdd0822a82c2d49545b8689f23f953d013e4a58d6f7cd800ebcc8712a3",
+      "changed_targets": [
+        "question"
+      ],
+      "reviewed_fields": {
+        "question": "当期純利益100万円、期中平均の自己資本1,000万円のROEはどれか。"
+      },
+      "policy_result": "自己資本は期間平均、又は期間中変化なしの1000万円と明示して期間利益と対応させる。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-168",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P3",
+      "source_id": "SC-A1-ORIGINAL-168",
+      "content_hash": "sha256:4d91619610c1e302a0a01fc65c36fad74ed301e21327b31a6ecc9d12032ff6fa",
+      "changed_targets": [
+        "category"
+      ],
+      "reviewed_fields": {
+        "category_id": "business_system_strategy"
+      },
+      "policy_result": "企業活動・会計からシステム企画・調達に相当する経営・システム戦略へ分類する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-174",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-174",
+      "content_hash": "sha256:7ff9cdac187eba7dd4302ddcdde2a139bba53c406d0958477bf61f815dcc248e",
+      "changed_targets": [
+        "question",
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "question": "日本の個人情報保護法で、生存する個人に関する情報のうち、氏名などにより特定の個人を識別できるもの（他の情報との容易な照合による識別を含む）、又は法令で定める個人識別符号を含むものはどれか。",
+        "explanation": "個人情報は生存する個人に関する情報で、単独又は他の情報との容易な照合で特定の個人を識別できるもの、あるいは法定の個人識別符号を含むものです。単なる任意の番号が全て個人識別符号になるわけではありません。個人との対応が除かれた統計情報とは区別します。判断は取扱いの実態や法定要件に基づきます。",
+        "memory_point": "個人情報は生存する個人の識別可能な情報又は法定個人識別符号を含む情報。容易照合も含む。"
+      },
+      "policy_result": "日本の個人情報保護法の定義と明示し、生存する個人、容易照合、個人識別符号の法定要件を記す。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-176",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P3",
+      "source_id": "SC-A1-ORIGINAL-176",
+      "content_hash": "sha256:9ea8e716d4cd48ab424c37b3fd564698cd1a419b29b3e0380a30f813f9a80abd",
+      "changed_targets": [
+        "category",
+        "source"
+      ],
+      "reviewed_fields": {
+        "category_id": "security",
+        "source": {
+          "type": "original",
+          "basis": "IPA公開の2011～2025年度の出題傾向を参照して新規作成",
+          "verbatim_past_question": false,
+          "source_id": "SC-A1-ORIGINAL-176",
+          "references": [
+            {
+              "title": "ISO/IEC 27001:2022及びAmd 1:2024",
+              "url": "https://www.iso.org/standard/27001",
+              "checked_on": "2026-10-08"
+            }
+          ]
+        }
+      },
+      "policy_result": "セキュリティ管理へ分類する。参考根拠にISO/IEC27001:2022とAmd1:2024の確認日を記す。年を問題本文に必須化する必要はない。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-177",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P2",
+      "source_id": "SC-A1-ORIGINAL-177",
+      "content_hash": "sha256:d894b230edfb80a0128e353b84357e63c4247a5d988781d3741b38ba68083a9f",
+      "changed_targets": [
+        "question",
+        "choices",
+        "explanation",
+        "category"
+      ],
+      "reviewed_fields": {
+        "question": "クラウドサービスで、利用者は提供済みのアプリケーションを使い、アプリ実行基盤やOSの管理をサービス提供者に任せるモデルはどれか。",
+        "choices": [
+          {
+            "id": "A",
+            "text": "SaaS"
+          },
+          {
+            "id": "B",
+            "text": "PaaS"
+          },
+          {
+            "id": "C",
+            "text": "IaaS"
+          },
+          {
+            "id": "D",
+            "text": "ハウジング"
+          }
+        ],
+        "explanation": "完成したアプリをサービスとして使うのがSaaSです。PaaSでは利用者がアプリを開発・配置し、IaaSでは通常OSやアプリも管理します。ハウジングは利用者の機器を施設に設置するサービスです。SaaSでも利用者側のアカウント・データ・設定の管理責任まで全て消えるわけではありません。",
+        "category_id": "system_reliability"
+      },
+      "policy_result": "クラウドのシステム構成分野へ分類し、PaaSを含む四択でアプリ利用・OS管理と責任分界を区別する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-178",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P3",
+      "source_id": "SC-A1-ORIGINAL-178",
+      "content_hash": "sha256:0755f371474e36822fdbeaece0acabd63291b6e97d35d8a61510c39962692a53",
+      "changed_targets": [
+        "category"
+      ],
+      "reviewed_fields": {
+        "category_id": "system_reliability"
+      },
+      "policy_result": "クラウド基盤をシステム構成分野へ分類する。IaaSの基本定義・Bは維持。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-179",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P3",
+      "source_id": "SC-A1-ORIGINAL-179",
+      "content_hash": "sha256:0d9f1b2bc4cde0e9d95cb41435b01eaddb58a71da99ebf20483cf5a475ca4d41",
+      "changed_targets": [
+        "category"
+      ],
+      "reviewed_fields": {
+        "category_id": "foundation_theory"
+      },
+      "policy_result": "基礎理論・AI/統計へ分類する。教師あり学習の定義・Cは維持。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-180",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P3",
+      "source_id": "SC-A1-ORIGINAL-180",
+      "content_hash": "sha256:f3ce027148e07cd0ddc660db710d292fe8075c07d6c0b60e12c6074e74346b4c",
+      "changed_targets": [
+        "category"
+      ],
+      "reviewed_fields": {
+        "category_id": "foundation_theory"
+      },
+      "policy_result": "基礎理論・AI/統計へ分類する。過学習の説明・Dは維持。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-187",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-187",
+      "content_hash": "sha256:c15ec6fb233fbd5f62dc8f0e0e1348527c1443851b2ac436b4c468951eae82a0",
+      "changed_targets": [
+        "question",
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "question": "社員表は第2正規形で、属性は「社員番号、部署番号、部署名」、唯一の候補キーは社員番号である。社員番号→部署番号、部署番号→部署名が成り立ち、部署番号から部署名は一意に決まり、他の独立した関数従属はない。第3正規形にするための対応として適切なものはどれか。",
+        "explanation": "社員番号から部署番号を経由して部署名が決まるため、部署名が候補キーに推移的に従属しています。社員表（社員番号、部署番号）と、部署番号をキーとする部署表（部署番号、部署名）に分けます。部署名を失わず更新の不整合を防げます。単に列を削除したり、不要な列をキーに足したりする対応とは異なります。"
+      },
+      "policy_result": "社員番号が候補キー、部署番号が部署表のキーで部署名が一意に定まる等、他の従属なしの前提を明示する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-189",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-189",
+      "content_hash": "sha256:22667bf0bfed6e4abb28658bbab65577c7f6f1e3d43a6ab32fe26c9f2512b79c",
+      "changed_targets": [
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "explanation": "Isolationはトランザクション同士の不適切な干渉を防ぐ隔離の性質です。理想的な直列化可能性では、同時実行がある直列順と同等になります。ただし実DBの低い分離レベルでは読取り異常等を許すこともあり、全設定で直列同等とは断定できません。Atomicityは全成功又は全取消し、Durabilityは確定結果の保持です。"
+      },
+      "policy_result": "ACIDの抽象的隔離と、実製品の分離レベルを区別する。直列化可能性を全設定の実挙動と断定しない。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-190",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-190",
+      "content_hash": "sha256:ef5d5a87333b2f60a47c8a69718ba8deb4be08f97103511bdceca976ad3d9e48",
+      "changed_targets": [
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "memory_point": "通常のブロードキャスト型IPv4サブネットは2^(32−プレフィックス長)−2。/31のポイントツーポイントや/32は別扱い。"
+      },
+      "policy_result": "通常のブロードキャスト型IPv4サブネットの式と限定する。/31のポイントツーポイントと/32の例外を短く補足する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-194",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-194",
+      "content_hash": "sha256:8eb62ef05496682f7f1366bc740cefaa04c98926dd0e1b23d00f3f2d7e091694",
+      "changed_targets": [
+        "question",
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "question": "暗号学的ハッシュでデータから計算した値を、改ざんされない真正な照合元の既知の値と比較する主な目的として最も適切なものはどれか。",
+        "explanation": "真正な照合元のハッシュ値との比較によって、データの変更・改ざんを検知します。ハッシュ化は暗号化と異なり、データを読めなくする機密性の仕組みではありません。攻撃者がデータと照合値を両方書き換えられる場合には、ハッシュ単独では真正性を保証できず、署名やMAC等の保護が必要です。",
+        "memory_point": "真正な既知のハッシュ値と照合して改ざんを検知。ハッシュ単独では秘匿・真正性を保証しない。"
+      },
+      "policy_result": "暗号学的ハッシュを使い、改ざんされない既知の値と照合する場合と明示する。ハッシュ単独の真正性を保証しない。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-195",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P2",
+      "source_id": "SC-A1-ORIGINAL-195",
+      "content_hash": "sha256:f7e3665c190322cca48923c3feecec7be6e8e97adf533489ee40713049888aad",
+      "changed_targets": [
+        "choices"
+      ],
+      "reviewed_fields": {
+        "choices": [
+          {
+            "id": "A",
+            "text": "シェル経由のOSコマンド実行機能を使用しない"
+          },
+          {
+            "id": "B",
+            "text": "シェルに渡す文字列から空白だけを除去する"
+          },
+          {
+            "id": "C",
+            "text": "コマンド名だけを許可リストで検査し、引数は未検査のままシェルへ渡す"
+          },
+          {
+            "id": "D",
+            "text": "直接実行APIを使わず、外部入力を連結したコマンド文字列をシェルへ渡す"
+          }
+        ]
+      },
+      "policy_result": "シェルを使う必要性の除去、直接実行API、許可リスト等の効果を区別する現実的な誤答に変更する。Aの論点は維持。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-200",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-200",
+      "content_hash": "sha256:0a2a8495959203c62f2f9a8ee06fed04a5ff9ed21ee23ff174e17b22cbb859d3",
+      "changed_targets": [
+        "question"
+      ],
+      "reviewed_fields": {
+        "question": "開始から終了までの全経路はA→CとB→Dの二つで、各経路の開始点と終了点は共通である。経路A→Cは3日+4日、経路B→Dは5日+1日を要し、他の依存関係や資源制約はない。クリティカルパスはどれか。"
+      },
+      "policy_result": "示した二経路が全開始終了経路であり、資源制約や他の依存関係なしと明示する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-203",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P2",
+      "source_id": "SC-A1-ORIGINAL-203",
+      "content_hash": "sha256:4dbe6d58f22327db07f7184907ac395792005fed2a327c4968915c195b9910f5",
+      "changed_targets": [
+        "choices",
+        "difficulty"
+      ],
+      "reviewed_fields": {
+        "choices": [
+          {
+            "id": "A",
+            "text": "ウォークスルー"
+          },
+          {
+            "id": "B",
+            "text": "質問法"
+          },
+          {
+            "id": "C",
+            "text": "観察法"
+          },
+          {
+            "id": "D",
+            "text": "再実施法"
+          }
+        ],
+        "difficulty": "基礎"
+      },
+      "policy_result": "定義識別は基礎へ再評定する。質問・観察・再実施・取引追跡など同じ監査技法領域の四択にする。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-209",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P2",
+      "source_id": "SC-A1-ORIGINAL-209",
+      "content_hash": "sha256:b70e56bb54a5c70874b9a42f92fb685078595fcaae6f7b594c2dde88e5589ed0",
+      "changed_targets": [
+        "choices",
+        "category"
+      ],
+      "reviewed_fields": {
+        "choices": [
+          {
+            "id": "A",
+            "text": "利用要求に応じてサーバやネットワークなどの資源を準備・設定する"
+          },
+          {
+            "id": "B",
+            "text": "稼働中の資源の状態や異常を監視する"
+          },
+          {
+            "id": "C",
+            "text": "将来の需要を予測して必要な資源容量を計画する"
+          },
+          {
+            "id": "D",
+            "text": "不要となった資源を廃棄し、利用を終了する"
+          }
+        ],
+        "category_id": "system_reliability"
+      },
+      "policy_result": "システム構成・クラウド資源管理へ分類し、監視・容量計画・割当て・廃棄等を比較する四択にする。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-214",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-214",
+      "content_hash": "sha256:d0a219a9ff68b95bbfeeed6abc550e5186d4cf2324dae4e86c3de7cdee1e3dc4",
+      "changed_targets": [
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "explanation": "ページが主記憶にない場合、ページフォールトを受けてOSがページを用意します。退避済みなら補助記憶から読み戻しますが、デマンドゼロによる初回割当てなど、ディスクを読まない場合もあります。ページの入替えが頻発して有用な処理が進まない状態がスラッシングで、資源を待ち合うデッドロックとは異なります。"
+      },
+      "policy_result": "退避ページ読込みを代表例に限定する。ページフォールトにはデマンドゼロ等があり、必ずディスクアクセスするとはしない。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-218",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-218",
+      "content_hash": "sha256:394192e38a1fc4d6ec6477bb0d44744ad107e60166af7cb9d6ac025b203fcea9",
+      "changed_targets": [
+        "question",
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "question": "データベースの更新済みデータページを永続ストレージへ書き込むより先に、その更新を記録したログを永続化する方式を何というか。",
+        "explanation": "WALはデータページの永続化より先に対応するログを永続化する方式です。メモリ上のデータ更新より先という意味ではありません。障害時にはログを基に更新を再適用するなどして回復します。REDOやUNDOの使い方はDB方式に依存します。Round Robinは順番割当て、Port Mirroringは通信の複製です。",
+        "memory_point": "WALはデータページを永続化する前にログを永続化。メモリ更新の順序とは区別する。"
+      },
+      "policy_result": "メモリ上の更新と永続ストレージへの書込みを区別し、データページ永続化より先にログを永続化すると記す。REDO/UNDOはDB方式に依存。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-224",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-224",
+      "content_hash": "sha256:e39b2493ebc6497d34788c925430c3527fc06aecd0b7df1d9ae3bda31b6a0afa",
+      "changed_targets": [
+        "question",
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "question": "多要素認証となる組合せはどれか。スマートフォンの認証アプリは、登録済み端末内の秘密を用いて本人による端末の所持を検証するものとする。",
+        "explanation": "パスワードは知識、端末内の秘密を使う認証アプリは所持を検証するため、異なる要素の組合せです。パスワードと秘密の質問、パスワードとPINはどちらも知識要素です。指紋と顔認証はどちらも生体要素なので、手段が二つでも二要素にはなりません。アプリがあるという事実だけでなく所持の検証が必要です。"
+      },
+      "policy_result": "端末内の秘密を使う認証器により所持を証明することを指定する。知識二つ・生体二つとの区別は維持。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-225",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P2",
+      "source_id": "SC-A1-ORIGINAL-225",
+      "content_hash": "sha256:9824d4e7965bee925b816d49d58fd64fac454cb3eb465c815c736984c825c604",
+      "changed_targets": [
+        "choices",
+        "explanation"
+      ],
+      "reviewed_fields": {
+        "choices": [
+          {
+            "id": "A",
+            "text": "CSRFトークンを検証する"
+          },
+          {
+            "id": "B",
+            "text": "HTML出力を文脈に応じてエスケープする"
+          },
+          {
+            "id": "C",
+            "text": "SQLをパラメータ化して実行する"
+          },
+          {
+            "id": "D",
+            "text": "パスワードのオンライン試行回数を制限する"
+          }
+        ],
+        "explanation": "これはCSRFです。予測困難なトークンを要求に含め、セッション等と照合して意図した要求か確認します。出力エスケープはXSS、パラメータ化SQLはSQLインジェクション、試行制限はパスワード推測への対策です。SameSite Cookieも防御に使えますが、要求の種類や構成によって効果が異なり、常にトークンを代替するわけではありません。"
+      },
+      "policy_result": "出力エスケープ、パラメータ化SQL等の別攻撃向け対策と区別させる。SameSiteはリクエスト・構成依存でトークンを常に代替しないと補足する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-226",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P2",
+      "source_id": "SC-A1-ORIGINAL-226",
+      "content_hash": "sha256:abda34f7a32603bfc0f6324f1a4e592e31811e6b84e16624fd2f007757e178d4",
+      "changed_targets": [
+        "question",
+        "choices"
+      ],
+      "reviewed_fields": {
+        "question": "入力値が整数で、受け付ける範囲が1～100であるとき、上下の境界とその直前直後を検査する境界値分析の値の組合せはどれか。",
+        "choices": [
+          {
+            "id": "A",
+            "text": "0、1、2、99、100、101"
+          },
+          {
+            "id": "B",
+            "text": "1、25、50、75、100"
+          },
+          {
+            "id": "C",
+            "text": "2、20、40、60、80、98"
+          },
+          {
+            "id": "D",
+            "text": "10、20、30、40、50、60"
+          }
+        ]
+      },
+      "policy_result": "入力は整数1〜100と明示する。具体的な境界値セットを四択にして内点のみとの違いを測る。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-228",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-228",
+      "content_hash": "sha256:f7c566971f97fbfa677e2a9a17430017b289597fdd418924e9ce6af79a5e0454",
+      "changed_targets": [
+        "explanation",
+        "memory_point"
+      ],
+      "reviewed_fields": {
+        "explanation": "Retrospectiveは人・協働・プロセス・ツールなどを振り返り、品質と効果を高める進め方の改善を計画する機会です。Reviewはインクリメントと環境変化を関係者と確認し、次の適応を協議する機会で、披露や受入判断だけに限りません。何を作ったかと、どう進めるかの着眼点を区別します。",
+        "memory_point": "Reviewは成果・環境を検査し適応を協議。Retrospectiveは品質・効果を高める進め方の改善。"
+      },
+      "policy_result": "Reviewはインクリメントと環境変化を確認し次の適応を協議する機会、Retrospectiveは品質・効果を高める進め方の改善と補足する。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-238",
+      "status": "verified",
+      "fix_class": "FIX_CONTENT",
+      "priority": "P2",
+      "source_id": "SC-A1-ORIGINAL-238",
+      "content_hash": "sha256:b70ac1af2001382b277ed56fcecfd82783eef81bbcb0ac1ecb9745e13cd72e9c",
+      "changed_targets": [
+        "choices",
+        "category"
+      ],
+      "reviewed_fields": {
+        "choices": [
+          {
+            "id": "A",
+            "text": "通信遅延や外部送信データ量を減らしやすい"
+          },
+          {
+            "id": "B",
+            "text": "端末の処理能力に関係なく、常にクラウドより大きなモデルを動かせる"
+          },
+          {
+            "id": "C",
+            "text": "各端末で推論するため、モデル更新を一元管理する必要がなくなる"
+          },
+          {
+            "id": "D",
+            "text": "推論を端末に移すと、画像を外部に送る通信量が必ず増える"
+          }
+        ],
+        "category_id": "system_reliability"
+      },
+      "policy_result": "エッジ処理を技術系のシステム構成へ分類する。クラウドとの遅延・通信量・端末性能・モデル更新のトレードオフを問う四択にする。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    },
+    {
+      "code": "A1-240",
+      "status": "verified",
+      "fix_class": "FIX_NON_CONTENT",
+      "priority": "P1",
+      "source_id": "SC-A1-ORIGINAL-240",
+      "content_hash": "sha256:bcfd6409d00131148ac8fb8aa9115c6fecdff2fadd3a0b796e719054e0c2aedb",
+      "changed_targets": [
+        "explanation",
+        "memory_point",
+        "category"
+      ],
+      "reviewed_fields": {
+        "explanation": "技術的なデジタル署名は、対応する公開鍵で検証し、署名鍵による作成と文書の完全性の確認を支援します。作成者本人の確認には公開鍵と本人の対応、秘密鍵の管理も必要です。内容を秘匿する暗号化とは別です。電子署名法上の真正な成立の推定には法定の要件があり、全ての技術的署名に自動で生じる効果ではありません。",
+        "memory_point": "署名は作成元・完全性を確認する。本人との鍵の対応と鍵管理が必要で、法的推定とは区別する。",
+        "category_id": "security"
+      },
+      "policy_result": "技術的署名の目的ならテクノロジ系セキュリティへ分類する。公開鍵の本人対応と鍵管理の条件、電子署名法上の真正成立推定との違いを補う。",
+      "official_review": "not_applicable_original_question",
+      "reviewed_on": "2026-10-08"
+    }
+  ]
+}

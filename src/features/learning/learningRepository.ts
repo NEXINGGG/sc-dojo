@@ -20,6 +20,7 @@ import type { SubjectId } from '../../domain/subject';
 import type { Question } from '../../types/question';
 import { markQuestionForCloudSync } from '../sync/cloudSyncLocalRepository';
 import { notifyCloudSyncNeeded } from '../sync/syncEvents';
+import { initializeDatabase } from '../../database/database';
 
 const readinessByDatabase = new WeakMap<A1DojoDatabase, Promise<void>>();
 
@@ -231,11 +232,13 @@ export function ensureLearningDataReady(database: A1DojoDatabase): Promise<void>
     return existing;
   }
 
-  const readiness = backfillLegacyPracticeData(database).catch((error: unknown) => {
-    // IndexedDBが一時的に利用できない場合、再読み込みや空き容量確保後に再試行できるようにする。
-    readinessByDatabase.delete(database);
-    throw error;
-  });
+  const readiness = initializeDatabase(database)
+    .then(() => backfillLegacyPracticeData(database))
+    .catch((error: unknown) => {
+      // IndexedDBが一時的に利用できない場合、再読み込みや空き容量確保後に再試行できるようにする。
+      readinessByDatabase.delete(database);
+      throw error;
+    });
   readinessByDatabase.set(database, readiness);
   return readiness;
 }

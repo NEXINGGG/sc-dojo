@@ -214,13 +214,27 @@ if (
 ) {
   errors.push('既存B-1 2023～2025データが変更されています');
 }
-if (
+if (readJson('data/questions.json').metadata?.dataset_version === 'sc-a1-v1') {
+  // The formal A-1 release has its frozen audit/map/review/hash gate.
+  execFileSync(
+    process.execPath,
+    [join(root, 'scripts/validate-sc-a1-release.mjs'), 'data/questions.json'],
+    { cwd: root, stdio: 'inherit', windowsHide: true },
+  );
+} else if (
   hashJson('data/questions.json') !==
   '9004F83084D78E43D70B647A4E27DE6E2B2A53BC7FAE0CA2D43A1BF2F4484307'
 ) {
   errors.push('科目A-1問題データが変更されています');
 }
-if (
+if (readJson('data/a2-questions.json').metadata?.dataset_version === 'sc-a2-v1') {
+  // A-2 is now an independently reviewed SC release; keep its full release gate.
+  execFileSync(process.execPath, [join(root, 'scripts/validate-sc-a2-release.mjs')], {
+    cwd: root,
+    stdio: 'inherit',
+    windowsHide: true,
+  });
+} else if (
   hashJson('data/a2-questions.json') !==
   'E86783804502799A16A6139CABB630F5B805E46934C8055E3F0D0AAE1CFEEA4E'
 ) {

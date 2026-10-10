@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { getSubjectCatalog, questions } from '../data/catalog';
 import type { ExamSessionRow } from '../database/types';
 import {
@@ -37,8 +38,16 @@ describe('模試の出題生成', () => {
     expect(second).toHaveLength(30);
     expect(new Set(first)).toHaveLength(30);
     expect(new Set(second)).toHaveLength(30);
-    expect(first).toEqual(questions.slice(180, 210).map((question) => question.code));
-    expect(second).toEqual(questions.slice(210, 240).map((question) => question.code));
+    if (getSubjectCatalog('a1').datasetVersion === 'sc-a1-v1') {
+      const plan = JSON.parse(readFileSync('data/sc-a1-source-code-map-draft.json', 'utf8')) as {
+        summary: { assignments: Record<string, { codes: string[] }> };
+      };
+      expect(first).toEqual(plan.summary.assignments.mock1.codes);
+      expect(second).toEqual(plan.summary.assignments.mock2.codes);
+    } else {
+      expect(first).toEqual(questions.slice(180, 210).map((question) => question.code));
+      expect(second).toEqual(questions.slice(210, 240).map((question) => question.code));
+    }
   });
 
   it('ランダム模試はactiveな問題から重複なし30問を再現可能に抽出する', () => {
@@ -55,6 +64,43 @@ describe('模試の出題生成', () => {
 });
 
 describe('A-2 exam rules', () => {
+  it('creates both SC fixed sessions in audited order without changing codes or the source array', () => {
+    const inventory = JSON.parse(
+      readFileSync('data/sc-a2-past-question-inventory.json', 'utf8'),
+    ) as {
+      questions: Array<{
+        source_id: string;
+        adoption_status: string;
+        assignment: string | null;
+        mock_sequence?: number;
+      }>;
+    };
+    const source = [...a2Questions].reverse();
+    const before = source.map((question) => question.code);
+
+    for (const n of [1, 2] as const) {
+      const expected = inventory.questions
+        .filter(
+          (question) =>
+            question.adoption_status === 'selected' && question.assignment === `mock${n}`,
+        )
+        .sort((a, b) => (a.mock_sequence ?? 0) - (b.mock_sequence ?? 0))
+        .map((question) => a2Questions.find((item) => item.sourceId === question.source_id)?.code);
+      const examType = n === 1 ? 'fixed_1' : 'fixed_2';
+      const session = createExamSession(
+        'a2',
+        examType,
+        selectExamQuestionCodes('a2', examType, source),
+        { id: `sc-fixed-${n}`, now: '2026-10-07T00:00:00.000Z' },
+      );
+
+      expect(expected).toHaveLength(25);
+      expect(expected).not.toContain(undefined);
+      expect(session.questionCodes).toEqual(expected);
+      expect(source.map((question) => question.code)).toEqual(before);
+    }
+  });
+
   it('uses 25 unique questions, 40 minutes, and a 15-answer pass threshold', () => {
     const codes = selectExamQuestionCodes('a2', 'random', a2Questions, () => 0.2);
     const session = createExamSession('a2', 'random', codes, {

@@ -1,3 +1,6 @@
+import { b1Cases } from '../data/b1';
+import { isScBFoundationPilot, isScBPilot } from '../data/pilotMode';
+import { getB1ExamConfig } from '../domain/b1ExamConfig';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
@@ -8,6 +11,8 @@ import { SubjectSwitcher, useSubject } from '../features/subjects/SubjectContext
 const repository = new B1Repository(database);
 
 export function B1HomePage() {
+  const config = getB1ExamConfig(b1Cases);
+  const isSc = b1Cases[0]?.examCode === 'SC';
   const { error: subjectError } = useSubject();
   const [summary, setSummary] = useState<B1ProgressSummary>();
 
@@ -32,8 +37,14 @@ export function B1HomePage() {
       ) : null}
       <section className="hero-card b1-home-hero">
         <p className="eyebrow hero-eyebrow">科目B 記述式</p>
-        <h2>公式PDFを見ながら答案を作る</h2>
-        <p>問題文・図表はIPA公式PDFで確認します。アプリは問題文を転載しません。</p>
+        <h2>{isSc ? '問題本文を読み、根拠を示して答案を作る' : '公式PDFを見ながら答案を作る'}</h2>
+        <p>
+          {isSc
+            ? !isScBPilot ? '2023年度秋期から2025年度秋期までの5回・20大問を収録しています。本文の根拠を探し，答案・自己採点・振り返りを記録できます。' : isScBFoundationPilot
+              ? '開発専用の架空pilot教材です。本文・ログを同梱しています。旧NW履歴は端末内に退避し、SCの成績に含めません。'
+              : 'IPA公式2025年度秋期の問1〜問4を収録したpilotです。本文・図表から根拠を探し、答案と自己採点を記録します。正式教材への切替前の検証用です。'
+            : '現在の本番教材はNW由来です。SC正式教材は準備中です。問題文・図表はIPA公式PDFで確認します。'}
+        </p>
         <Link className="primary-button" to="/practice">
           科目B演習を始める
         </Link>
@@ -60,7 +71,7 @@ export function B1HomePage() {
       <section className="surface-card b1-official-notice" role="status">
         <h2>公式問題の扱い</h2>
         <p>
-          オンラインではIPA公式PDFを開けます。オフラインで利用する場合は、利用者自身がダウンロードした年度別PDFを端末に登録してください。登録ファイルは外部送信しません。
+          {isSc ? '本文・図表はアプリ内でオフラインでも確認できます。公式PDFも利用する場合は，試験回ごとに端末へ登録してください。' : 'オンラインではIPA公式PDFを開けます。オフラインで利用する場合は，公式PDFを端末に登録してください。'}登録ファイルは外部送信しません。
         </p>
         <p>
           <strong>アプリの判定はIPAの正式採点ではありません。</strong>
@@ -68,7 +79,10 @@ export function B1HomePage() {
       </section>
       <section className="surface-card home-exam-card">
         <h2>科目B模試</h2>
-        <p>同一年度の3大問から2大問を選択し、90分の締切時刻方式で取り組みます。</p>
+        <p>
+          同一試験回の{config.presentedCount}大問から{config.selectedCount}大問を選択し、
+          {config.durationSeconds / 60}分の締切時刻方式で取り組みます。
+        </p>
         <Link className="primary-button" to="/exam">
           科目B模試を開始
         </Link>

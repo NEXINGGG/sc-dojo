@@ -10,10 +10,10 @@ export default tseslint.config(
     ignores: ['dist/', 'node_modules/', 'data/', 'prototype/', 'reports/'],
   },
   {
-    files: ['scripts/**/*.mjs'],
+    files: ['scripts/**/*.mjs', 'src/**/*.mjs', 'e2e/fixtures/**/*.mjs'],
     extends: [js.configs.recommended],
     languageOptions: {
-      globals: globals.node,
+      globals: { ...globals.node, ...globals.browser },
     },
   },
   {

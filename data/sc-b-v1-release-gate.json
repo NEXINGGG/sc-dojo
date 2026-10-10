@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "dataset_version": "sc-b-v1",
+  "approved": true,
+  "reason": "追加16大問を含む20大問の原文本文・設問・図表教材化とIPA公式3資料による二次校閲を完了。採点講評5回・公式292欄・content_hash20件・校閲ゲート・lint・unit370件・候補の通常build・全E2E31件・A-1/A-2回帰・NW履歴分離が成功したため，SC B v1をproduction教材へ接続する。旧NW正本と退避履歴を保持。",
+  "reviewedOn": "2026-10-09",
+  "validationEvidence": {
+    "secondaryReview": "data/sc-b-v1-source-map.json",
+    "images": "data/sc-b-v1-image-report.json",
+    "officialAnswers": "tmp/sc-b-completion/official-answers-final.log:15 source hashes / 273 text fields passed; remaining 19 fields reviewed in source-map",
+    "contentHash": "tmp/sc-b-completion/content-hash-final.log:20 matched",
+    "releaseGate": "tmp/sc-b-completion/release-gate-final.log:20 cases / 181 units / 292 fields passed",
+    "a1": "tmp/sc-b-completion/validate-sc-a1-final.log:240 passed",
+    "a2": "tmp/sc-b-completion/validate-sc-a2-final.log:240 passed",
+    "lint": "tmp/sc-b-completion/lint-release-final.log:passed",
+    "unit": "tmp/sc-b-completion/unit-release-final.log:62 files / 370 passed",
+    "e2e": "tmp/sc-b-completion/e2e-all-final.log:31 passed with final SC B candidate build",
+    "build": "tmp/sc-b-completion/build-candidate-final.log:passed including deployment validation",
+    "mobile": "tmp/sc-b-completion/ui/results.json:9 representatives / 390,320 / light,dark",
+    "releaseReview": "docs/sc-b-v1-release-review.md"
+  }
+}

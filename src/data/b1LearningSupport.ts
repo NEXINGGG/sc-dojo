@@ -1,3 +1,5 @@
+import scFailureCausesPayload from '../../data/sc-b-failure-causes.json';
+import scReleaseGate from '../../data/sc-b-v1-release-gate.json';
 import { getSubjectCatalog } from './catalog';
 import failureCausesPayload from '../../data/b1-failure-causes.json';
 import topicAliasesPayload from '../../data/b1-a2-topic-aliases.json';
@@ -21,7 +23,7 @@ import {
   type B1QuestionGuidance,
 } from '../domain/b1LearningSupport';
 
-export const b1FailureCauses = failureCausesPayload.failureCauses as readonly B1FailureCauseDefinition[];
+export const b1FailureCauses = (b1Cases[0]?.examCode === 'SC' ? scFailureCausesPayload : failureCausesPayload).failureCauses as readonly B1FailureCauseDefinition[];
 
 export interface B1LearningSupportCatalog {
   guidance: readonly B1QuestionGuidance[];
@@ -61,11 +63,21 @@ function buildCatalog(): B1LearningSupportCatalog {
   const guidance = b1QuestionUnits.map((unit) => {
     const caseItem = caseByQuestionId.get(unit.questionId);
     if (caseItem === undefined) throw new Error(`科目Bケースが見つかりません: ${unit.questionId}`);
+    if (caseItem.examCode === 'SC') return unit.guidance ?? {
+      questionId: unit.questionId,
+      requirementBreakdown: { answerTarget: '設問の要求を確認する', targetObject: '本文で指定された対象', targetEnvironment: '本文の環境', situation: '本文根拠に基づいて答える', answerForm: 'other' as const, requiredAnswerCount: unit.answerFields.length, maxLength: null, responseChecklist: [], constraints: [], commonTraps: [], trainingHint: '本文・図表・ログの根拠を記録する。' },
+      officialEvidence: [], applicableFailureCauseIds: scFailureCausesPayload.failureCauses.map((entry) => entry.id as B1FailureCauseId),
+    };
     return createGuidance(unit, getB1QuestionOfficialReview(unit, caseItem));
   });
   const a2Remediations = b1QuestionUnits.map((unit) => {
     const caseItem = caseByQuestionId.get(unit.questionId);
     if (caseItem === undefined) throw new Error(`科目Bケースが見つかりません: ${unit.questionId}`);
+    if (caseItem.examCode === 'SC') {
+      const catalog = getSubjectCatalog('a2');
+      const codes = [...new Set(unit.relatedA2QuestionIds ?? [])].filter((code) => catalog.getQuestionByCode(code) !== undefined);
+      return { questionId: unit.questionId, status: codes.length ? 'linked' : 'not_applicable', a2QuestionIds: codes, a2CategoryIds: unit.relatedA2Categories ?? [], prerequisiteTopics: unit.relatedTerms ?? [], reason: codes.length ? '教材で指定されたSC A-2問題を復習する。' : '個別のA-2対応は未登録です。本文を見直してください。', recommendedCount: codes.length, triggerFailureCauseIds: ['sc_b_knowledge_gap', 'sc_b_attack_vulnerability_confusion', 'sc_b_auth_access_confusion'] as B1FailureCauseId[], reviewStatus: scReleaseGate.approved && caseItem.dataset_version === 'sc-b-v1' ? 'completed' as const : 'needs_review' as const } satisfies B1A2Remediation;
+    }
     return createA2Remediation(unit, caseItem, getB1QuestionOfficialReview(unit, caseItem));
   });
   return {

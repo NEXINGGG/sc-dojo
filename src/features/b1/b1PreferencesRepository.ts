@@ -16,6 +16,7 @@ export class B1PreferencesRepository {
     updatedAt = new Date().toISOString(),
   ): Promise<B1PreferenceRow> {
     const row: B1PreferenceRow = {
+      ...(await this.get()),
       key: 'b1-learning-preferences',
       version: 1,
       relevanceFilter: { ...relevanceFilter },
@@ -27,6 +28,22 @@ export class B1PreferencesRepository {
 
   async reset(): Promise<B1PreferenceRow> {
     return this.save(defaultB1RelevanceFilter);
+  }
+
+  async toggleFavorite(caseId: string): Promise<readonly string[]> {
+    return this.database.transaction('rw', this.database.b1Preferences, async () => {
+      const row = await this.get();
+      const favorites = new Set(row.favoriteCaseIds ?? []);
+      if (favorites.has(caseId)) favorites.delete(caseId);
+      else favorites.add(caseId);
+      const favoriteCaseIds = [...favorites];
+      await this.database.b1Preferences.put({
+        ...row,
+        favoriteCaseIds,
+        updatedAt: new Date().toISOString(),
+      });
+      return favoriteCaseIds;
+    });
   }
 
   private createDefault(): B1PreferenceRow {

@@ -82,7 +82,9 @@ export function selectExamQuestionCodes(
   const randomizer = (usesSubjectId ? random : sourceOrRandom) as (() => number) | undefined;
   if (examType === 'fixed_1' || examType === 'fixed_2') {
     const questionSetId = examType === 'fixed_1' ? 'mock_exam_1' : 'mock_exam_2';
-    const selected = source.filter((question) => question.questionSet.id === questionSetId);
+    const selected = source
+      .filter((question) => question.questionSet.id === questionSetId)
+      .sort((a, b) => (a.questionSet.sequence ?? 0) - (b.questionSet.sequence ?? 0));
     validateExamQuestionPool(selected, getExamName(examType));
     return selected.map((question) => question.code);
   }

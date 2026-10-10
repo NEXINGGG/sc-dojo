@@ -21,7 +21,11 @@ const remediationTriggers = new Set<B1FailureCauseId>(['knowledge_gap', 'calcula
 /** A stable, side-effect-free selector for the Phase 3 remediation UI. */
 export function recommendB1A2Questions(input: B1A2RecommendationInput): B1A2Recommendation {
   const { remediation } = input;
-  const hasRelevantCause = input.failureCauseIds.some((id) => remediationTriggers.has(id));
+  const hasRelevantCause = input.failureCauseIds.some((id) =>
+    remediation.triggerFailureCauseIds.some((cause) => cause.startsWith('sc_b_'))
+      ? remediation.triggerFailureCauseIds.includes(id)
+      : remediationTriggers.has(id),
+  );
   if (!hasRelevantCause) {
     return notApplicable(
       remediation.questionId,

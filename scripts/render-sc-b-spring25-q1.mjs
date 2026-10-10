@@ -1,0 +1,14 @@
+import {writeFileSync} from 'node:fs';
+const tx=(x,y,t)=>'<text x="'+x+'" y="'+y+'" stroke="none" fill="#111">'+t+'</text>';
+const b=(x,y,w,h,t)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'"/>'+tx(x+12,y+h/2+8,t);
+let s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 650"><rect width="1200" height="650" fill="white"/><g fill="none" stroke="#111" stroke-width="2" font-family="sans-serif" font-size="24">';
+s+=b(45,240,1110,360,'')+tx(60,275,'L社')+'<rect x="65" y="300" width="245" height="80" stroke-dasharray="9 6"/><rect x="65" y="440" width="245" height="80" stroke-dasharray="9 6"/><rect x="885" y="350" width="245" height="220" stroke-dasharray="9 6"/>'+tx(75,335,'パートナーLAN')+tx(75,477,'従業員LAN')+tx(895,380,'開発LAN');
+s+='<path d="M310 340 L350 480 M310 480 H350 M480 480 H525 M700 480 H750 M880 480 L920 490 M880 480 L960 452 M615 450 V355 M615 295 V225 M690 325 H775"/>';
+s+=b(350,450,130,60,'L3SW-1')+b(525,450,175,60,'踏み台サーバ')+b(750,450,130,60,'L3SW-2')+b(575,295,115,60,'FW')+b(775,280,160,60,'VPN-GW')+b(960,430,165,55,'')+'<rect x="920" y="460" width="190" height="55" fill="white"/>'+tx(932,495,'開発系サーバ');
+s+='<ellipse cx="615" cy="180" rx="175" ry="45"/>'+tx(520,188,'インターネット')+'<path d="M615 135 V85"/>'+b(500,30,250,55,'オフショア拠点');
+writeFileSync('public/questions/sc/b/2025-spring/q1-figure-2.svg',s+'</g></svg>');
+const groups=[['開発者の端末',['ソースコードの修正','コンパイルの実行(1)','開発者によるテスト','ソースコードの|リポジトリへの|アップロード']],['プラットフォームG',['コンパイルの実行(2)¹','開発リーダー|によるレビュー','テスト環境用|ソースコード|への反映','テスト環境への|デプロイ']],['テスト環境',['機能テストの実行','本番環境用|ソースコード|への反映','本番環境への|デプロイ']],['本番環境',['リリース及び|本番への切替え']]];
+s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 720"><defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#111"/></marker></defs><rect width="1240" height="720" fill="white"/><g fill="none" stroke="#111" stroke-width="2" font-family="sans-serif" font-size="22">';
+groups.forEach(([title,nodes],col)=>{const x=20+col*310;s+=tx(x+15,42,title);nodes.forEach((n,row)=>{const y=70+row*145;s+='<rect x="'+x+'" y="'+y+'" width="260" height="90"/>';n.split('|').forEach((t,k)=>s+=tx(x+12,y+30+k*24,t));if(row<nodes.length-1)s+='<path d="M'+(x+130)+' '+(y+90)+' V'+(y+145)+'" marker-end="url(#a)"/>';});});
+s+='<path d="M280 550 H300 V115 H330 M590 550 H610 V115 H640 M900 405 H920 V115 H950" marker-end="url(#a)"/>'+tx(158,343,'（あ）')+tx(468,198,'（い）');
+writeFileSync('public/questions/sc/b/2025-spring/q1-figure-3.svg',s+'</g></svg>');

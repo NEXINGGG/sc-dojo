@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { questions } from '../data/catalog';
+import { getSubjectCatalog, questions } from '../data/catalog';
 import type { QuestionProgressRow } from '../database/types';
 import {
   completePracticeSession,
@@ -15,10 +15,75 @@ import {
 } from './practice';
 
 const firstActiveQuestions = questions
-  .filter((question) => question.status === 'active')
+  .filter(
+    (question) => question.status === 'active' && question.questionSet.id === 'category_drill',
+  )
   .slice(0, 3);
 
 describe('通常演習の出題条件', () => {
+  it('正式A-1は180問を通常出題し、固定模試の誤答・お気に入りを復習できる', () => {
+    // Explicitly mark the completed A-1 catalog, also runs before production replacement.
+    const formal = questions.map((q) => ({ ...q, datasetVersion: 'sc-a1-v1' }));
+    const filters = { ...defaultPracticeFilters, questionCount: 'all' as const };
+    expect(selectPracticeQuestions(formal, filters)).toHaveLength(180);
+    const mock = formal.find((q) => q.questionSet.id === 'mock_exam_1')!;
+    const progress = new Map<string, QuestionProgressRow>([
+      [
+        mock.code,
+        {
+          subjectId: 'a1',
+          code: mock.code,
+          attemptCount: 1,
+          correctCount: 0,
+          incorrectCount: 1,
+          favorite: true,
+          lastIsCorrect: false,
+          updatedAt: '2026-10-08T00:00:00Z',
+        },
+      ],
+    ]);
+    for (const answerStatus of ['incorrect', 'favorite'] as const)
+      expect(
+        selectPracticeQuestions(formal, { ...filters, answerStatus }, Math.random, progress).map(
+          (q) => q.code,
+        ),
+      ).toContain(mock.code);
+  });
+  it('正式SCでは通常演習190問を出題し，模試の誤答・お気に入りは復習できる', () => {
+    const catalog = getSubjectCatalog('a2');
+    const filters = { ...defaultPracticeFilters, questionCount: 'all' as const };
+    const practice = selectPracticeQuestions(catalog.questions, filters);
+    expect(practice).toHaveLength(190);
+    expect(practice.every((q) => q.questionSet.id === 'category_drill')).toBe(true);
+    const mock = catalog.getQuestionsInSet('mock_exam_1')[0];
+    const progress = new Map<string, QuestionProgressRow>([
+      [
+        mock.code,
+        {
+          subjectId: 'a2',
+          code: mock.code,
+          attemptCount: 1,
+          correctCount: 0,
+          incorrectCount: 1,
+          favorite: true,
+          lastIsCorrect: false,
+          updatedAt: '2026-10-07T00:00:00Z',
+        },
+      ],
+    ]);
+    for (const answerStatus of ['incorrect', 'favorite'] as const)
+      expect(
+        selectPracticeQuestions(
+          catalog.questions,
+          { ...filters, answerStatus },
+          Math.random,
+          progress,
+        ),
+      ).toEqual([mock]);
+    // Legacy datasets keep their pre-formalization behavior.
+    const legacy = questions.map((q) => ({ ...q, datasetVersion: 'legacy-sc-a1-v0' }));
+    expect(selectPracticeQuestions(legacy, filters)).toHaveLength(240);
+  });
   it('系統、カテゴリ、難易度で正本データを絞り込める', () => {
     const target = firstActiveQuestions[0];
     const filtered = filterPracticeQuestions(questions, {
@@ -110,7 +175,9 @@ describe('通常演習の出題条件', () => {
   });
 
   it('出題数の5問・10問・20問・30問・すべてを安定して適用する', () => {
-    const source = questions.filter((question) => question.status === 'active');
+    const source = questions.filter(
+      (question) => question.status === 'active' && question.questionSet.id === 'category_drill',
+    );
 
     for (const count of [5, 10, 20, 30, 'all'] as const) {
       const selected = selectPracticeQuestions(source, {

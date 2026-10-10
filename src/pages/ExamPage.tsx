@@ -1,3 +1,4 @@
+import { QuestionChoiceContent, QuestionStimuli } from '../components/QuestionStimuli';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -294,6 +295,7 @@ export function ExamPage() {
           <span className="chip chip-muted">難易度: {question.difficulty}</span>
         </div>
         <h2 className="question-text">{question.question}</h2>
+        <QuestionStimuli stimulus={question.stimulus} />
         <fieldset className="answer-choice-list" disabled={isSaving}>
           <legend>答えを1つ選んでください。正誤は提出後に表示します。</legend>
           {question.choices.map((choice) => (
@@ -306,7 +308,7 @@ export function ExamPage() {
                 value={choice.id}
               />
               <span className="choice-id">{choice.id}</span>
-              <span>{choice.text}</span>
+              <QuestionChoiceContent choice={choice} />
             </label>
           ))}
         </fieldset>

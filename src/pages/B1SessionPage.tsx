@@ -1,3 +1,4 @@
+import { B1CaseBody } from '../features/b1/B1CaseBody';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -81,6 +82,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
         navigate(kind === 'mock' ? '/exam' : '/practice', { replace: true });
         return;
       }
+      if (kind === 'mock' && loaded.status !== 'in_progress') await createInitialAttempts(loaded);
       sessionRef.current = loaded;
       setSession(loaded);
     } catch {
@@ -180,15 +182,17 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
     setIsSaving(true);
     setError(undefined);
     const revision = ++saveRevision.current;
-    const pending = saveQueue.current.then(async () => {
-      if (kind === 'mock') await repository.saveMock(next as B1MockSessionRow);
-      else
-        await repository.savePractice(next as B1PracticeSessionRow, {
-          previous: previous as B1PracticeSessionRow | undefined,
-        });
-      confirmPersistenceSaved();
-    });
-    saveQueue.current = pending.catch(() => undefined);
+    const pending = saveQueue.current
+      .catch(() => undefined)
+      .then(async () => {
+        if (kind === 'mock') await repository.saveMock(next as B1MockSessionRow);
+        else
+          await repository.savePractice(next as B1PracticeSessionRow, {
+            previous: previous as B1PracticeSessionRow | undefined,
+          });
+        confirmPersistenceSaved();
+      });
+    saveQueue.current = pending;
     void pending
       .catch(() => {
         if (sessionRef.current === next) {
@@ -341,6 +345,14 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
     const active = sessionRef.current;
     if (active === undefined || currentUnit === undefined) return;
     try {
+      // Submitted SC mock answers remain the exam snapshot. Rewriting uses a
+      // separate, resumable practice session with the same content identity.
+      if (kind === 'mock' && caseItem?.examCode === 'SC') {
+        await saveQueue.current;
+        const practice = await repository.createReviewPractice(currentUnit.questionId);
+        navigate(`/b1/practice/${practice.id}`);
+        return;
+      }
       await repository.createAnswerAttempt({
         sessionId: active.id,
         questionId: currentUnit.questionId,
@@ -539,7 +551,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
   const isInProgress = session.status === 'in_progress';
   const isMock = kind === 'mock';
   const mockSession = isMock && 'startedAt' in session ? session : undefined;
-  const learningMode = isMock ? 'mock90' : (session.mode ?? 'training');
+  const learningMode = session.mode === 'practical' ? 'practical' : 'training';
   const mockAnswerProgress = isMock
     ? summarizeB1MockAnswers(
         session.unitIds.flatMap((unitId) => {
@@ -553,10 +565,8 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
   const mockElapsedSeconds =
     mockSession === undefined ? undefined : getB1MockElapsedSeconds(mockSession);
   const confirmation = session.unitConfirmations?.[currentUnit.questionId];
-  const revealReference =
-    confirmation !== undefined || (learningMode === 'mock90' && !isInProgress);
-  const showPostSubmission =
-    !isInProgress && (confirmation !== undefined || learningMode === 'mock90');
+  const revealReference = isMock ? !isInProgress : confirmation !== undefined;
+  const showPostSubmission = !isInProgress && (confirmation !== undefined || isMock);
   const isAnswerEditable = (isInProgress || isRewriting) && (isMock || confirmation === undefined);
   const unanswered = isMock
     ? (mockAnswerProgress?.unansweredUnitCount ?? 0)
@@ -599,6 +609,32 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
       <p aria-live="polite" className="b1-autosave-status" role="status">
         {isSaving ? '答案をこの端末に保存中です。' : '答案はこの端末に自動保存されています。'}
       </p>
+      {mockSession ? (
+        <nav aria-label="大問切替" className="card-action-row">
+          {mockSession.caseIds.map((id) => {
+            const item = b1Cases.find((entry) => entry.caseId === id);
+            if (!item) return null;
+            return (
+              <button
+                key={id}
+                type="button"
+                className="secondary-button"
+                aria-pressed={id === caseItem.caseId}
+                disabled={isSaving}
+                onClick={() =>
+                  save({
+                    ...sessionRef.current!,
+                    currentIndex: session.unitIds.indexOf(item.questionUnits[0].questionId),
+                    updatedAt: new Date().toISOString(),
+                  })
+                }
+              >
+                問{item.questionNumber}
+              </button>
+            );
+          })}
+        </nav>
+      ) : null}
       <div className="b1-mobile-tabs" role="tablist" aria-label="科目B表示を切り替え">
         <button
           aria-selected={tab === 'pdf'}
@@ -606,7 +642,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
           role="tab"
           type="button"
         >
-          公式PDF
+          {caseItem.body.fullTextIncluded ? '本文・図表' : '公式PDF'}
         </button>
         <button
           aria-selected={tab === 'answer'}
@@ -617,16 +653,47 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
           答案
         </button>
       </div>
+      {caseItem.examCode === 'SC' ? (
+        <label className="setting-option">
+          設問を選ぶ
+          <select
+            value={session.currentIndex}
+            disabled={isSaving}
+            onChange={(event) =>
+              save({
+                ...sessionRef.current!,
+                currentIndex: Number(event.currentTarget.value),
+                updatedAt: new Date().toISOString(),
+              })
+            }
+          >
+            {session.unitIds.map((id, index) => {
+              const unit = getB1QuestionUnit(id);
+              const item = b1Cases.find((c) => c.questionUnits.some((u) => u.questionId === id));
+              return (
+                <option key={id} value={index}>
+                  問{item?.questionNumber} {unit?.label}
+                </option>
+              );
+            })}
+          </select>
+        </label>
+      ) : null}
       <div className={`b1-workspace b1-tab-${tab}`}>
         <div className="b1-workspace-pdf">
-          <B1PdfReference
-            caseItem={caseItem}
-            requestedPrintedPage={requestedPdfPage}
-            unit={currentUnit}
-          />
+          {caseItem.body.fullTextIncluded ? (
+            <B1CaseBody caseItem={caseItem} unit={currentUnit} />
+          ) : null}
+          {caseItem.source.questionPdfUrl || !caseItem.body.fullTextIncluded ? (
+            <B1PdfReference
+              caseItem={caseItem}
+              requestedPrintedPage={requestedPdfPage}
+              unit={currentUnit}
+            />
+          ) : null}
         </div>
         <div className="b1-workspace-answer">
-          {learningMode !== 'mock90' ? (
+          {!isMock ? (
             <B1RequirementBreakdownPanel
               expanded={(session.requirementDisclosureQuestionIds ?? []).includes(
                 currentUnit.questionId,
@@ -647,7 +714,7 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
             unit={answerInputUnit}
             values={session.answers[currentUnit.questionId] ?? {}}
           />
-          {(isInProgress || isRewriting) && learningMode !== 'mock90' ? (
+          {(isInProgress || isRewriting) && !isMock ? (
             <section aria-live="polite" className="surface-card b1-confirmation-panel">
               <h2>{confirmation === undefined ? '回答を確定する' : '回答を確定済みです'}</h2>
               {confirmation === undefined ? (
@@ -677,8 +744,9 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
               {confirmationMessage !== undefined ? <p>{confirmationMessage}</p> : null}
             </section>
           ) : null}
-          {isInProgress && learningMode !== 'mock90' ? (
+          {isInProgress ? (
             <B1LearnerEvidencePanel
+              caseItem={caseItem}
               defaultPrintedPage={
                 Array.isArray(currentUnit.sourcePromptLocator.printedPage)
                   ? currentUnit.sourcePromptLocator.printedPage[0]
@@ -690,11 +758,24 @@ function B1SessionPage({ kind }: { kind: 'practice' | 'mock' }) {
           ) : null}
         </div>
       </div>
+      {showPostSubmission && caseItem.examCode === 'SC' ? (
+        <B1LearnerEvidencePanel
+          caseItem={caseItem}
+          sessionId={session.id}
+          unit={currentUnit}
+          defaultPrintedPage={
+            Array.isArray(currentUnit.sourcePromptLocator.printedPage)
+              ? currentUnit.sourcePromptLocator.printedPage[0]
+              : currentUnit.sourcePromptLocator.printedPage
+          }
+        />
+      ) : null}
       {showPostSubmission ? (
         <B1PostSubmissionPanel
           attempts={attempts}
           caseItem={caseItem}
           isRewriting={isRewriting}
+          rewriteInPractice={isMock && caseItem.examCode === 'SC'}
           onFinishRewrite={() => void finishRewrite()}
           onFailureCauses={(failureCauseIds) => {
             if (sessionId === undefined) return;

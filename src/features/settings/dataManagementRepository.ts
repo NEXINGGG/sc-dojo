@@ -1,4 +1,5 @@
-import { DATABASE_VERSION, type A1DojoDatabase } from '../../database/database';
+import { reconcileB1Dataset } from '../../database/b1DatasetMigration';
+import { DATABASE_VERSION, initializeDatabase, type A1DojoDatabase } from '../../database/database';
 import { APP_VERSION } from '../../app/appVersion';
 import type { AnswerAttemptRow, LearningDayRow, QuestionProgressRow } from '../../database/types';
 import { allQuestions } from '../../data/catalog';
@@ -53,7 +54,7 @@ export class DataManagementRepository {
   constructor(private readonly database: A1DojoDatabase) {}
 
   async getSummary(): Promise<StoredDataSummary> {
-    await this.database.open();
+    await initializeDatabase(this.database);
     const [
       attempts,
       progress,
@@ -107,7 +108,7 @@ export class DataManagementRepository {
   }
 
   async createBackup(exportedAt = new Date().toISOString()): Promise<BackupDocument> {
-    await this.database.open();
+    await initializeDatabase(this.database);
     const [
       answerHistory,
       progress,
@@ -143,6 +144,8 @@ export class DataManagementRepository {
       this.database.b1AnswerAttempts.toArray(),
       this.database.b1Preferences.toArray(),
     ]);
+    const datasetArchives = await this.database.b1DatasetArchives.toArray();
+    const documents = await this.database.b1Documents.toArray();
     const document = createBackupDocument({
       exportedAt,
       appVersion: APP_VERSION,
@@ -165,10 +168,12 @@ export class DataManagementRepository {
       learningDays,
       settings,
       b1: {
+        datasetArchives,
         practiceSessions: b1PracticeSessions,
         mockSessions: b1MockSessions,
-        pdfRegistrations: b1PdfFiles.map((row) => ({
+        pdfRegistrations: [...b1PdfFiles, ...documents].map((row) => ({
           subjectId: row.subjectId,
+          documentId: row.documentId,
           year: row.year,
           fileName: row.fileName,
           mimeType: row.mimeType,
@@ -194,7 +199,7 @@ export class DataManagementRepository {
   }
 
   async restore(backup: ValidatedBackup): Promise<void> {
-    await this.database.open();
+    await initializeDatabase(this.database);
     const data = backup.document.data;
     const progressRows = createQuestionProgress(data.answerHistory, data.favorites);
     const learningDays = createLearningDays(data.answerHistory);
@@ -237,6 +242,8 @@ export class DataManagementRepository {
           this.database.learningDays,
           this.database.learningDaysBySubject,
           this.database.settings,
+          this.database.b1DatasetManifests,
+          this.database.b1DatasetArchives,
           this.database.b1PracticeSessions,
           this.database.b1MockSessions,
           this.database.b1LearnerEvidence,
@@ -316,12 +323,14 @@ export class DataManagementRepository {
           if ((data.b1.preferences?.length ?? 0) > 0) {
             await this.database.b1Preferences.bulkPut(data.b1.preferences ?? []);
           }
+          await this.database.b1DatasetArchives.bulkPut([...(data.b1.datasetArchives ?? [])]);
           await this.database.cloudSyncMetadata.bulkPut(cloudSyncMetadata);
           await queueCloudSyncMetadataForActiveUser(
             this.database,
             cloudSyncMetadata,
             syncUpdatedAt,
           );
+          await reconcileB1Dataset(this.database);
         },
       );
       notifyCloudSyncNeeded();
@@ -333,7 +342,7 @@ export class DataManagementRepository {
   }
 
   async clearLearningData(): Promise<void> {
-    await this.database.open();
+    await initializeDatabase(this.database);
     const deletedAt = new Date().toISOString();
     const deviceId = getDeviceId();
     const [b1PracticeSessions, cloudSyncMetadata] = await Promise.all([
@@ -359,6 +368,8 @@ export class DataManagementRepository {
           this.database.learningDays,
           this.database.learningDaysBySubject,
           this.database.b1PdfFiles,
+          this.database.a2DatasetArchives,
+          this.database.a1DatasetArchives,
           this.database.b1PracticeSessions,
           this.database.b1MockSessions,
           this.database.b1LearnerEvidence,
@@ -379,6 +390,8 @@ export class DataManagementRepository {
             this.database.learningDays.clear(),
             this.database.learningDaysBySubject.clear(),
             this.database.b1PdfFiles.clear(),
+            this.database.a2DatasetArchives.clear(),
+            this.database.a1DatasetArchives.clear(),
             this.database.b1PracticeSessions.clear(),
             this.database.b1MockSessions.clear(),
             this.database.b1LearnerEvidence.clear(),

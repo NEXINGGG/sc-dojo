@@ -1,0 +1,14 @@
+import {writeFileSync} from 'node:fs';
+const tx=(x,y,t)=>'<text x="'+x+'" y="'+y+'" fill="#111" stroke="none">'+t+'</text>';
+const b=(x,y,w,h,t,dash=false)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'"'+(dash?' stroke-dasharray="8 6"':'')+'/>'+tx(x+10,y+30,t);
+let s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1270 660"><rect width="1270" height="660" fill="white"/><g fill="none" stroke="#111" stroke-width="2" font-family="sans-serif" font-size="23">';
+s+=b(20,20,605,620,'V社本社')+b(35,65,575,290,'DMZ',true)+b(35,375,330,175,'サーバセグメント',true)+b(35,575,330,50,'PCセグメント',true);
+['DNSキャッシュサーバ','公開Webサーバ','プロキシサーバ','メールサーバ'].forEach((t,i)=>{const y=105+i*60;s+=b(50,y,295,45,t)+'<path d="M345 '+(y+22)+' L465 275"/>';});
+s+=b(370,105,220,45,'権威DNSサーバ')+'<path d="M480 150 V245"/>'+b(420,245,110,55,'L2SW')+b(420,410,110,55,'UTM')+'<path d="M475 300 V410 M365 437 H420 M475 465 V600 H365 M530 437 H680"/>';
+['会計システム','人事システム','ファイルサーバ'].forEach((t,i)=>s+=b(50,415+i*40,295,35,t));
+s+='<ellipse cx="725" cy="345" rx="45" ry="210"/>';['イ','ン','タ','ー','ネ','ッ','ト'].forEach((t,i)=>s+=tx(712,245+i*30,t));
+s+=b(805,20,445,190,'V社データセンター')+b(985,70,250,100,'データセンター',true)+tx(1035,135,'セグメント')+b(830,95,110,55,'UTM')+'<path d="M725 135 V122 H830 M940 122 H985"/>';
+s+=b(830,285,420,290,'')+b(817,298,420,290,'')+b(805,311,420,290,'V社支社')+b(985,365,220,90,'工場セグメント',true)+b(985,475,220,90,'PCセグメント',true)+b(830,365,110,55,'UTM')+'<path d="M770 392 H830 M940 392 H985 M885 420 V520 H985"/>';
+s=s.replaceAll('L465 275','L420 275').replace('H680','H685');
+s=s.replace('x="815" y="341"','x="1090" y="341"');
+writeFileSync('public/questions/sc/b/2025-spring/q4-figure-1.svg',s+'</g></svg>');

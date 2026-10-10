@@ -1,3 +1,5 @@
+import { QuestionStimuli } from '../components/QuestionStimuli';
+import { QuestionExplanation } from '../components/QuestionExplanation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
@@ -197,6 +199,19 @@ export function ExamResultPage() {
         <section className="surface-card exam-result-question">
           <p className="eyebrow">問題 {detailIndex + 1}</p>
           <h2 className="question-text">{question.question}</h2>
+          <QuestionStimuli stimulus={question.stimulus} />
+          {question.choices.some((choice) => (choice.stimulus?.length ?? 0) > 0) ? (
+            <div className="result-choice-stimuli">
+              {question.choices.map((choice) => (
+                <div key={choice.id}>
+                  <p>
+                    {choice.id}. {choice.text}
+                  </p>
+                  <QuestionStimuli stimulus={choice.stimulus} />
+                </div>
+              ))}
+            </div>
+          ) : null}
           <div className="chip-list">
             <span className="chip">
               {getCategoryById(question.categoryId, subjectId)?.name ?? question.categoryId}
@@ -218,10 +233,7 @@ export function ExamResultPage() {
                 ? '不正解'
                 : '未回答'}
           </p>
-          <h3>解説</h3>
-          <p>{question.explanation}</p>
-          <h3>覚える一行</h3>
-          <p>{question.memoryPoint}</p>
+          <QuestionExplanation question={question} />
           <button
             aria-pressed={progressByCode.get(question.code)?.favorite ?? false}
             className="secondary-button favorite-button"

@@ -7,6 +7,8 @@ import {
   type B1SelfGrade,
 } from '../../domain/b1';
 import type { B1AnswerInputUnit } from './b1AnswerInput';
+import { SourceImage } from './B1CaseBody';
+import { B1DiagramInput, B1DiagramPreview } from './B1DiagramInput';
 
 export function B1AnswerForm({
   unit,
@@ -50,9 +52,21 @@ export function B1AnswerForm({
     <section aria-labelledby={`b1-answer-${unit.questionId}`} className="b1-answer-form">
       <p className="eyebrow">答案</p>
       <h2 id={`b1-answer-${unit.questionId}`}>{unit.label}</h2>
-      <p className="b1-prompt-summary">設問の趣旨: {unit.promptSummary}</p>
+      <p className="b1-prompt-summary b1-original-text">
+        {unit.promptText ?? `設問の案内（学習用）: ${unit.promptSummary}`}
+      </p>
+      {unit.promptSourceImages?.length ? (
+        <details>
+          <summary>設問・解答群を原本で確認する</summary>
+          {unit.promptSourceImages.map((p) => (
+            <SourceImage key={p.assetUrl} url={p.assetUrl} alt={p.alt} />
+          ))}
+        </details>
+      ) : null}
       <p className="muted-text">
-        設問本文・図表は、左側（スマートフォンでは公式PDFタブ）の公式PDFで確認してください。
+        {unit.promptTextIncluded
+          ? '設問本文・図表は、左側（スマートフォンでは本文・図表タブ）で確認してください。'
+          : '設問本文・図表は、左側（スマートフォンでは公式PDFタブ）の公式PDFで確認してください。'}
       </p>
       <fieldset className="b1-answer-fieldset" disabled={disabled}>
         <legend>答案を入力</legend>
@@ -72,10 +86,19 @@ export function B1AnswerForm({
                     ? `（順番どおりに${field.expectedCount}項目を区切る）`
                     : ''}
               </span>
-              {isMultiline(field) ? (
+              {field.choices?.length ? <small>解答群：{field.choices.join('／')}</small> : null}
+              {field.answerFormat === 'diagram' ? (
+                <B1DiagramInput
+                  id={`${unit.questionId}-${field.fieldId}`}
+                  value={value}
+                  disabled={disabled}
+                  onChange={(v) => onChange(field.fieldId, v)}
+                />
+              ) : isMultiline(field) ? (
                 <textarea
                   id={`${unit.questionId}-${field.fieldId}`}
                   maxLength={field.maxLength ?? undefined}
+                  disabled={field.gradingExcluded}
                   onChange={(event) => updateField(field, event.currentTarget.value)}
                   onCompositionEnd={(event) => endComposition(field, event.currentTarget.value)}
                   onCompositionStart={() => composing.current.add(field.fieldId)}
@@ -87,6 +110,7 @@ export function B1AnswerForm({
                   id={`${unit.questionId}-${field.fieldId}`}
                   inputMode={inputModeFor(field)}
                   maxLength={field.maxLength ?? undefined}
+                  disabled={field.gradingExcluded}
                   onChange={(event) => updateField(field, event.currentTarget.value)}
                   onCompositionEnd={(event) => endComposition(field, event.currentTarget.value)}
                   onCompositionStart={() => composing.current.add(field.fieldId)}
@@ -114,12 +138,46 @@ export function B1AnswerForm({
                 <dt>{field.label}</dt>
                 <dd>
                   <strong>自分の回答</strong>
-                  <span>{values[field.fieldId]?.trim() || '未入力'}</span>
+                  {field.answerFormat === 'diagram' ? (
+                    <B1DiagramPreview value={values[field.fieldId] ?? ''} />
+                  ) : (
+                    <span>{values[field.fieldId]?.trim() || '未入力'}</span>
+                  )}
                 </dd>
                 <dd>
                   <strong>模範解答・解答例</strong>
-                  <span>{field.acceptedAnswers.join('／') || '公式PDFで確認してください'}</span>
+                  <span>
+                    {field.officialAnswer ??
+                      (field.acceptedAnswers.join('／') || '公式PDFで確認してください')}
+                  </span>
                 </dd>
+                {field.acceptableAnswers?.length ? (
+                  <dd>
+                    <strong>学習用の許容表現例</strong>
+                    {field.acceptableAnswers.join('／')}
+                  </dd>
+                ) : null}
+                {field.requiredKeywords?.length ? (
+                  <dd>
+                    <strong>確認する語・観点</strong>
+                    {field.requiredKeywords.join('／')}
+                  </dd>
+                ) : null}
+                {field.scoringPoints?.length ? (
+                  <dd>
+                    <strong>自己採点のポイント</strong>
+                    {field.scoringPoints.join('／')}
+                  </dd>
+                ) : null}
+                {field.gradingNote ? <dd>{field.gradingNote}</dd> : null}
+                {field.officialAnswerAsset ? (
+                  <dd>
+                    <SourceImage
+                      url={field.officialAnswerAsset.assetUrl}
+                      alt={field.officialAnswerAsset.alt}
+                    />
+                  </dd>
+                ) : null}
               </div>
             ))}
           </dl>
@@ -133,6 +191,46 @@ export function B1AnswerForm({
             </p>
           ) : null}
           <p>公式解答の観点: {referenceUnit?.grading.officialAnswerConcepts.join('／')}</p>
+          {referenceUnit?.explanation ? (
+            <section aria-label="学習用解説">
+              <h3>学習用解説</h3>
+              <dl className="b1-requirement-list">
+                <div>
+                  <dt>何を問われているか</dt>
+                  <dd>{referenceUnit.explanation.asked}</dd>
+                </div>
+                <div>
+                  <dt>本文のどこを見るか</dt>
+                  <dd>{referenceUnit.explanation.lookAt}</dd>
+                  {referenceUnit.explanation.necessaryKnowledge ? (
+                    <>
+                      <dt>必要知識</dt>
+                      <dd>{referenceUnit.explanation.necessaryKnowledge}</dd>
+                    </>
+                  ) : null}
+                </div>
+                <div>
+                  <dt>どう考えるか</dt>
+                  <dd>{referenceUnit.explanation.reasoning}</dd>
+                </div>
+                <div>
+                  <dt>公式解答との対応</dt>
+                  <dd>{referenceUnit.explanation.officialAnswerReason}</dd>
+                </div>
+                <div>
+                  <dt>間違えやすいポイント</dt>
+                  <dd>{referenceUnit.explanation.commonMistakes}</dd>
+                </div>
+              </dl>
+              <h3>答えの作り方</h3>
+              <ol>
+                {referenceUnit.answerStrategy?.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ol>
+              {referenceUnit.commentaryInsight ? <p>{referenceUnit.commentaryInsight}</p> : null}
+            </section>
+          ) : null}
           <div aria-label="自己評価" className="card-action-row">
             <SelfGradeButton
               active={selfGrade === 'correct'}

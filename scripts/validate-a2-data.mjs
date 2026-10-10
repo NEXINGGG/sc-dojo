@@ -1,12 +1,27 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { validateQuestionMaterialData } from './question-material-data.mjs';
+import { validateScA2Release } from './validate-sc-a2-release.mjs';
 
 const root = process.cwd();
 const qPath = path.join(root, 'data', 'a2-questions.json');
 const cPath = path.join(root, 'data', 'a2-categories.json');
 const questionsDoc = JSON.parse(fs.readFileSync(qPath, 'utf8'));
 const categoriesDoc = JSON.parse(fs.readFileSync(cPath, 'utf8'));
-const errors = [];
+const errors = validateQuestionMaterialData(questionsDoc);
+if (questionsDoc.metadata?.dataset_version === 'sc-a2-v1') {
+  const read = (file) => JSON.parse(fs.readFileSync(path.join(root, 'data', file), 'utf8'));
+  errors.push(
+    ...validateScA2Release(
+      questionsDoc,
+      read('sc-a2-past-question-inventory.json'),
+      categoriesDoc,
+      read('sc-a2-source-code-map.json'),
+      read('sc-a2-v1-secondary-review.json'),
+      read('sc-a2-pilot-30.json'),
+    ),
+  );
+}
 const questions = questionsDoc.questions;
 const categoryIds = new Set(categoriesDoc.categories.map((c) => c.id));
 if (!Array.isArray(questions) || questions.length !== 240)

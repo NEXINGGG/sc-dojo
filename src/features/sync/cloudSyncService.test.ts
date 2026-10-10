@@ -1,5 +1,8 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import * as catalog from '../../data/catalog';
+import { calculateQuestionContentHash } from '../../domain/questionContent.mjs';
 import { createDatabase, type A1DojoDatabase } from '../../database/database';
+import { reconcileA2Dataset } from '../../database/a2DatasetMigration';
 import type { QuestionProgressRow } from '../../database/types';
 import { getSubjectCatalog } from '../../data/catalog';
 import { b1Cases } from '../../data/b1';
@@ -64,12 +67,47 @@ class InMemoryCloudSyncGateway implements CloudSyncGateway {
 }
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   for (const database of openDatabases.splice(0)) database.close();
   await Promise.all(databaseNames.splice(0).map((name) => indexedDB.deleteDatabase(name)));
   window.localStorage.removeItem('sc-dojo-device-id');
 });
 
 describe('A-1・A-2クラウド同期', () => {
+  it.each([false, true])(
+    '同じcodeの旧A-1クラウド履歴は内容変更後に混入しない: identity=%s',
+    async (withIdentity) => {
+      const database = createTestDatabase();
+      const changed = { ...a1Question, question: a1Question.question + '新条件' };
+      changed.contentHash = calculateQuestionContentHash(changed);
+      const original = catalog.getQuestionByCode;
+      vi.spyOn(catalog, 'getQuestionByCode').mockImplementation((code, subject) =>
+        code === changed.code ? changed : original(code, subject),
+      );
+      const remote = createCloudItem(a1Question, '2026-10-08T00:00:00.000Z', 'remote');
+      if (withIdentity)
+        (remote.payload as LearningSyncPayloadV1).questionIdentity = {
+          sourceId: a1Question.sourceId!,
+          contentHash: a1Question.contentHash!,
+        };
+      const local = new CloudSyncLocalRepository(database);
+      await local.mergeRemoteItems(userId, [remote]);
+      expect(await database.questionProgress.get(a1Question.code)).toBeUndefined();
+      expect(await database.answerAttempts.count()).toBe(0);
+    },
+  );
+  it('旧NWのA-2クラウド行とtombstoneはSC履歴へ反映しない', async () => {
+    const database = createTestDatabase();
+    await seedLocal(database, a2Question, '2026-10-07T00:00:00.000Z', 'device-local');
+    const old = createCloudItem(a2Question, '2026-10-08T00:00:00.000Z', 'old-device', false);
+    delete (old.payload as LearningSyncPayloadV1).questionIdentity;
+    const gateway = new InMemoryCloudSyncGateway([old]);
+    await createService(database, gateway).synchronize({ userId, isOnline: true });
+    expect((await database.questionProgress.get(a2Question.code))?.lastIsCorrect).toBe(true);
+    gateway.rows[0] = { ...old, payload: null, isDeleted: true };
+    await createService(database, gateway).synchronize({ userId, isOnline: true });
+    expect((await database.questionProgress.get(a2Question.code))?.lastIsCorrect).toBe(true);
+  });
   it('クラウドが空ならローカル履歴を正しいscopeでbulk uploadする', async () => {
     const database = createTestDatabase();
     await seedLocal(database, a1Question, '2026-08-08T01:00:00.000Z', 'device-a');
@@ -288,8 +326,15 @@ describe('A-1・A-2クラウド同期', () => {
     await expect(database.questionProgress.get(a1Question.code)).resolves.toBeUndefined();
     const cloudRow = gateway.rows.find((row) => row.itemKey === a1Question.code);
     expect(cloudRow).toMatchObject({ isDeleted: true, scope: 'a1.question' });
-    expect(cloudRow?.payload).toEqual({ progress: null, answerAttempts: [] });
-  });
+    expect(cloudRow?.payload).toEqual({
+      progress: null,
+      answerAttempts: [],
+      questionIdentity: {
+        sourceId: a1Question.sourceId,
+        contentHash: a1Question.contentHash,
+      },
+    });
+  }, 15_000); // Full reset synchronizes tombstones for all 480 legacy questions.
 
   it('オフラインのA-1・A-2変更をユーザー別outboxへ保存し、オンライン復帰後に一括送信して消去する', async () => {
     const database = createTestDatabase();
@@ -554,6 +599,8 @@ async function seedLocal(
   deviceId: string,
   isCorrect = true,
 ): Promise<void> {
+  // These fixtures represent newly learned SC questions after the initial migration.
+  await reconcileA2Dataset(database);
   const payload = createPayload(question, updatedAt, isCorrect);
   if (payload.progress === null) throw new Error('progress is required');
   await database.questionProgress.put(payload.progress);
@@ -604,6 +651,9 @@ function createPayload(
     updatedAt,
   };
   return {
+    ...(question.subjectId === 'a2' && /^sc-a2-v[0-9]+$/.test(question.datasetVersion ?? '')
+      ? { questionIdentity: { sourceId: question.sourceId!, contentHash: question.contentHash! } }
+      : {}),
     progress,
     answerAttempts: [
       {

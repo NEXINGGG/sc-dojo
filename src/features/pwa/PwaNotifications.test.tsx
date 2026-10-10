@@ -4,6 +4,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../App';
 import { database } from '../../database/database';
 import { pwaRegisterMock } from '../../test/pwaRegisterMock';
+import { questions } from '../../data/catalog';
+import { createExamSession } from '../../domain/exam';
+import { b1Cases } from '../../data/b1';
+import { B1Repository } from '../b1/b1Repository';
+
+let b1UpdateSessionId: string | undefined;
 
 function renderAt(path: string) {
   window.location.hash = `#${path}`;
@@ -26,9 +32,12 @@ function registerServiceWorker() {
   );
 }
 
-afterEach(() => {
+afterEach(async () => {
   cleanup();
   vi.restoreAllMocks();
+  await database.examSessions.delete('pwa-update-exam');
+  if (b1UpdateSessionId !== undefined) await database.b1MockSessions.delete(b1UpdateSessionId);
+  b1UpdateSessionId = undefined;
   Reflect.deleteProperty(navigator, 'serviceWorker');
   window.location.hash = '#/';
   window.localStorage.clear();
@@ -67,8 +76,16 @@ describe('PWA通知', () => {
   it('模試中は更新前に保存確認を表示する', async () => {
     enableServiceWorkerSupport();
     const user = userEvent.setup();
-    renderAt('/exam/demo');
-    await screen.findByRole('heading', { name: '模擬試験を読み込んでいます' });
+    // A nonexistent session redirects asynchronously; test an actual ongoing exam.
+    await database.examSessions.put(
+      createExamSession(
+        'fixed_1',
+        questions.slice(180, 210).map((question) => question.code),
+        { id: 'pwa-update-exam', now: new Date().toISOString() },
+      ),
+    );
+    renderAt('/exam/pwa-update-exam');
+    await screen.findByRole('heading', { name: '1 / 30 問' });
     registerServiceWorker();
 
     act(() => pwaRegisterMock.options?.onNeedRefresh?.());
@@ -86,6 +103,27 @@ describe('PWA通知', () => {
 
     act(() => pwaRegisterMock.options?.onOfflineReady?.());
     expect(screen.getByText('オフラインでも利用できるようになりました')).toBeInTheDocument();
+  });
+
+  it('科目B模試も更新前に保存確認し、キャンセルすると模試を継続する', async () => {
+    enableServiceWorkerSupport();
+    const user = userEvent.setup();
+    const session = await new B1Repository(database).createMock(
+      b1Cases[0].year,
+      [b1Cases[0].caseId, b1Cases[1].caseId],
+      'official_year',
+    );
+    b1UpdateSessionId = session.id;
+    renderAt(`/b1/mock/${session.id}`);
+    await screen.findAllByRole('heading', { name: '設問1(1)' });
+    registerServiceWorker();
+    act(() => pwaRegisterMock.options?.onNeedRefresh?.());
+    await user.click(screen.getByRole('button', { name: '更新する' }));
+    const dialog = screen.getByRole('dialog', { name: '模試を保存して更新しますか？' });
+    expect(pwaRegisterMock.updateServiceWorker).not.toHaveBeenCalled();
+    await user.click(within(dialog).getByRole('button', { name: '模試を続ける' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect((await database.b1MockSessions.get(session.id))?.status).toBe('in_progress');
   });
 
   it('更新適用は二重に実行しない', async () => {

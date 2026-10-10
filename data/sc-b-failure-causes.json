@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "failureCauses": [
+    {
+      "id": "sc_b_requirement_misread",
+      "displayName": "設問要求の読み違い",
+      "description": "設問要求の読み違い"
+    },
+    {
+      "id": "sc_b_evidence_missed",
+      "displayName": "本文根拠の見落とし",
+      "description": "本文根拠の見落とし"
+    },
+    {
+      "id": "sc_b_evidence_misread",
+      "displayName": "本文・図表・ログの読み違い",
+      "description": "本文・図表・ログの読み違い"
+    },
+    {
+      "id": "sc_b_knowledge_gap",
+      "displayName": "技術知識不足",
+      "description": "技術知識不足"
+    },
+    {
+      "id": "sc_b_attack_vulnerability_confusion",
+      "displayName": "攻撃・脅威・脆弱性の混同",
+      "description": "攻撃・脅威・脆弱性の混同"
+    },
+    {
+      "id": "sc_b_actor_scope_confusion",
+      "displayName": "主体・対象の取り違え",
+      "description": "主体・対象の取り違え"
+    },
+    {
+      "id": "sc_b_auth_access_confusion",
+      "displayName": "認証・認可の混同",
+      "description": "認証・認可の混同"
+    },
+    {
+      "id": "sc_b_direction_sequence_error",
+      "displayName": "通信方向・処理順の誤認",
+      "description": "通信方向・処理順の誤認"
+    },
+    {
+      "id": "sc_b_control_effect_mismatch",
+      "displayName": "対策と効果の不一致",
+      "description": "対策と効果の不一致"
+    },
+    {
+      "id": "sc_b_missing_answer_element",
+      "displayName": "必要要素・用語の不足",
+      "description": "必要要素・用語の不足"
+    },
+    {
+      "id": "sc_b_wording_length",
+      "displayName": "表現・字数条件",
+      "description": "表現・字数条件"
+    },
+    {
+      "id": "sc_b_time_shortage",
+      "displayName": "時間不足",
+      "description": "時間不足"
+    }
+  ]
+}

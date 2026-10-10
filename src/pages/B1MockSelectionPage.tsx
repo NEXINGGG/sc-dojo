@@ -1,3 +1,4 @@
+import { ScBMockSelection } from './ScBMockSelection';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -11,6 +12,10 @@ import type { B1MockType } from '../domain/b1LearningSupport';
 const repository = new B1Repository(database);
 
 export function B1MockSelectionPage() {
+  return b1Cases[0]?.examCode === 'SC' ? <ScBMockSelection /> : <NwBMockSelection />;
+}
+
+function NwBMockSelection() {
   const navigate = useNavigate();
   const [year, setYear] = useState(b1AvailableYears[0] ?? 2025);
   const [caseIds, setCaseIds] = useState<string[]>([]);

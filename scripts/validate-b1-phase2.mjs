@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 import { hashJsonFile } from './json-semantic-hash.mjs';
 
@@ -21,8 +22,41 @@ const protectedFiles = {
   'data/b1-relevance.json': '8612D07E80D1354C0EA0A49F510606555B17D106C6242693840F0E60BAB46F43',
 };
 
+const isScA2Release = readJson('data/a2-questions.json').metadata?.dataset_version === 'sc-a2-v1';
+const isScA1Release = readJson('data/questions.json').metadata?.dataset_version === 'sc-a1-v1';
+const checksA1Candidate = process.env.SC_A1_CANDIDATE === '1';
+if (isScA1Release || checksA1Candidate) {
+  // Replace the legacy A-1 freeze only after the dedicated frozen-audit gate passes.
+  execFileSync(
+    process.execPath,
+    [
+      join(root, 'scripts/validate-sc-a1-release.mjs'),
+      checksA1Candidate ? 'data/sc-a1-v1-candidate.json' : 'data/questions.json',
+    ],
+    {
+      cwd: root,
+      stdio: 'inherit',
+      windowsHide: true,
+    },
+  );
+}
+if (isScA2Release) {
+  execFileSync(process.execPath, [join(root, 'scripts/validate-sc-a2-release.mjs')], {
+    cwd: root,
+    stdio: 'inherit',
+    windowsHide: true,
+  });
+}
 for (const [path, expectedHash] of Object.entries(protectedFiles)) {
-  if (hashJson(path) !== expectedHash) errors.push(`保護対象データが変更されています: ${path}`);
+  // Each formal SC choice dataset has its own audit/map/review/hash gate. B is still frozen.
+  if (isScA2Release && ['data/a2-questions.json', 'data/a2-categories.json'].includes(path))
+    continue;
+  if (isScA1Release && path === 'data/questions.json') continue;
+  const approvedHash =
+    (isScA1Release || checksA1Candidate) && path === 'data/categories.json'
+      ? '62CCC656984E9A4F82450F3DEB95197FFAD002BBDAE0F4A5293547825ECAB208'
+      : expectedHash;
+  if (hashJson(path) !== approvedHash) errors.push(`保護対象データが変更されています: ${path}`);
 }
 
 const legacy = readJson('data/b1-cases-2023-2025-ready.json');

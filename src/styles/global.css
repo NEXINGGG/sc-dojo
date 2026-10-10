@@ -1121,6 +1121,89 @@ h2 {
   line-height: 1.75;
 }
 
+.question-stimuli {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  margin: 16px 0;
+  color: var(--color-text);
+  font-size: calc(16px * var(--font-scale));
+}
+
+.question-stimulus-scroll {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.stimulus-scroll-hint {
+  margin: 0;
+  font-size: calc(16px * var(--font-scale));
+  font-weight: 400;
+}
+
+.question-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+}
+
+.question-table th,
+.question-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  white-space: pre;
+  text-align: left;
+}
+
+.question-table th {
+  background: var(--color-surface-muted);
+}
+
+.question-table caption,
+.question-stimuli figcaption {
+  margin-bottom: 8px;
+  color: var(--color-text);
+  text-align: left;
+}
+
+.question-code,
+.question-image {
+  min-width: 0;
+  margin: 0;
+}
+
+.question-code pre {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  white-space: pre;
+  tab-size: 4;
+  font-size: inherit;
+}
+
+.question-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 8px;
+  background: #fff;
+}
+
+.answer-choice > .choice-content {
+  flex: 1;
+  flex-basis: 100%;
+  min-width: 0;
+}
+
+.answer-choice:has(> .choice-content) {
+  flex-wrap: wrap;
+}
+
 .answer-choice-list {
   display: grid;
   gap: 10px;
@@ -2247,6 +2330,7 @@ h2 {
 
 .b1-answer-form {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   padding: 16px;
   border: 1px solid var(--color-border);
@@ -2302,10 +2386,13 @@ h2 {
   color: var(--color-text-muted);
   font-size: 13px;
   font-weight: 600;
+  white-space: pre-wrap;
 }
 
 .b1-reference-grade {
   margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .b1-reference-grade h3,
@@ -2332,6 +2419,7 @@ h2 {
 
 .b1-answer-comparison > div {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   padding: 12px;
   border: 1px solid var(--color-border);
@@ -2496,3 +2584,126 @@ h2 {
     animation-iteration-count: 1 !important;
   }
 }
+.choice-explanations dl {
+  display: grid;
+  gap: 12px;
+}
+
+.choice-explanations dt {
+  font-weight: 700;
+}
+
+.choice-explanations dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.related-terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding-left: 20px;
+}
+
+.question-source-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.question-source-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.pilot-notice {
+  margin: 8px 16px;
+  padding: 12px;
+  border: 2px solid var(--color-border);
+  overflow-wrap: anywhere;
+}
+
+.b1-case-body p {
+  font-size: 18px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.b1-case-body figure {
+  margin: 1rem 0;
+}
+.b1-case-body pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.b1-case-body img {
+  max-width: 100%;
+}
+/* SC B pilot: long originals stay inside the reading pane at 320px and wider. */
+.b1-case-body,
+.b1-material,
+.b1-workspace-pdf,
+.b1-workspace-answer {
+  min-width: 0;
+}
+.b1-case-body figure {
+  margin: 1.5rem 0;
+}
+.b1-original-text {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  font-size: 1.125rem;
+}
+.b1-case-body [id] {
+  scroll-margin-top: 1rem;
+}
+.b1-case-body summary {
+  cursor: pointer;
+  padding: 0.75rem 0;
+  min-height: 44px;
+}
+.b1-material-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.b1-material-scroll table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+}
+.b1-material-scroll th,
+.b1-material-scroll td {
+  border: 1px solid var(--border-color, #64748b);
+  padding: 0.65rem;
+  white-space: pre-line;
+  max-width: 24rem;
+}
+.b1-case-body pre {
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: 1rem;
+  padding: 0.75rem;
+}
+.b1-source-image {
+  width: 100%;
+  height: auto;
+  background: white;
+}
+.b1-source-image-full,
+.b1-case-body .b1-source-image-full {
+  width: auto;
+  max-width: none;
+  height: auto;
+  background: white;
+}
+.b1-evidence-fields select {
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+.b1-answer-field small {
+  overflow-wrap: anywhere;
+}
+.b1-diagram-input { min-width: 0; }
+.b1-diagram-canvas { width: 100%; height: auto; display: block; border: 2px solid currentColor; touch-action: none; }

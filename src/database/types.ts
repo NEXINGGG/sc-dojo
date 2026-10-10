@@ -1,6 +1,31 @@
+import type { B1ContentIdentity } from '../domain/b1Identity';
 import type { PracticeFilters } from '../domain/practice';
 import type { SubjectId } from '../domain/subject';
 import type { ChoiceId } from '../types/question';
+import type { QuestionDatasetManifest } from '../domain/questionManifest';
+
+export interface QuestionDatasetArchiveRow {
+  id: string;
+  archiveVersion: 1;
+  archivedAt: string;
+  previousDatasetVersion: string;
+  nextDatasetVersion: string;
+  previousManifest?: QuestionDatasetManifest;
+  changedCodes: string[];
+  data: {
+    progress: QuestionProgressRow[];
+    attempts: AnswerAttemptRow[];
+    practiceSessions: PracticeSessionRow[];
+    practiceResults: PracticeResultRow[];
+    examSessions: ExamSessionRow[];
+    examResults: ExamResultRow[];
+    learningDays: LearningDayRow[];
+    syncMetadata: CloudSyncMetadataRow[];
+    syncOutbox: CloudSyncOutboxRow[];
+  };
+}
+
+export type A2DatasetArchiveRow = QuestionDatasetArchiveRow;
 import type { B1AnswerValues, B1SelfGrade } from '../domain/b1';
 import type {
   B1LearnerEvidence,
@@ -211,6 +236,7 @@ export interface CloudSyncOutboxRow {
 }
 
 export interface B1PdfFileRow {
+  documentId?: string;
   subjectId: 'b1';
   year: number;
   fileName: string;
@@ -221,6 +247,7 @@ export interface B1PdfFileRow {
 }
 
 export interface B1PdfRegistrationMetadata {
+  documentId?: string;
   subjectId: 'b1';
   year: number;
   fileName: string;
@@ -236,11 +263,12 @@ export interface B1UnitConfirmation {
 }
 
 export interface B1PracticeSessionRow {
+  identity?: B1ContentIdentity;
   id: string;
   subjectId: 'b1';
   version: 1 | 2 | 3;
   status: 'in_progress' | 'completed';
-  mode?: Exclude<B1LearningMode, 'mock90'>;
+  mode?: Exclude<B1LearningMode, 'mock90' | 'mock150'>;
   caseId: string;
   unitIds: string[];
   answers: Record<string, B1AnswerValues>;
@@ -261,12 +289,15 @@ export interface B1PracticeSessionRow {
 }
 
 export interface B1MockSessionRow {
+  caseIdentities?: Record<string, B1ContentIdentity>;
+  presentedCaseIds?: string[];
+  examRuleId?: string;
   id: string;
   subjectId: 'b1';
   version: 1 | 2 | 3;
   status: 'in_progress' | 'submitted' | 'completed';
   year: number;
-  mode?: 'mock90';
+  mode?: 'mock90' | 'mock150';
   mockType?: B1MockType;
   caseIds: string[];
   unitIds: string[];
@@ -287,6 +318,7 @@ export interface B1MockSessionRow {
 }
 
 export interface B1AnswerAttemptRow {
+  identity?: B1ContentIdentity;
   id: string;
   version: 1;
   sessionId: string;
@@ -306,8 +338,13 @@ export interface B1PreferenceRow {
   version: 1;
   relevanceFilter: B1RelevanceFilter;
   updatedAt: string;
+  favoriteCaseIds?: readonly string[];
 }
 
 export type B1LearnerEvidenceRow = B1LearnerEvidence;
 export type B1LearningReflectionRow = B1LearningReflection;
 export type B1RemediationProgressRow = B1RemediationProgress;
+
+export interface B1DocumentRow extends B1PdfFileRow {
+  documentId: string;
+}

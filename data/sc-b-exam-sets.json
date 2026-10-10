@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "dataset_version": "sc-b-v1",
+  "sets": [
+    {
+      "examSetId": "SC-2023-FALL-PM",
+      "exam": "SC",
+      "year": 2023,
+      "term": "fall",
+      "session": "pm",
+      "label": "2023年度秋期",
+      "presentedCount": 4,
+      "selectedCount": 2,
+      "durationSeconds": 9000,
+      "caseIds": [
+        "SC-2023-FALL-PM-Q01",
+        "SC-2023-FALL-PM-Q02",
+        "SC-2023-FALL-PM-Q03",
+        "SC-2023-FALL-PM-Q04"
+      ]
+    },
+    {
+      "examSetId": "SC-2024-SPRING-PM",
+      "exam": "SC",
+      "year": 2024,
+      "term": "spring",
+      "session": "pm",
+      "label": "2024年度春期",
+      "presentedCount": 4,
+      "selectedCount": 2,
+      "durationSeconds": 9000,
+      "caseIds": [
+        "SC-2024-SPRING-PM-Q01",
+        "SC-2024-SPRING-PM-Q02",
+        "SC-2024-SPRING-PM-Q03",
+        "SC-2024-SPRING-PM-Q04"
+      ]
+    },
+    {
+      "examSetId": "SC-2024-FALL-PM",
+      "exam": "SC",
+      "year": 2024,
+      "term": "fall",
+      "session": "pm",
+      "label": "2024年度秋期",
+      "presentedCount": 4,
+      "selectedCount": 2,
+      "durationSeconds": 9000,
+      "caseIds": [
+        "SC-2024-FALL-PM-Q01",
+        "SC-2024-FALL-PM-Q02",
+        "SC-2024-FALL-PM-Q03",
+        "SC-2024-FALL-PM-Q04"
+      ]
+    },
+    {
+      "examSetId": "SC-2025-SPRING-PM",
+      "exam": "SC",
+      "year": 2025,
+      "term": "spring",
+      "session": "pm",
+      "label": "2025年度春期",
+      "presentedCount": 4,
+      "selectedCount": 2,
+      "durationSeconds": 9000,
+      "caseIds": [
+        "SC-2025-SPRING-PM-Q01",
+        "SC-2025-SPRING-PM-Q02",
+        "SC-2025-SPRING-PM-Q03",
+        "SC-2025-SPRING-PM-Q04"
+      ]
+    },
+    {
+      "examSetId": "SC-2025-FALL-PM",
+      "exam": "SC",
+      "year": 2025,
+      "term": "fall",
+      "session": "pm",
+      "label": "2025年度秋期",
+      "presentedCount": 4,
+      "selectedCount": 2,
+      "durationSeconds": 9000,
+      "caseIds": [
+        "SC-2025-FALL-PM-Q01",
+        "SC-2025-FALL-PM-Q02",
+        "SC-2025-FALL-PM-Q03",
+        "SC-2025-FALL-PM-Q04"
+      ]
+    }
+  ]
+}

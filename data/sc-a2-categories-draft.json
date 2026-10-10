@@ -1,0 +1,500 @@
+{
+  "draft_version": 1,
+  "schema_version": 1,
+  "exam_id": "information_security_specialist",
+  "exam_code": "SC",
+  "subject_id": "a2",
+  "metadata": {
+    "status": "draft",
+    "runtime_enabled": false,
+    "target_exam_year": 2026,
+    "created_on": "2026-10-05",
+    "plan_document": "docs/sc-a2-content-plan.md",
+    "allocation_status": "proposed_not_audited",
+    "notice": "教材設計用のカテゴリ案。本番アプリに接続しない。公式分類との対応と配分は実問題の監査後に確定する。",
+    "domain_assignment_rule": "default_domainは入力初期値。カテゴリ9は小分類に従って問題ごとのdomain_idを設定する。",
+    "priority_rule": "S/Aはアプリ内の学習優先度案であり、IPAの技術レベルや公式出題比率を表さない。"
+  },
+  "references": [
+    {
+      "id": "ipa_exam_outline_v5_6",
+      "title": "IPA 試験要綱 Ver.5.6",
+      "url": "https://www.ipa.go.jp/shiken/syllabus/rcu1hd00000141gq-att/youkou_ver5_6.pdf",
+      "checked_on": "2026-10-05"
+    },
+    {
+      "id": "ipa_sc_a2_supplement_v4_0",
+      "title": "SC シラバス追補版（科目A-2）Ver.4.0",
+      "url": "https://www.ipa.go.jp/shiken/syllabus/nq6ept00000014hj-att/syllabus_sc_am2_tsuiho4_0.pdf",
+      "checked_on": "2026-10-05"
+    },
+    {
+      "id": "ipa_past_question_usage",
+      "title": "IPA FAQ 過去問題の使用方法",
+      "url": "https://www.ipa.go.jp/shiken/faq.html",
+      "checked_on": "2026-10-05"
+    }
+  ],
+  "domains": [
+    {
+      "id": "technology",
+      "name": "テクノロジ系",
+      "order": 1
+    },
+    {
+      "id": "management",
+      "name": "マネジメント系",
+      "order": 2
+    }
+  ],
+  "question_structure": {
+    "total": 240,
+    "id_min": 1001,
+    "id_max": 1240,
+    "code_first": "A2-001",
+    "code_last": "A2-240",
+    "sets": [
+      {
+        "id": "category_drill",
+        "count": 190,
+        "id_min": 1001,
+        "id_max": 1190,
+        "code_first": "A2-001",
+        "code_last": "A2-190",
+        "number": null,
+        "sequence": null
+      },
+      {
+        "id": "mock_exam_1",
+        "count": 25,
+        "id_min": 1191,
+        "id_max": 1215,
+        "code_first": "A2-191",
+        "code_last": "A2-215",
+        "number": 1,
+        "sequence_min": 1,
+        "sequence_max": 25
+      },
+      {
+        "id": "mock_exam_2",
+        "count": 25,
+        "id_min": 1216,
+        "id_max": 1240,
+        "code_first": "A2-216",
+        "code_last": "A2-240",
+        "number": 2,
+        "sequence_min": 1,
+        "sequence_max": 25
+      }
+    ],
+    "note": "将来の差し替え先の枠。既存ID・コード・問題・セットの割当は今回変更しない。190+50は教材上の所属であり、現行演習は固定模試問題も対象にする。"
+  },
+  "source_pool": {
+    "publisher": "IPA",
+    "exam_code": "SC",
+    "paper": "am2",
+    "year_first": 2017,
+    "year_last": 2025,
+    "years": 9,
+    "sittings": 17,
+    "questions_per_sitting": 25,
+    "occurrences": 425,
+    "deduplicated_question_count": null,
+    "diagram_question_count": null,
+    "eligible_question_count": null,
+    "selection_status": "not_selected",
+    "excluded_sittings": [
+      {
+        "year": 2020,
+        "session": "spring",
+        "reason": "試験中止・過去問題なし"
+      }
+    ],
+    "special_sessions": [
+      {
+        "year": 2020,
+        "session": "october",
+        "session_label": "令和2年度10月試験"
+      }
+    ]
+  },
+  "categories": [
+    {
+      "id": "sc_security_threats",
+      "name": "情報セキュリティ・脅威・攻撃",
+      "order": 1,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "保護目的、脅威・脆弱性、攻撃の成立条件を理解する。暗号・認証は別カテゴリへ分類する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": ["11.1"]
+      },
+      "allocation": {
+        "category_drill": 38,
+        "mock_exam_1": 5,
+        "mock_exam_2": 5,
+        "total": 48
+      },
+      "subcategories": [
+        {
+          "id": "sc_security_threats__goals",
+          "name": "情報の保護目的",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_security_threats__threats_vulnerabilities",
+          "name": "脅威・脆弱性",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_security_threats__attack_mechanisms",
+          "name": "攻撃の仕組み",
+          "domain_id": "technology"
+        }
+      ]
+    },
+    {
+      "id": "sc_crypto_auth_pki",
+      "name": "暗号・認証・PKI",
+      "order": 2,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "暗号、認証、署名、証明書の役割と使い分けを理解する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": ["11.1"]
+      },
+      "allocation": {
+        "category_drill": 30,
+        "mock_exam_1": 4,
+        "mock_exam_2": 4,
+        "total": 38
+      },
+      "subcategories": [
+        {
+          "id": "sc_crypto_auth_pki__encryption",
+          "name": "暗号・鍵",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_crypto_auth_pki__hash_signature",
+          "name": "ハッシュ・署名",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_crypto_auth_pki__authentication",
+          "name": "認証",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_crypto_auth_pki__pki",
+          "name": "PKI・証明書",
+          "domain_id": "technology"
+        }
+      ]
+    },
+    {
+      "id": "sc_security_management",
+      "name": "情報セキュリティ管理・リスク",
+      "order": 3,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "資産とリスク、規程、組織の責任、継続の考え方を理解する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": ["11.2"]
+      },
+      "allocation": {
+        "category_drill": 22,
+        "mock_exam_1": 2,
+        "mock_exam_2": 2,
+        "total": 26
+      },
+      "subcategories": [
+        {
+          "id": "sc_security_management__assets_risk",
+          "name": "資産・リスク",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_security_management__isms_policy",
+          "name": "ISMS・規程",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_security_management__organization_continuity",
+          "name": "組織・継続",
+          "domain_id": "technology"
+        }
+      ]
+    },
+    {
+      "id": "sc_security_assessment_controls",
+      "name": "セキュリティ技術評価・対策",
+      "order": 4,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "技術の評価・診断と、リスクに応じた防御・対策・対応の選択を学ぶ。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": ["11.3", "11.4"]
+      },
+      "allocation": {
+        "category_drill": 25,
+        "mock_exam_1": 3,
+        "mock_exam_2": 3,
+        "total": 31
+      },
+      "subcategories": [
+        {
+          "id": "sc_security_assessment_controls__assessment",
+          "name": "セキュリティ技術評価",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_security_assessment_controls__controls",
+          "name": "情報セキュリティ対策",
+          "domain_id": "technology"
+        }
+      ],
+      "coverage_constraints": {
+        "assessment_minimum": {
+          "category_drill": 5,
+          "mock_exam_1": 1,
+          "mock_exam_2": 1
+        },
+        "note": "評価だけ又は対策だけに偏らない。最低件数は配分案であり、実査後に確定する。"
+      }
+    },
+    {
+      "id": "sc_security_implementation",
+      "name": "セキュリティ実装技術",
+      "order": 5,
+      "default_domain": "technology",
+      "priority": "S",
+      "description": "安全な通信、設定、アクセス制御、コードの具体的な実装判断を学ぶ。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": ["11.5"]
+      },
+      "allocation": {
+        "category_drill": 22,
+        "mock_exam_1": 3,
+        "mock_exam_2": 3,
+        "total": 28
+      },
+      "subcategories": [
+        {
+          "id": "sc_security_implementation__secure_communications",
+          "name": "安全な通信の実装",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_security_implementation__access_configuration",
+          "name": "アクセス制御・設定",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_security_implementation__secure_coding",
+          "name": "安全なコード・入力処理",
+          "domain_id": "technology"
+        }
+      ]
+    },
+    {
+      "id": "sc_networks",
+      "name": "ネットワーク",
+      "order": 6,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "通信の流れとプロトコル、制御、管理、応用を学ぶ。安全性の実装が主題ならセキュリティ実装技術へ分類する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": ["10.1", "10.2", "10.3", "10.4", "10.5"]
+      },
+      "allocation": {
+        "category_drill": 20,
+        "mock_exam_1": 3,
+        "mock_exam_2": 3,
+        "total": 26
+      },
+      "subcategories": [
+        {
+          "id": "sc_networks__methods",
+          "name": "ネットワーク方式",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_networks__communication_control",
+          "name": "データ通信と制御",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_networks__protocols",
+          "name": "通信プロトコル",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_networks__management",
+          "name": "ネットワーク管理",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_networks__applications",
+          "name": "ネットワーク応用",
+          "domain_id": "technology"
+        }
+      ]
+    },
+    {
+      "id": "sc_databases",
+      "name": "データベース",
+      "order": 7,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "データの構造、設計・操作、トランザクションと回復、応用を学ぶ。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": ["9.1", "9.2", "9.3", "9.4", "9.5"]
+      },
+      "allocation": {
+        "category_drill": 10,
+        "mock_exam_1": 1,
+        "mock_exam_2": 1,
+        "total": 12
+      },
+      "subcategories": [
+        {
+          "id": "sc_databases__models_design",
+          "name": "方式・設計",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_databases__operations",
+          "name": "データ操作",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_databases__transactions_recovery",
+          "name": "トランザクション・回復",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_databases__applications",
+          "name": "データベース応用",
+          "domain_id": "technology"
+        }
+      ]
+    },
+    {
+      "id": "sc_system_development",
+      "name": "システム開発・セキュア開発",
+      "order": 8,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "開発工程全体と各工程の安全性を学ぶ。具体的な防御コードの判断はセキュリティ実装技術へ分類する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": ["12.1", "12.2", "12.3", "12.4", "12.5", "12.6"]
+      },
+      "allocation": {
+        "category_drill": 8,
+        "mock_exam_1": 1,
+        "mock_exam_2": 1,
+        "total": 10
+      },
+      "subcategories": [
+        {
+          "id": "sc_system_development__requirements_design",
+          "name": "要件定義・設計",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_system_development__implementation_testing",
+          "name": "実装工程・統合・テスト",
+          "domain_id": "technology"
+        },
+        {
+          "id": "sc_system_development__deployment_maintenance",
+          "name": "導入・受入れ・保守・廃棄",
+          "domain_id": "technology"
+        }
+      ]
+    },
+    {
+      "id": "sc_development_service_management",
+      "name": "開発管理・サービスマネジメント",
+      "order": 9,
+      "default_domain": "technology",
+      "priority": "A",
+      "description": "開発の管理とサービスの管理を小分類で分離する。問題ごとにテクノロジ系・マネジメント系を設定する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": ["13.1", "13.2", "13.3", "13.4", "15.1", "15.2", "15.3", "15.4", "15.5"]
+      },
+      "allocation": {
+        "category_drill": 8,
+        "mock_exam_1": 2,
+        "mock_exam_2": 2,
+        "total": 12
+      },
+      "subcategories": [
+        {
+          "id": "sc_development_service_management__development_management",
+          "name": "ソフトウェア開発管理技術",
+          "domain_id": "technology",
+          "official_syllabus_sections": ["13.1", "13.2", "13.3", "13.4"],
+          "allocation": {
+            "category_drill": 4,
+            "mock_exam_1": 1,
+            "mock_exam_2": 1,
+            "total": 6
+          }
+        },
+        {
+          "id": "sc_development_service_management__service_management",
+          "name": "サービスマネジメント",
+          "domain_id": "management",
+          "official_syllabus_sections": ["15.1", "15.2", "15.3", "15.4", "15.5"],
+          "allocation": {
+            "category_drill": 4,
+            "mock_exam_1": 1,
+            "mock_exam_2": 1,
+            "total": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "sc_system_audit",
+      "name": "システム監査・内部統制",
+      "order": 10,
+      "default_domain": "management",
+      "priority": "A",
+      "description": "監査の独立性、証拠、手続と内部統制の評価を学ぶ。管理策の実施主体としての判断とは区別する。",
+      "official_syllabus": {
+        "reference_id": "ipa_sc_a2_supplement_v4_0",
+        "sections": ["16.1", "16.2"]
+      },
+      "allocation": {
+        "category_drill": 7,
+        "mock_exam_1": 1,
+        "mock_exam_2": 1,
+        "total": 9
+      },
+      "subcategories": [
+        {
+          "id": "sc_system_audit__audit",
+          "name": "システム監査",
+          "domain_id": "management"
+        },
+        {
+          "id": "sc_system_audit__internal_control",
+          "name": "内部統制",
+          "domain_id": "management"
+        }
+      ]
+    }
+  ]
+}

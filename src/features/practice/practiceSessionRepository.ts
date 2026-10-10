@@ -1,6 +1,7 @@
 import type { A1DojoDatabase } from '../../database/database';
 import type { PracticeSessionRow } from '../../database/types';
 import type { SubjectId } from '../../domain/subject';
+import { ensureLearningDataReady } from '../learning/learningRepository';
 
 export class PracticeSessionRepository {
   constructor(
@@ -9,6 +10,7 @@ export class PracticeSessionRepository {
   ) {}
 
   async get(sessionId: string): Promise<PracticeSessionRow | undefined> {
+    await ensureLearningDataReady(this.database);
     return this.database.practiceSessions
       .where('[subjectId+id]')
       .equals([this.subjectId, sessionId])
@@ -16,6 +18,7 @@ export class PracticeSessionRepository {
   }
 
   async getInProgress(): Promise<PracticeSessionRow | undefined> {
+    await ensureLearningDataReady(this.database);
     return this.database.practiceSessions
       .where('[subjectId+status]')
       .equals([this.subjectId, 'in_progress'])
@@ -23,6 +26,7 @@ export class PracticeSessionRepository {
   }
 
   async createInProgress(session: PracticeSessionRow): Promise<void> {
+    await ensureLearningDataReady(this.database);
     await this.database.transaction('rw', this.database.practiceSessions, async () => {
       const existing = await this.getInProgress();
       if (existing !== undefined) {
@@ -34,6 +38,7 @@ export class PracticeSessionRepository {
   }
 
   async replaceInProgress(session: PracticeSessionRow): Promise<void> {
+    await ensureLearningDataReady(this.database);
     await this.database.transaction('rw', this.database.practiceSessions, async () => {
       const existing = await this.getInProgress();
       if (existing !== undefined) {
@@ -45,6 +50,7 @@ export class PracticeSessionRepository {
   }
 
   async save(session: PracticeSessionRow): Promise<void> {
+    await ensureLearningDataReady(this.database);
     if (session.subjectId !== this.subjectId) {
       throw new ActivePracticeSessionExistsError(session.id);
     }
@@ -52,6 +58,7 @@ export class PracticeSessionRepository {
   }
 
   async remove(sessionId: string): Promise<void> {
+    await ensureLearningDataReady(this.database);
     await this.database.practiceSessions.delete(sessionId);
   }
 }

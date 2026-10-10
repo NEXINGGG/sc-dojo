@@ -1,5 +1,9 @@
+import { reconcileB1Dataset, type B1DatasetArchive } from './b1DatasetMigration';
+import type { B1DatasetManifest } from '../domain/b1Identity';
+import type { B1DocumentRow } from './types';
 import Dexie, { type EntityTable, type Table } from 'dexie';
 import { APP_ID } from '../app/appIdentity';
+import { isScA2Pilot } from '../data/pilotMode';
 import type {
   AnswerAttemptRow,
   B1MockSessionRow,
@@ -26,12 +30,20 @@ import type {
   ThemePreference,
 } from './types';
 import type { SubjectId } from '../domain/subject';
+import type { QuestionDatasetManifest } from '../domain/questionManifest';
+import type { A2DatasetArchiveRow } from './types';
+import { reconcileA2Dataset } from './a2DatasetMigration';
+import { reconcileA1Dataset } from './a1DatasetMigration';
 
 // A new database is opened for SC; the NW database is never migrated or deleted.
-export const DATABASE_NAME = APP_ID;
-export const DATABASE_VERSION = 12;
+export const DATABASE_NAME = isScA2Pilot ? `${APP_ID}-sc-a2-pilot-v1` : APP_ID;
+export const DATABASE_VERSION = 15;
 
 export class A1DojoDatabase extends Dexie {
+  a1DatasetManifests!: EntityTable<QuestionDatasetManifest, 'key'>;
+  a1DatasetArchives!: EntityTable<A2DatasetArchiveRow, 'id'>;
+  a2DatasetManifests!: EntityTable<QuestionDatasetManifest, 'key'>;
+  a2DatasetArchives!: EntityTable<A2DatasetArchiveRow, 'id'>;
   questionProgress!: EntityTable<QuestionProgressRow, 'code'>;
   answerAttempts!: EntityTable<AnswerAttemptRow, 'id'>;
   practiceSessions!: EntityTable<PracticeSessionRow, 'id'>;
@@ -42,6 +54,9 @@ export class A1DojoDatabase extends Dexie {
   learningDaysBySubject!: Table<LearningDayRow, [SubjectId, string]>;
   settings!: EntityTable<SettingRow, 'key'>;
   metadata!: EntityTable<MetadataRow, 'key'>;
+  b1DatasetManifests!: EntityTable<B1DatasetManifest, 'key'>;
+  b1DatasetArchives!: EntityTable<B1DatasetArchive, 'id'>;
+  b1Documents!: EntityTable<B1DocumentRow, 'documentId'>;
   b1PdfFiles!: Table<B1PdfFileRow, number>;
   b1PracticeSessions!: EntityTable<B1PracticeSessionRow, 'id'>;
   b1MockSessions!: EntityTable<B1MockSessionRow, 'id'>;
@@ -407,6 +422,19 @@ export class A1DojoDatabase extends Dexie {
       cloudSyncState: '&key, ownerUserId, updatedAt',
       cloudSyncOutbox: '&[userId+scope+itemKey], userId, scope, queuedAt, nextRetryAt, failureKind',
     });
+    this.version(13).stores({
+      a2DatasetManifests: '&key',
+      a2DatasetArchives: '&id, archivedAt, previousDatasetVersion, nextDatasetVersion',
+    });
+    this.version(15).stores({
+      b1DatasetManifests: '&key',
+      b1DatasetArchives: '&id, archivedAt',
+      b1Documents: '&documentId, year, updatedAt',
+    });
+    this.version(14).stores({
+      a1DatasetManifests: '&key',
+      a1DatasetArchives: '&id, archivedAt, previousDatasetVersion, nextDatasetVersion',
+    });
   }
 }
 
@@ -418,6 +446,9 @@ export const database = createDatabase();
 
 export async function initializeDatabase(target = database): Promise<void> {
   await target.open();
+  await reconcileA1Dataset(target);
+  await reconcileA2Dataset(target);
+  await reconcileB1Dataset(target);
 }
 
 function normalizeTheme(value: unknown): ThemePreference {

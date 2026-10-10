@@ -44,6 +44,7 @@ export function gradeB1Unit(unit: B1QuestionUnit, answers: B1AnswerValues): B1Un
   const automaticFields = unit.answerFields.map((field) => {
     const value = answers[field.fieldId] ?? '';
     const answered = value.trim().length > 0;
+    if (field.gradingExcluded) return { fieldId: field.fieldId, answered: false };
     if (unit.grading.mode !== 'automatic' || field.acceptedAnswers.length === 0 || !answered) {
       return { fieldId: field.fieldId, answered };
     }

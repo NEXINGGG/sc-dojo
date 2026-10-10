@@ -240,7 +240,11 @@ export function PracticeSetupPage() {
   return (
     <>
       <PageHeader
-        description="回答状態も組み合わせて、今の自分に合う問題を選べます。"
+        description={
+          questions[0]?.datasetVersion?.match(/^sc-a2-v[0-9]+$/)
+            ? '通常演習は190問です。固定模試の各25問も，回答後は間違い問題やお気に入りから復習できます。'
+            : '回答状態も組み合わせて、今の自分に合う問題を選べます。'
+        }
         title="通常演習"
       />
 

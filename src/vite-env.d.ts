@@ -1,6 +1,10 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  readonly VITE_SC_B_PILOT?: string;
+  readonly VITE_SC_B_LEGACY?: string;
+  readonly VITE_SC_B_RELEASE_CANDIDATE?: string;
+  readonly VITE_SC_A2_PILOT?: string;
   readonly VITE_SUPABASE_URL?: string;
   readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string;
 }

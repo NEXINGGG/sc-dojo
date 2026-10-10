@@ -1,3 +1,5 @@
+import { QuestionChoiceFigures, QuestionStimuli } from '../components/QuestionStimuli';
+import { QuestionExplanation } from '../components/QuestionExplanation';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
@@ -228,6 +230,8 @@ export function PracticeResultPage() {
                 <strong>{status}</strong>
               </summary>
               <p className="result-question-text">{question.question}</p>
+              <QuestionStimuli stimulus={question.stimulus} />
+              <QuestionChoiceFigures choices={question.choices} />
               <p>
                 あなたの回答:{' '}
                 {selectedChoice === undefined
@@ -254,10 +258,7 @@ export function PracticeResultPage() {
                   学習履歴を見る
                 </Link>
               </div>
-              <h3>解説</h3>
-              <p>{question.explanation}</p>
-              <h3>覚える一行</h3>
-              <p>{question.memoryPoint}</p>
+              <QuestionExplanation question={question} />
             </details>
           );
         })}
