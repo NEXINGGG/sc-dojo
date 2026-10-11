@@ -1,0 +1,2 @@
+# Keep SC A-2 image bytes identical across Windows and Linux checkouts.
+/public/questions/sc/a2/**/*.svg text eol=lf

@@ -12160,10 +12160,10 @@
           "src": "questions/sc/a2/SC-2025-FALL-Q22.svg",
           "alt": "上からアプリケーション層，ミドルウェア層，デバイスドライバ層，ハードウェアの4階層。",
           "caption": "IPA原図の階層と順序を再構成",
-          "asset_sha256": "25878ac18f152a700dcf21ca6af2d95529fea694e0a15e7afaf312bd39dc3028"
+          "asset_sha256": "ac304572035d04efdf9d3d8f883253b2b8bfa4aafccf6ac6dbda7ad1df9665eb"
         }
       ],
-      "content_hash": "sha256:59ceb36d41f11664c347710d9326fb87b8fd6abea1c1c9499e8adb10f939310e",
+      "content_hash": "sha256:12bf9e136df9d31b32691705f0ead996fbd88a94377ef22fd413671f655ef0ba",
       "source_id": "SC-2025-FALL-Q22"
     },
     {
@@ -16290,7 +16290,7 @@
               "src": "questions/sc/a2/SC-2018-FALL-Q18-A.svg",
               "alt": "要求元→要求先へSYN，要求先→要求元へSYN＋ACK，要求元→要求先へACKの3通信。",
               "caption": "IPA原図の通信順序を再構成",
-              "asset_sha256": "3b7055695d0750627b32ab4883f2f90c8d0154801afce7acb3568524e5309d64"
+              "asset_sha256": "4f1a092ab1e8444f42c0bdf854ab591dc8804e109c6dcbfef8024811da0e5724"
             }
           ]
         },
@@ -16303,7 +16303,7 @@
               "src": "questions/sc/a2/SC-2018-FALL-Q18-B.svg",
               "alt": "要求元→要求先へSYN，要求先→要求元へACK，要求先→要求元へSYN，要求元→要求先へACK，要求元→要求先へSYN，要求先→要求元へACKの6通信。",
               "caption": "IPA原図の通信順序を再構成",
-              "asset_sha256": "1fc744409c5908808338ed9aa8be3ba89c82e65c04defd849ede039d422a785c"
+              "asset_sha256": "8abfc50b61e6de4e8574a3a1c37b598b311bfee5bd107e7df6283755c714cb0b"
             }
           ]
         },
@@ -16316,7 +16316,7 @@
               "src": "questions/sc/a2/SC-2018-FALL-Q18-C.svg",
               "alt": "要求元→要求先へSYNを3回送信し，要求先→要求元へACKを1回返す4通信。",
               "caption": "IPA原図の通信順序を再構成",
-              "asset_sha256": "e63dead4437a421143d26dc90a3989917718cca210a1abf4bd9cd89644a4d570"
+              "asset_sha256": "79adf03de235e13760647070da62f2aab13d9286e85208cbae01e2ef32cb277a"
             }
           ]
         },
@@ -16329,7 +16329,7 @@
               "src": "questions/sc/a2/SC-2018-FALL-Q18-D.svg",
               "alt": "要求元→要求先へSYN，要求先→要求元へACKを3回繰り返す6通信。",
               "caption": "IPA原図の通信順序を再構成",
-              "asset_sha256": "3158297d8b95408208af48537ad1e1f0105a4214a5bfab8200abcbfc6c22a877"
+              "asset_sha256": "1b4c9cdadf3d790b9707797a7297babebf79b96679e917a80215bd5b0fe138d5"
             }
           ]
         }
@@ -16371,7 +16371,7 @@
       },
       "status": "active",
       "schema_version": 1,
-      "content_hash": "sha256:e44d358e0fe9ac028b596a9d490285d106f7ee46b13759f5f252a5b989b7cf2f",
+      "content_hash": "sha256:74b7f4bf4515ba3fdd612e113f6796e8e72a4a8c6aadd3d6d545ba925dc6e154",
       "source_id": "SC-2018-FALL-Q18"
     },
     {

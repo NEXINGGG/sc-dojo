@@ -87,6 +87,21 @@ Cloudflare Pagesは`pnpm-lock.yaml`を検出して依存関係を導入する。
 4. ローカルで`pnpm install --frozen-lockfile`と`pnpm run check:release`を実行し、同じエラーを再現する。
 5. `dist/`の`manifest.webmanifest`、`sw.js`、`_headers`、`robots.txt`がビルド後にあるか確認する。
 
+## SC A-2 SVGの改行と画像ハッシュ
+
+`asset_sha256`は画像ファイルの実バイト全体を検証する。ルートの`.gitattributes`で`/public/questions/sc/a2/**/*.svg text eol=lf`を指定し、WindowsとLinuxのcheckoutをLFへ統一する。A-1やSC Bの属性には適用しない。Windowsで編集するときもSVGをLFで保存する。
+
+画像ハッシュ不一致時は、まず次を確認する。
+
+```bash
+git ls-files --eol -- public/questions/sc/a2/*.svg
+git check-attr text eol -- public/questions/sc/a2/SC-2025-FALL-Q22.svg
+```
+
+`i/lf w/lf attr/text eol=lf`が期待値。改行を統一した後、既存の`update-question-content-hashes.mjs --update --strict-sc-a2`で本番・原稿・pilotの参照ハッシュを再生成し、対応する二次校閲記録の`content_hash`も整合させる。改行のみの修正では、SVGが既存Git blobと同一バイトであること、JSONの差分がハッシュのみであることを確認する。
+
+`.gitattributes`と更新したJSONを同じコミットで公開し、`pnpm run validate:a2`、`pnpm run validate:sc-a2`、`pnpm run build`を実行する。ハッシュ検証時にCRLF/LFを吸収したり検証を省略したりしない。SVGが既にindexでLFなら、working treeの正規化によるSVG自体のGit差分は発生しない。
+
 ## ロールバックとキャッシュ不整合
 
 Cloudflare Dashboardの**Deployments**から直前の正常なデプロイを選び、ロールバックする。ロールバック前後ともIndexedDBは削除しない。学習履歴、途中演習、途中模試はService Workerキャッシュとは別の端末内データである。

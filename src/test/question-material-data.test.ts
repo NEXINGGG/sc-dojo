@@ -1,5 +1,6 @@
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -101,6 +102,26 @@ describe('教材データ検証とhashツール', () => {
     );
     rmSync(file);
     expect(validateQuestionMaterialData(result.payload, options()).join('\n')).toContain('image:');
+  });
+  it('SVGのLFからCRLFへの変更も実バイトのhash不一致として拒否する', () => {
+    const file = join(temporary, 'questions/sc/a2/test.svg');
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg">\n<text>テスト</text>\n</svg>\n';
+    writeFileSync(file, svg);
+    const payload = createQuestionMaterialFixture();
+    payload.questions[0].stimulus = [
+      { type: 'image', src: 'questions/sc/a2/test.svg', alt: 'テスト図', asset_sha256: '' },
+    ];
+    const result = processQuestionContentHashes(payload, { ...options(), mode: 'update' });
+    expect(result.errors).toEqual([]);
+    expect(result.payload.questions[0].stimulus[0].asset_sha256).toBe(
+      createHash('sha256').update(svg).digest('hex'),
+    );
+    writeFileSync(file, svg.replaceAll('\n', '\r\n'));
+    const checked = processQuestionContentHashes(result.payload, { ...options(), mode: 'check' });
+    expect(checked.errors.join('\n')).toContain('image.asset_sha256');
+    expect(checked.payload).toEqual(result.payload);
+    writeFileSync(file, svg);
+    expect(validateQuestionMaterialData(result.payload, options())).toEqual([]);
   });
   it('CLIのcheckが不整合を検出し、ファイルを変更しない', () => {
     const file = join(temporary, 'questions.json');
